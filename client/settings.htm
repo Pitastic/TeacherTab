@@ -1,0 +1,194 @@
+<!doctype html>
+<html manifest="cache.manifest">
+
+<head>
+	<meta charset="utf-8">
+	<meta id="dynamicViewport" name="viewport">
+    <script type="text/javascript">
+    if (screen.width > 767) {
+        switch(window.orientation){
+            case 180:
+            case 0:
+                // Portrait = 0 or 180:
+                document.getElementById('dynamicViewport').setAttribute('content', "width=device-width");
+                break;
+            default:
+                // Landscape = 90 or -90:
+                document.getElementById('dynamicViewport').setAttribute('content', "width="+document.documentElement.clientWidth);
+                break;
+        }
+    }
+    </script>
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- CSS Media Queries -->
+    <link rel="stylesheet" href="./css/basic.css" />
+    <link rel="stylesheet" media="only screen and (min-device-width: 768px)" href="./css/ipad.css" />
+    <link rel="stylesheet" media="only screen and (max-device-width: 767px)" href="./css/phone.css" />
+	<link rel="stylesheet" href="./css/menu_popups.css">
+	<link rel="stylesheet" href="./css/buttons.css">
+	<link rel="apple-touch-icon" href="apple-touch-icon.png">
+	
+	<title>TeacherTab</title>
+</head>
+
+<body ontouchstart>
+<div id="header">
+    <h1>klassenspezifische Einstellungen</h1>
+</div>
+
+<!-- Menus -->
+
+
+<!-- Details Settings -->
+<div id="item1setting" class="uebersicht bottom">
+    <div class="content">
+        <div class="styleWrap scrollable">
+            <div id="listSetting">
+                <h3>Notenverteilung</h3>
+                <div>
+                    Welcher Prozentsatz entspricht welcher Note
+                    <form id="form_Notenverteilung" name="form_Notenverteilung">
+                        <label>1 : <input type="number"></label>
+                        <label>2 : <input type="number"></label>
+                        <label>3 : <input type="number"></label>
+                        <label>4 : <input type="number"></label>
+                        <label>5 : <input type="number"></label>
+                    </form>
+                </div>
+                <h3>Kompetenzen</h3>
+                <div>
+                    Namen der Kompetenzen, die in den schriftlichen Leistungen getestet werden
+                    <form id="form_KompNamen" name="form_KompNamen">
+                        <label>Kategorie 1 : <input type="text" placeholder="Kategorie 1"></label><label>Kategorie 2 : <input type="text" placeholder="Kategorie 2"></label>
+                        <label>Kategorie 3 : <input type="text" placeholder="Kategorie 3"></label><label>Kategorie 4 : <input type="text" placeholder="Kategorie 4"></label>
+                    </form>
+                </div>
+                <h3>Gewichtung</h3>
+                <div>
+                    Verhältnis zur Notenberrechnung zwischen den verschiedenen Bereichen
+                    <form id="form_Gewichtung" name="form_Gewichtung">
+                        <label> : <input type="number"></label>
+                        <label> : <input type="number"></label>
+                        <label> : <input type="number"></label>
+                    </form>
+                </div>
+                <h3>Fachspezifische Leistungen</h3>
+                <div>
+                    Die Leistungen können für Sprachen differenziert errechnet und aufgelistet werden (Vokabeln / Grammatk)
+                    <form id="form_fspz" name="form_fspz">
+                        <label>Differenzieren : <input name="differenziert" type="checkbox"></label>
+                    </form>
+                </div>
+                <h3>Schülerliste</h3>
+                <div>
+                    Schüler können hier oder in den 'Schüler-Details' Gruppen (A-H) eingeteilt werden. Soll bei der Auflistung der Schüler nicht nur nach Namen, sondern auch nach diesen Gruppen sortiert werden ?
+                    <form id="form_sex" name="form_sex">
+                        <label>nach Gruppierung sortieren : <input type="checkbox" name="stud_Sort"></label>
+                    </form>
+                    <div id="alle_gruppieren">
+                        <a href="#" class="button stay">Liste gruppieren</a>
+                    </div>
+                </div>
+                <h3>Vorjahresnoten</h3>
+                <div>
+                    Zeugnisnote der Schüler aus dem letzten Halbjahr laden
+                    (die alte Klasse muss sich dazu zumindest kurz auf deinem Gerät befinden)
+                    <!--<form><label>Feature momentan noch deaktiviert</label></form>-->
+                    <form id="form_vorjahr" name="form_vorjahr">
+                        <label>Noten anzeigen : <input name="setVorjahr" type="checkbox" onchange="vorjahresPop(this);"></label>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Details Settings-->
+
+<!-- Details Settings -->
+<div id="item1setting_gruppen" class="uebersicht bottom">
+    <div class="content">
+        <div class="styleWrap scrollable">
+            <div id="gruppierenListe">
+            </div>
+        </div>
+		<select name="gruppierer" id="gruppierer">
+		    <option value="-">-</option>
+		    <option value="A">A</option>
+		    <option value="B">B</option>
+		    <option value="C">C</option>
+		    <option value="D">D</option>
+		    <option value="E">E</option>
+		    <option value="F">F</option>
+		    <option value="G">G</option>
+			<option value="H">H</option>
+		</select>
+    </div>
+</div>
+<!-- /Details Settings-->
+
+<!-- Eingabe-PopUp -->
+<div id="fadeBlack" class="hide">
+
+<!-- Schüler gruppieren -->
+<div id="item1setting_info" class="popUp">
+<h3>Gruppieren</h3>
+    <ul>
+        <li>Hier kannst du mehrere Schüler einer Gruppe zuweisen</li>
+        <li>Möchtest du verschiedene Gruppierungen vornehmen, musst du zwischendurch speichern</li>
+    </ul>
+    <div class="close"><a class="stay" href="#">x</a></div>
+    <div>
+        <a class="button OK stay" href="#" onclick="popUpClose(this, false)">OK</a>
+    </div>
+</div>
+
+<!-- Vorjahr festlegen -->
+<div id="item1setting_vorjahr" class="popUp">
+<h3>Klasse festlegen</h3>
+    <form name="form_vorjahrSelect">
+    <ul>
+        <li>
+            Wie ist der Name dieser Klasse im letzten Halbjahr gewesen
+        </li>
+        <li>
+            <select name="klasseSelect" id="klasseSelect">
+            <option>Lade...</option>
+            </select>
+        </li>
+    </ul>
+    </form>
+    <div class="close"><a class="stay" href="#">x</a></div>
+    <div>
+        <a class="button ABORT stay" href="#" onclick="saveVorjahr(this, true)">Abbrechen</a>
+        <a class="button OK stay" href="#" onclick="saveVorjahr(this, false);">OK</a>
+    </div>
+</div>
+
+</div>
+<!-- /popUp-PopUp -->
+
+<nav>
+    <div class="centerWrap-child">
+    <div class="">
+        <a id="Abbrechen" class="button ABORT stay" onclick="window.location.reload()" href="#">Reset</a>
+        <a id="Save" class="button OK stay" href="#" onclick="SettingsSave(true);">Speichern</a>
+        <div class="clearer"></div>
+    </div>
+    </div>
+    <div id="btn_refresh" class="button"><a href="#" class="stay" onclick="window.location.reload();"><img src="./img/reload_button.gif"></a></div>
+</nav>
+
+<div id="footer">
+</div>
+
+</body>
+
+    <script src="js/jquery-2.2.3.min.js"></script>
+	<script type="text/javascript" src="js/all.js"></script>
+	<script type="text/javascript" src="js/touch.js"></script>
+	<script type="text/javascript" src="js/stay.js"></script>
+	<script type="text/javascript" src="js/settings.js"></script>
+
+</html>

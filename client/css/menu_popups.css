@@ -1,0 +1,191 @@
+/* PopUp Fenster */
+.popUp { 
+    position: absolute; z-index: 5;
+    right: 10%; left: 10%;
+    margin: 0 auto; padding: 15px;
+	border-radius: 5px; border: 2px solid #666;
+    background-color: rgb(220,220,220);
+   	box-shadow: 1px 1px 10px 1px #000;
+    -webkit-transform: translateY(-110%);
+    -moz-transform: translateY(-110%);
+    transform: translateY(-110%);
+    -webkit-transition: -webkit-transform .3s linear;
+    -moz-transition: -webkit-transform .3s linear;
+    transition: -webkit-transform .3s linear;
+    }
+    .popUp h3 {
+        font-size: 1.5em;
+        font-weight: bold;
+        }
+    .popUp ul {
+        margin: 15px 0;
+        }
+    .popUp li, li.inputs {
+		display: block;
+		margin-bottom: -1px;
+		padding: 12px 10px;
+		background-color: #FFF;
+		color: #222;
+		border: 1px solid #999999;
+		font-size: 16px;
+		font-weight: bold;
+		text-decoration: none;
+        }
+        .popUp li:first-child, li.inputs:first-child {
+            border-top-left-radius: 8px;
+		    border-top-right-radius: 8px;
+        }
+        .popUp li:last-child, li.inputs:last-child {
+    		border-bottom-left-radius: 8px;
+    		border-bottom-right-radius: 8px;
+        }
+        .popUp li span {
+            font-size: 0.75em;
+            font-weight: normal;
+        }
+        	.popUp li.edit span {
+        		float: left;
+        		width: 35%;
+        		font-size: initial;
+        		font-weight: bold;
+        		}
+    .popUp input[type="text"], .popUp input[type="number"], li.inputs input {
+        padding: 0 5px;
+        margin: -7px; margin-right: 0;
+        width: 96%;
+        border: none;
+        }
+        .popUp input[type="number"] {
+            width: 60%;
+        }
+		
+		#ds_nach_Prozent, #ds_nach_Noten {
+	        padding: 2px 0;
+	        margin-left: 0;
+	        width: 50%;
+	        border: none;
+	        font-size: 16px;
+	        font-weight: bold;
+	        text-align: center;
+	        opacity: 1;
+        }
+        	#ds_nach_Noten{color:rgb(81, 15, 15) !important;}
+        	#ds_nach_Prozent{color: rgb(208, 120, 120) !important;}
+        
+        #trennZ {
+            vertical-align: top;
+            padding: 12px 5px; padding-right: 20px;
+            margin: 0 10px;
+        }
+    .popUp div:last-child {
+        text-align: right;
+        }
+    .showPop {
+        -webkit-transform: translateY(50px);
+        -moz-transform: translateY(50px);
+        transform: translateY(50px);/*status-bar-fix*/
+        }
+/* Add Menu */
+/* -- speziell */
+#item1Add textarea{
+    padding: 5px;
+    margin: -4px; margin-left: 0;
+    height: 80px;
+    width: 96%;
+    border: none;
+    background: white;
+    font-size: 1em;
+}
+#trennN {
+    border: 1px solid gray;
+    margin: 0 10px;
+    padding: 0.75em 5px;
+    border-radius: 5px;
+    width: 2em;
+}
+
+li.edit {
+    text-align: right;
+}
+
+#mitschreiberTrue:before {
+    content: "N";
+}
+    #mitschreiberTrue:checked:before {
+        content: "J";
+    }
+input#notenDatum {
+    width: 70%;
+}
+
+/* Settingsmenü */
+#item1setting_vorjahr ul li:last-child {text-align: center;}
+
+/* Custom Keyboard */
+#NotenListe_Arbeit {
+	display: none;
+    padding: 10px;
+    border-radius: 5px;
+}
+#NotenListe_Arbeit.show {display: block; opacity: 1;}
+
+    #NotenListe_Arbeit ul {
+        text-align: center;
+        margin-top: 1em;
+    }
+    /*- Styles außerdem bei '.popUp li' vorhanden !  -*/
+        li.inputs {
+            padding-top: 0.75em; padding-bottom: 0.75em;
+            margin: auto; margin-bottom: 10px;
+            width: 5em;
+        }
+        li.inputs.saved {
+            border-color: rgb(50,190,40);
+        }
+        li.inputs.changed {
+            border-color: rgb(245,20,40);
+        }
+        #keyMax {
+            margin: auto;
+            padding: 5px 0;
+            display: block;
+            width: inherit;
+            font-size: 1em;
+            text-align: center;
+        }
+        #NotenListe_Arbeit a.button.OK {
+            margin: 0;
+        }
+#ds_gesamt_eingetragen {
+    position: absolute;
+    top: 3.8em; right: 2.5em; z-index: 10;
+}
+
+.NotenSelect {
+    font-size: 20px;
+    padding: 15px;
+    padding-right: 25px;
+}
+
+.NotenListe {
+    display: block;
+    border-radius: 4px 0 0 4px;
+    text-align: center;
+}
+    #NotenListe_Arbeit select {
+        padding: 10px;
+        padding-right: 25px; padding-left: 15px;
+        margin: 0.75em auto;
+        font-weight: bold;
+        font-size: 26px;
+        text-align: center;
+        border-bottom-width: 2px;
+    }
+    #NotenListe_Arbeit p {
+        font-size: 1em;
+        line-height: 1.25em;
+    }
+
+/* ============ Media Queries allgemein ============== */
+@media only screen and (max-device-width: 767px) {
+}

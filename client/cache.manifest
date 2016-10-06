@@ -1,0 +1,48 @@
+CACHE MANIFEST
+# Version: 1.6.3.6 vom 04.06.2016
+
+CACHE:
+# HTML
+details_leistungen.htm
+details_students.htm
+index.htm
+export.htm
+settings.htm
+uebersicht.htm
+export-PDF.htm
+
+# CSS Stylesheets
+./css/basic.css
+./css/ipad.css
+./css/phone.css
+./css/buttons.css
+./css/menu_popups.css
+
+# JavaScript
+./js/all.js
+./js/details_leistungen.js
+./js/details_students.js
+./js/export.js
+./js/index.js
+./js/settings.js
+./js/stay.js
+./js/touch.js
+./js/uebersicht.js
+
+# Images
+./img/back_tisch.jpg
+./img/DropDown.png
+./img/lupe_klein.gif
+./img/no_entry.png
+./img/switch.gif
+./img/noten.gif
+./img/punkte.gif
+./img/reload_button.gif
+./img/rohpunkte.gif
+./img/Slider_rotate.gif
+
+# Jquery
+./js/jquery-2.2.3.min.js
+
+NETWORK:
+*

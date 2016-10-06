@@ -1,0 +1,34 @@
+<!doctype html>
+<html manifest="cache.manifest">
+
+<head>
+	<meta charset="utf-8">
+
+    <!-- CSS Media Queries -->
+    <link rel="stylesheet" href="./css/basic.css" />
+    <link rel="stylesheet" media="only screen and (min-device-width: 768px)" href="./css/ipad.css" />
+    <link rel="stylesheet" media="only screen and (max-device-width: 767px)" href="./css/phone.css" />
+	<link rel="stylesheet" href="./css/menu_popups.css">
+	<link rel="stylesheet" href="./css/buttons.css">
+	<title>TeacherTab</title>
+</head>
+
+<body>
+<div id="header">
+    <h1>Datei wird erstellt</h1>
+    <div class="uebersicht show" id="itemExport">
+        <div class="styleWrap">
+            Dein Download startet in 5 Sekunden ...
+        </div>
+    </div>
+</div>
+<div id="result"></div>
+<script>
+    var buffer = "data:text/csv;charset=utf-8,\n"+unescape(location.search.split("=")[1]);
+    //document.getElementById('result').innerHTML = buffer; // for Dev only !
+    var meta = document.createElement('meta');
+    meta.setAttribute('http-equiv', 'refresh');
+    meta.setAttribute('content', '5, URL='+buffer);
+    document.head.appendChild(meta);
+</script>
+</html>

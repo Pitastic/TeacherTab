@@ -1,0 +1,392 @@
+/* Clear inherit Styles */
+div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, hr, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    }
+a {
+    margin: 0; padding: 0;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    text-decoration: none;
+    color: inherit;
+    }
+menu, ul, li, ol {
+    margin: 0; padding: 0;
+    list-style: none;
+    }
+hr {
+    border: 1px solid white;
+    margin: 20px 5px;
+    box-shadow: 1px 1px 3px 0 rgb(100,100,100);
+}
+h2 { display: none; }
+
+/* Background */
+html, body {
+    margin: 0; padding: 0;
+    color: black;
+    background-color: rgb(184, 120, 82);
+    font-family: Helvetica;
+    font-size: 100%;
+    vertical-align: baseline;
+    }
+
+/* Blendelemente */
+.hide {
+    display: none !important;
+}
+#fadeBlack { 
+    position: fixed; top: 0; bottom: 0;
+    left: 0; right: 0; z-index: 4;
+    background-color: rgba(0,0,0,0.7);
+}
+#progress { /*loading (inaktiv)*/
+    position: absolute;
+    top: 150px; left: 50%;
+    margin-left: -75px;
+    height: 150px; width: 150px;
+    border-radius: 8px;
+    font-weight: bold;
+    line-height: 150px;
+    color: white;
+    background-color: rgba(10,10,10,0.5);
+    text-align: center;
+    z-index: 10;
+    }
+.styleWrap {
+    border: 2px solid rgb(230,230,230);
+    border-radius: 3px;
+    background: rgba(226,226,226,0.7);
+}
+
+/* Status and Stats - Bars and Charts */
+.schiene {
+    position: relative;
+    margin-bottom:8px; margin-top:3px;
+    height: 16px;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: grey;
+    color: white;
+    overflow: hidden;
+}
+    .schiene span {
+        position: absolute;
+        top: -50%; margin-top: 0.55em;
+        width: 100%;
+        text-align: right;
+    }
+.schiene.sync {
+        background-color: silver;
+        margin-top: 0.75em; margin-bottom: 0;
+        border-radius: 4px;
+    }
+.balken {
+    width: 0;
+    height: 100%;
+    background-color: darkslategray;
+    text-align: right;
+    -webkit-transition: all 1s ease-out 1s;
+    -moz-transition: all 1s ease-out 1s;
+    -o-transition: all 1s ease-out 1s;
+    transition: all 1s ease-out 1s;
+}
+    #syncStatus{
+        background-color: gray;
+        text-align: center;
+        -webkit-transition: all 1s ease-out;
+        -moz-transition: all 1s ease-out;
+        -o-transition: all 1s ease-out;
+        transition: all 1s ease-out;
+    }
+    #syncStatus.ok {
+        background-color: rgb(50,190,40);
+        -webkit-transition: all .2s ease-out;
+        -moz-transition: all .2s ease-out;
+        -o-transition: all .2s ease-out;
+        transition: all .2s ease-out;
+    }
+    #syncStatus.error {
+        background-color: rgb(245,20,40);
+        -webkit-transition: all .2s ease-out;
+        -moz-transition: all .2s ease-out;
+        -o-transition: all .2s ease-out;
+        transition: all .2s ease-out;
+    }
+
+
+
+
+
+
+/*==================================================*/
+/*==================================================*/
+/* Section für Regeln die zum Löschen bestimmt sind*/
+/*==================================================*/
+/*==================================================*/
+
+/*ipad.css*/
+/*
+.circle {
+    display: inline-block;
+    background-color: silver;
+    border-radius: 30px;
+    border: 1px solid rgb(92,92,92);
+    box-shadow: inset 0 0 5px 1px grey;
+}
+    .circle.klein {
+        margin-bottom: 10px;
+        margin-right: 5px;
+        width: 10px;
+        height: 10px;
+    }
+    .circle.mittel {
+        margin-bottom: 5px;
+        margin-right: 5px;
+        width: 20px;
+        height: 20px;
+    }
+    .circle.gross {
+        width: 30px;
+        height: 30px;
+    }
+    .circle.selected {
+        background-color: rgb(50,90,255);
+    }
+
+    .indexBox h3 {
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+        font-weight: bold;
+        text-align: left;
+    }
+    .indexBox ol {
+        text-align: left;
+        margin: 0.25em 0;
+        margin-left: 1em;
+    }
+    .notenHeader {
+        position: absolute;
+        bottom: 8px;
+        right: 0; left: 150px;
+        text-align: center;
+    }
+        .notenHeader h3 {
+            display: inline-block;
+            margin-left: 2.5em;
+            font-weight: bold;
+        }
+        h3.schr {text-shadow: 0 0 1px black;}
+        .notenHeader h3:first-child{
+            margin-left: 0;
+        }
+        nav .styleWrap {
+        padding: 5px;
+        margin-top: 25px;
+        border-left: none;
+        border-radius: 0 3px 3px 0;
+    }
+
+/* basic.css */
+/*
+blockquote, q {
+    quotes: none;
+    }
+
+progress {
+    display: block;
+    margin: 0.25em 0;
+    width: 100%;
+    }
+
+/*buttons.css*/
+/*
+.button.trans {
+    background: grey;
+    }
+    .button.trans.pressed {
+        color: lightblue;
+        text-shadow: 0 0 3px darkblue;
+    }
+    .button.OK.pressed {
+        border: 1px solid rgba(200,200,200,0.8);
+        background: -webkit-linear-gradient(to bottom, rgba(74,74,74,0.85), rgba(20,20,20,0.75), rgba(2,2,2,0.75), rgba(14,14,14,0.75));
+        background: -moz-linear-gradient(to bottom, rgba(74,74,74,0.85), rgba(20,20,20,0.75), rgba(2,2,2,0.75), rgba(14,14,14,0.75));
+        background: linear-gradient(to bottom, rgba(74,74,74,0.85), rgba(20,20,20,0.75), rgba(2,2,2,0.75), rgba(14,14,14,0.75));
+        }
+    .button.ABORT.pressed { 
+        border: 1px solid rgba(200,200,200,0.8);
+        background: -webkit-linear-gradient(to bottom, rgb(248,80,50) 0%,rgb(241,111,92) 47%,rgb(246,41,12) 53%,rgb(231,56,39) 100%);
+        background: -moz-linear-gradient(to bottom, rgb(248,80,50) 0%,rgb(241,111,92) 47%,rgb(246,41,12) 53%,rgb(231,56,39) 100%);
+        background: linear-gradient(to bottom, rgb(248,80,50) 0%,rgb(241,111,92) 47%,rgb(246,41,12) 53%,rgb(231,56,39) 100%);
+    }
+
+[disabled], #ds_nach_Noten, #ds_nach_Prozent {
+    color: grey !important;
+    border-color: grey !important;
+}
+
+#Main {
+    padding: 0;
+    background: url('../img/none.png') bottom center;
+    width: 70px; height: 75px;
+    text-indent: -9999px;
+    }
+
+#MainSave.button a {
+    display : none;
+}
+    
+#item2slider{
+    padding: 5px 10px 40px;
+}
+
+/*menu_popup.css*/
+/*
+.popUp .button a {
+        display: block;
+        margin: 10px 7px;
+    }
+.sidebar {
+    position: fixed;
+    top: 0; bottom: 0;
+    width: 235px;
+    padding-top: 60px;
+    z-index: 2;
+    background-color: #ccc;
+    -webkit-transition: all .6s ease-in-out;
+    -moz-transition: all .6s ease-in-out;
+    -o-transition: all .6s ease-in-out;
+    transition: all .6s ease-in-out;
+}
+    .sidebar h1{
+    text-align: center;
+    }
+
+    .sidebar.left {
+        box-shadow: 2px 2px 10px 1px #000;
+       -webkit-box-shadow: 2px 2px 10px 1px #000;
+        border-right: 1px solid #666;
+        -webkit-transform: translateX(-150%);
+        -moz-transform: translateX(-150%);
+        transform: translateX(-150%);
+        }
+    .sidebar.left.show {
+        display: block;
+        -webkit-transfrom: translateX(0);
+        -moz-transfrom: translateX(0);
+        transfrom: translateX(0);
+        }
+        
+    .sidebar.right {
+        right: -250px;
+        margin-right: 0;
+        box-shadow: -2px -2px 10px 1px #000;
+       -webkit-box-shadow: 2px 2px 10px 1px #000;
+        border-left: 1px solid #666;
+        }
+    .sidebar.right.show {
+       display: block;
+       margin-right: 250px;
+       }
+
+.Menu {
+    margin: 7px; padding: 0;
+    list-style: none;
+}
+    .Menu li a {
+        display: block;
+        margin-bottom: -1px;
+        padding: 12px 10px;
+        background-color: #FFF;
+        color: #222;
+        border: 1px solid #999999;
+        font-size: 1.2em;
+        font-weight: bold;
+        text-decoration: none;
+    }
+    .Menu a:hover {
+        background: linear-gradient(to bottom, rgba(60,110,240,0.85), rgba(40,90,200,0.75), rgba(20,50,100,0.75), rgba(0,0,200,0.8));
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(60,110,240,1)), color-stop(33%,rgba(40,90,200,1)), color-stop(67%,rgba(20,50,100,1)), color-stop(100%,rgba(0,0,200,1)));
+        border-color: transparent;
+        color: white;
+        }
+    .Menu li:first-child a {
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        }
+    .Menu li:last-child a {
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        }
+menu#Leistung  {
+    position: absolute; top: 65px; right: 5px;
+    z-index: 6;
+    margin: 0px;
+    width: 300px;
+    background: linear-gradient(to bottom, rgba(18,26,46,0.6), rgb(18,26,46) 10%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(18,26,46,0.6)), color-stop(10%,rgba(18,26,46,1)));
+    border: solid 2px #4f4f4f;
+    -webkit-border-radius: 10px;
+    -webkit-box-shadow: 2px 2px 10px #000;
+}
+    menu#Leistung header {
+        padding: 0px;
+        background: linear-gradient(to bottom, rgb(125,130,140), rgb(48,55,73), rgb(18,26,46), rgb(18,26,46));
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(125,130,140)), color-stop(33%,rgb(48,55,73)), color-stop(67%,rgb(18,26,46)));
+        -webkit-border-top-left-radius: 8px;
+        -webkit-border-top-right-radius: 8px;
+        position: relative;
+    }
+        menu#Leistung header h3 {
+            margin: 0px; padding-top: 3px;
+            color: #fff;
+            font-size: 18px;
+            line-height: 30px;
+            display: block;
+            text-align: center;
+            text-shadow: -1px -1px 1px #000;
+            font-weight: bold;
+        }
+    
+#menu_pointer {
+    position: absolute;
+    top: -15px; right: 8px;
+    height: 30px; width: 30px;
+    border: solid 2px #4f4f4f;
+    border-bottom: none; border-right: none;
+    background-color: rgb(120,126,139);
+    -webkit-transform: rotate(45deg);
+    -webkit-mask-image: -webkit-gradient(linear, left top, right bottom, from(#000000), color-stop(0.5,#000000), color-stop(0.5, transparent), to(transparent));
+}
+#KeyBar {
+    position: fixed;
+    top: 95px; left: 217px; z-index: 10;
+    display: none;
+    border-radius: 4px 0 0 4px;
+    text-align: center;
+}
+    #KeyBar.show {
+        display: block;
+    }
+    
+#KeyBar ul {
+    display: block;
+}
+    #KeyBar li {
+        display: block;
+        padding: 1em 0;
+        margin-bottom: 2em;
+        text-align: center;
+        width: 100px;
+        color: white;
+    }
+        #KeyBar li:last-child {
+        }
+    #KeyBar li a{
+        padding: 1em 2.5em;
+    }
+*/

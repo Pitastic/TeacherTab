@@ -1,0 +1,250 @@
+html {
+	background-image: url(pi_logo.png), -webkit-linear-gradient(45deg, rgba(0,0,0,0.1) 0%,rgba(135,135,180,0.25) 25%,rgba(135,135,180,0.25) 75%,rgba(0,0,0,0.1) 100%), url(back_kachel.png);
+	background-image: url(pi_logo.png), -moz-linear-gradient(45deg, rgba(0,0,0,0.1) 0%,rgba(135,135,180,0.25) 25%,rgba(135,135,180,0.25) 75%,rgba(0,0,0,0.1) 100%), url(back_kachel.png);
+	background-image: url(pi_logo.png), linear-gradient(45deg, rgba(0,0,0,0.1) 0%, rgba(135,135,180,0.25) 25%, rgba(135,135,180,0.25) 75%, rgba(0,0,0,0.1) 100%), url(back_kachel.png);
+	background-size: auto, auto, 8px 8px;
+    background-position: 99% 1%, top left, top left;
+    background-repeat: no-repeat, repeat, repeat;
+    min-height: 100%;
+}
+html, body {
+    font-family: helvetica,arial;
+}
+
+header {
+    color: white;
+    text-shadow: 0 0 3px black;
+}
+
+a, a.link {
+	text-decoration: none;
+}
+
+h1 {
+	margin-bottom: 1.5em;
+	text-align: center;
+}
+h2 {
+	margin-left: 2%;
+}
+
+#alleV {
+    padding: 0; margin: 0;
+}
+
+.content {
+	margin: auto auto;
+    padding-bottom: 50px;
+    color: white;
+    width: 95%;
+}
+	.content div {
+		color: white;
+		font-weight: bold;
+	}
+
+#alleV li {
+    display: block;
+    margin: 2%;
+    padding: 1em;
+    background-color: white;
+    box-shadow: 0 0 3px 1px black;
+    border-radius: 2px;
+    color: rgb(60,60,60);
+}
+    #alleV li .vn {
+        float: left;
+        font-weight: bold;
+		letter-spacing: 0.25em;
+		width: 35%;
+    }
+    #alleV li .created {
+        float: left;
+		width: 30%;
+        font-size: 0.8em;
+        color: silver;
+        text-align: center;
+        line-height: 1.5em;
+    }
+	#alleV li .remind {
+        float: left;
+        margin-left: -0.75em;
+        text-align: right;
+		width: 30%;
+    }
+    li .status {
+        float: right;
+        display: inline-block;
+		margin-top: -0.25em;
+        width: 1.5em; height: 1.5em;
+        border-radius: 1em;
+        box-shadow: inset 0 0 2px 1px black;
+        text-align: center;
+    }
+    li .status.weg {
+        background-color: silver;
+    }
+	li .status.dringend {
+        background-color: red;
+    }
+	li .status.bald {
+        background-color: orange;
+    }
+    li .status.ok {
+        background-color: lightgreen;
+    }
+    
+    li.success {
+		box-shadow: 0 0 3px 1px green !important;
+	    background-color: rgb(200,255,200) !important;
+    }
+	    li.success a {
+			color: darkgreen;
+	    	font-weight: bold;
+	    }
+	li.error {
+	    box-shadow: 0 0 3px 1px red !important;
+	    background-color: rgb(255,200,200) !important;
+	}
+		li.error a {
+			color: darkred;
+			font-weight: bold;
+	    }
+
+h2 span {
+	float: right;
+}   
+	#vn_status {
+		padding: 0.5em;
+		margin: 0;
+		-webkit-appearance: none;
+		text-indent: 0.1px;
+		text-overflow: "";
+		color: rgb(24,24,24);
+		border: none;
+		font-size: 0.5em;
+		font-weight: bold;
+		vertical-align: top;
+	}
+		#vn_status.aktiv, #vn_status.neu {
+			background: -moz-linear-gradient(top, #78d155 0%, #61c419 50%, #78d155 100%); /* FF3.6+ */
+			background: -webkit-linear-gradient(top, #78d155 0%,#61c419 50%,#78d155 100%); /* Chrome10+,Safari5.1+ */
+			background: linear-gradient(to bottom, #78d155 0%,#61c419 50%,#78d155 100%); /* W3C */
+			border: 1px solid green;
+		}
+		#vn_status.weitergeleitet {
+			background: -moz-linear-gradient(top, #eaf29b 0%, #d8cd2d 50%, #eaf29b 100%); /* FF3.6+ */
+			background: -webkit-linear-gradient(top, #eaf29b 0%,#d8cd2d 50%,#eaf29b 100%); /* Chrome10+,Safari5.1+ */
+			background: linear-gradient(to bottom, #eaf29b 0%,#d8cd2d 50%,#eaf29b 100%); /* W3C */
+			border: 1px solid yellow;
+		}
+		#vn_status.abgeschlossen {
+			background-color: silver;
+			color: white;
+			border: 1px solid grey;
+		}
+
+.clearer {
+    clear: both;
+}
+footer {
+	position: fixed;
+	bottom: 0; left:0; right:0;
+	padding: 0.5em 0;
+	min-height: 50px;
+	text-align: center;
+	background-color: rgba(50,100,200,0.5);
+	border-top: 2px solid rgb(50,100,200);
+}
+
+form {
+	color: white;
+	font-weight: bold;
+	}
+	form label {
+		display: block;
+		margin-top: 1.25em;
+	}
+	footer input[type="number"] {
+		padding: 0; margin: 0;
+		padding: 0.25em; margin-right: 3em;
+		color: lightblue;
+		background-color: rgba(0,50,100,0.5);
+		border: 2px solid rgb(50,100,200);
+		font-weight: bold;
+		font-size: 24px;
+	}
+		footer input[type="number"]:active, footer input[type="number"]:focus{
+			background-color: rgba(0,50,100,0.75);
+			border-color: lightblue;
+		}
+	form input, form textarea {
+		border-radius: 5px;
+		border: none
+	}
+	textarea {
+		padding: 1%;
+		width: 98%;
+		height: 400px;
+		font-size: 1.25em;
+	}
+	input[type="date"] {
+		padding: 1%;
+		font-size: 1.25em;
+	}
+	input[type="submit"], a.button {
+		-webkit-appearance: none;
+		float: right;
+		padding: 0.5em 1em;
+		margin: 0.5em 0; 
+		border-radius: 13px;
+		font-size: 16px;
+		color: #ffffff;
+		-moz-box-shadow:
+			0px 1px 3px rgba(000,000,000,0.5),
+			inset 0px 0px 1px rgba(255,255,255,0.7);
+		-webkit-box-shadow:
+			0px 1px 3px rgba(000,000,000,0.5),
+			inset 0px 0px 1px rgba(255,255,255,0.7);
+		box-shadow:
+			0px 1px 3px rgba(000,000,000,0.5),
+			inset 0px 0px 1px rgba(255,255,255,0.7);
+		text-shadow:
+			0px -1px 0px rgba(000,000,000,0.3),
+			0px 1px 0px rgba(255,255,255,0.3);
+	}
+	.button.OK, input[type="submit"] {
+		margin-right: 2em;
+		background-image: -moz-linear-gradient(top, rgba(0,122,216,1) 0%, rgba(0,56,170,1) 100%); /* FF3.6+ */
+		background-image: -webkit-linear-gradient(top, rgba(0,122,216,1) 0%,rgba(0,56,170,1) 100%); /* Chrome10+,Safari5.1+ */
+		background-image: linear-gradient(to bottom, rgba(0,122,216,1) 0%,rgba(0,56,170,1) 100%); /* W3C */
+		-moz-border-radius: 13px;
+		-webkit-border-radius: 13px;
+		border: 1px solid #000000;
+		}
+	#suche {
+		float: left;
+		margin-right: 0;
+		margin-left: 2em;
+		color: transparent;
+		background-image: url(pi_logo.png), -moz-linear-gradient(top, rgba(0,122,216,1) 0%, rgba(0,56,170,1) 100%); /* FF3.6+ */
+		background-image: url(pi_logo.png), -webkit-linear-gradient(top, rgba(0,122,216,1) 0%,rgba(0,56,170,1) 100%); /* Chrome10+,Safari5.1+ */
+		background-image: url(pi_logo.png), linear-gradient(to bottom, rgba(0,122,216,1) 0%,rgba(0,56,170,1) 100%); /* W3C */
+		background-position: center, center;
+		background-repeat: no-repeat, repeat;
+		}
+	a.button.Abort {
+		float: left;
+		margin-left: 2em;
+		background: -moz-linear-gradient(top, rgba(204,0,0,1) 0%, rgba(132,0,0,1) 100%); /* FF3.6+ */
+		background: -webkit-linear-gradient(top, rgba(204,0,0,1) 0%,rgba(132,0,0,1) 100%); /* Chrome10+,Safari5.1+ */
+		background: linear-gradient(to bottom, rgba(204,0,0,1) 0%,rgba(132,0,0,1) 100%); /* W3C */
+		-moz-border-radius: 13px;
+		-webkit-border-radius: 13px;
+		border: 1px solid #000000;
+		}
+		
+		input[type="submit"]:hover, a.button:hover {
+			color: yellow;
+			cursor: pointer;
+			}
