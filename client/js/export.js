@@ -3,7 +3,7 @@ function showArchiv(old_arr,sel){
     var temp_arr = [];
     if (serverIP){
         $.ajax({
-            url:'http://'+serverIP+':8100/ShowAll',
+            url:serverIP+'/ShowAll',
             type:'post',
             crossDomain:true,
             data:{
@@ -13,7 +13,7 @@ function showArchiv(old_arr,sel){
             dataType:'json',
             timeout:4000,
             success:function(response,status,jqXHR){server_tables = response.all_tables;},
-            error:function(jqXHR, status, data){console.log(status);},
+            error:function(jqXHR, status, data){console.log(status, jqXHR);},
             }
             )
             .done(function(response,status,jqXHR){
@@ -59,7 +59,7 @@ function initSyncSQL(){
                     console.log("Synchronisiere: "+klasse+" (v"+changed+")");
                     // Serverfragen, welche Version neuer ist:
                     $.ajax({
-                        url:'http://'+serverIP+':8100/HowAreYou',
+                        url:serverIP+'/HowAreYou',
                         type:'post',
                         crossDomain:true,
                         data:{
@@ -99,6 +99,7 @@ function initSyncSQL(){
                             }else{
                                 _element.classList.add('error');
                                 _element.innerHTML = "Kein Sync durchgeführt !";
+                                console.log(jqXHR);
                             }
                             document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
                         });
@@ -135,7 +136,7 @@ console.log("pushing...");
                     data += "INSERT OR REPLACE INTO "+klasse+" ("+_fields.join(',')+") VALUES ("+ _values.join(',') + ");";
                 }
             $.ajax({
-                url:'http://'+serverIP+':8100/storeFromClient',
+                url:serverIP+'/storeFromClient',
                 type:'post',
                 crossDomain:true,
                 data:{
@@ -145,7 +146,7 @@ console.log("pushing...");
                 },
                 dataType:'json',
 	            timeout:4000,
-                error:function(jqXHR, status, data){console.log(status);},
+                error:function(jqXHR, status, data){console.log(status, jqXHR);},
                 }
                 ).done(console.log("Sync is complete!"));
             })});
@@ -154,7 +155,7 @@ console.log("pushing...");
 function pullToClient(client_stamp) {
 console.log("pulling...");
     $.ajax({
-        url:'http://'+serverIP+':8100/giveToClient',
+        url:serverIP+'/giveToClient',
         type:'post',
         crossDomain:true,
         data:{
@@ -201,7 +202,7 @@ function deleteKlasse(selKlasse){
         if (window.confirm('Du bist online.\nSoll die Klasse auch auf dem SyncServer gelöscht werden ?')){
             _elementTxt.innerHTML = "Lösche Klasse von diesem Gerät und vom SyncServer !";
             $.ajax({
-                url:'http://'+serverIP+':8100/deleteKlasse',
+                url:serverIP+'/deleteKlasse',
                 type:'post',
                 crossDomain:true,
                 data:{

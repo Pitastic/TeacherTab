@@ -553,7 +553,7 @@ function listIdx_Select(results, options) {
 }
 
 function settingsAllgemein(thisElement){
-    serverIP = document.getElementById('serverIP').value;
+    serverIP = "https://" + document.getElementById('serverIP').value + "/api";
     userID = document.getElementById('userID').value || "AppArchiv";
     userID += ".db";
     if (serverIP){
