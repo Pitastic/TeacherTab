@@ -1,0 +1,8 @@
+# keine interpretierten Pythonmodule
+*.pyc
+/*.pyc
+
+# keine DBs
+UserDBs/
+UserDBs/*
+*.db
