@@ -24,11 +24,15 @@
 </div>
 <div id="result"></div>
 <script>
+// vorab Check, ob pdf oder csv geliefert wird !
+// - If CSV :
     var buffer = "data:text/csv;charset=utf-8,\n"+unescape(location.search.split("=")[1]);
     //document.getElementById('result').innerHTML = buffer; // for Dev only !
     var meta = document.createElement('meta');
     meta.setAttribute('http-equiv', 'refresh');
     meta.setAttribute('content', '5, URL='+buffer);
     document.head.appendChild(meta);
+// If PDF :
+//  ???
 </script>
 </html>
