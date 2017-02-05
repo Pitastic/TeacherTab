@@ -6,3 +6,6 @@
 UserDBs/
 UserDBs/*
 *.db
+
+# ftpSync
+ftpsync.settings
