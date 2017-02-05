@@ -1,33 +1,3 @@
-// =================================================== //
-// ================ To Do - Generell ================= //
-//
-//  -	neue Datenbank-Technik
-//      -   incrementelles Sync (erst mit neuem DB Modell)
-//          - neuere Zeilen vom Server ziehen und gleichzeitig
-//          - ältere Zeilen auf Server ersetzen
-//      -	Sync-Alle Button
-//
-//  -   Klassenname irgendwo in die Übersicht schreiben
-//
-// ---------------------------------------------------
-//
-//  - Index.js
-//      - Allgemeine Settings (übergeordnet) zu:
-//          - Name / persönliche Daten für Ausdrucke
-//          - Fächer ?
-//
-//  - Uebersicht.js
-//      -   Validate() bei Inputfeldern
-//      -   Gewichtungssymbole zur Verdeutlichung
-//      -   Symbole überarbeiten (Punkteverteilung?, Editieren)
-//
-//  - StudentDetails
-//      -	Bester / Schlechtester als Symbol
-//			anzeigen statt Lupe (?)
-//
-// =================================================== //
-// =================================================== //
-
 $(document).ready(function() {
     // Device ist KEIN Phone
     if (!isPhone) {
@@ -342,7 +312,7 @@ function objLength(obj) {
 function sum(n){
     var i, r = 0;
     for (i=0;i<n.length;i++){
-        r += parseFloat(n[i]);
+        r += parseInt(n[i]);
     }
     return r;
 }
