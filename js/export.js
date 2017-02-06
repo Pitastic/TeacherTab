@@ -3,7 +3,7 @@ function showArchiv(old_arr,sel){
     var temp_arr = [];
     if (serverIP){
         $.ajax({
-            url:serverIP+'/ShowAll',
+            url:serverIP+'/ShowAll.py',
             type:'post',
             crossDomain:true,
             data:{
@@ -12,19 +12,22 @@ function showArchiv(old_arr,sel){
             },
             dataType:'json',
             timeout:4000,
-            success:function(response,status,jqXHR){server_tables = response.all_tables;},
+            success:function(response,status,jqXHR){var stbls = response.all_tables;},
             error:function(jqXHR, status, data){console.log(status, jqXHR);},
             }
             )
             .done(function(response,status,jqXHR){
-                var stbls = response.all_tables;
-                for (i=0;i<stbls.length;i++){
-                    if (old_arr.indexOf(stbls[i])<0){
-                        temp_arr.push(stbls[i]+"#");
-                        var opt = new Option("# "+stbls[i]);
-                        opt.value = "new"+stbls[i];
-                        sel.appendChild(opt);
+                if (stbls) {
+                    for (i=0;i<stbls.length;i++){
+                        if (old_arr.indexOf(stbls[i])<0){
+                            temp_arr.push(stbls[i]+"#");
+                            var opt = new Option("# "+stbls[i]);
+                            opt.value = "new"+stbls[i];
+                            sel.appendChild(opt);
+                        }
                     }
+                }else{
+                    console.log("Error! Response was:", response)
                 }
             });
     }
@@ -59,7 +62,7 @@ function initSyncSQL(){
                     console.log("Synchronisiere: "+klasse+" (v"+changed+")");
                     // Serverfragen, welche Version neuer ist:
                     $.ajax({
-                        url:serverIP+'/HowAreYou',
+                        url:serverIP+'/HowAreYou.py',
                         type:'post',
                         crossDomain:true,
                         data:{
@@ -75,6 +78,7 @@ function initSyncSQL(){
                             },
                         error:function(jqXHR, status, data){
                             syncResult = false;
+                            console.log("jqXHR", jqXHR);
                             },
                         }
                         )
@@ -99,7 +103,6 @@ function initSyncSQL(){
                             }else{
                                 _element.classList.add('error');
                                 _element.innerHTML = "Kein Sync durchgeführt !";
-                                console.log("jqXHR", jqXHR);
                             }
                             document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
                         });
@@ -136,7 +139,7 @@ console.log("pushing...");
                     data += "INSERT OR REPLACE INTO "+klasse+" ("+_fields.join(',')+") VALUES ("+ _values.join(',') + ");";
                 }
             $.ajax({
-                url:serverIP+'/storeFromClient',
+                url:serverIP+'/storeFromClient.py',
                 type:'post',
                 crossDomain:true,
                 data:{
@@ -155,7 +158,7 @@ console.log("pushing...");
 function pullToClient(client_stamp) {
 console.log("pulling...");
     $.ajax({
-        url:serverIP+'/giveToClient',
+        url:serverIP+'/giveToClient.py',
         type:'post',
         crossDomain:true,
         data:{
@@ -202,7 +205,7 @@ function deleteKlasse(selKlasse){
         if (window.confirm('Du bist online.\nSoll die Klasse auch auf dem SyncServer gelöscht werden ?')){
             _elementTxt.innerHTML = "Lösche Klasse von diesem Gerät und vom SyncServer !";
             $.ajax({
-                url:serverIP+'/deleteKlasse',
+                url:serverIP+'/deleteKlasse.py',
                 type:'post',
                 crossDomain:true,
                 data:{
