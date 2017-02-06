@@ -99,7 +99,7 @@ function initSyncSQL(){
                             }else{
                                 _element.classList.add('error');
                                 _element.innerHTML = "Kein Sync durchgeführt !";
-                                console.log(jqXHR);
+                                console.log("jqXHR", jqXHR);
                             }
                             document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
                         });
