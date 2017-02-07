@@ -389,23 +389,9 @@ function dropStudent(id){
             });
             });
     if (navigator.onLine){
-        $.ajax({
-            url:'http://'+serverIP+'/deleteStudentOnServer',
-            type:'post',
-            crossDomain:true,
-            data:{
-                klasse:klasse,
-                user:userID,
-                studID:id,
-            },
-            dataType:'json',
-            error:function(jqXHR, status, data){console.log(status);},
-            }
-            ).done(function(data, status, jqXHR){
-                alert("Schüler vom Gerät und auf dem SyncServer gelöscht !\nTrotzdem musst du diesen Schüler von jedem Gerät selbst löschen.");
-            });
+        function deleteStudent(id);
     }else{
-        alert("Kein Kontakt zum SyncServer.\nDer Schüler wird nur von diesem Gerät entfernt.");
+        alert("Kein Kontakt zum SyncServer.\nDer Schüler wurde nur von diesem Gerät entfernt.");
     }
     setTimeout(function() {
         window.location = 'uebersicht.htm';

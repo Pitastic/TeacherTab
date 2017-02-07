@@ -39,7 +39,7 @@
 	}
 	pdf.klasse.value = params.klasse;
 	pdf.userID.value = params.userID;
-	pdf.setAttribute("action", "http://"+params.serverIP+":8100/pdf_export")
+	pdf.setAttribute("action", params.serverIP+"/export_pdf.py")
 	document.getElementById("pdf_download").classList.remove("hide")
 </script>
 </html>

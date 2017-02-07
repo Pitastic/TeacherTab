@@ -193,6 +193,26 @@ console.log("pulling...");
             });
 }
 
+
+function deleteStudent(studID) {
+    $.ajax({
+        url:'http://'+serverIP+'/deleteStudentOnServer',
+        type:'post',
+        crossDomain:true,
+        data:{
+            klasse:klasse,
+            user:userID,
+            studID:studID,
+        },
+        dataType:'json',
+        error:function(jqXHR, status, data){console.log(status);},
+        }
+        ).done(function(data, status, jqXHR){
+            alert("Schüler vom Gerät und auf dem SyncServer gelöscht !\nTrotzdem musst du diesen Schüler von jedem Gerät selbst löschen, damit er beim Sync nicht wieder hinzugefügt wird.");
+    });
+}
+
+
 function deleteKlasse(selKlasse){
     var syncResult;
     var _element = document.getElementById('syncStatus');
