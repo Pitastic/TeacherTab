@@ -389,7 +389,7 @@ function dropStudent(id){
             });
             });
     if (navigator.onLine){
-        function deleteStudent(id);
+        deleteStudent(id);
     }else{
         alert("Kein Kontakt zum SyncServer.\nDer Schüler wurde nur von diesem Gerät entfernt.");
     }

@@ -22,7 +22,7 @@ export-PDF.htm
 ./js/all.js
 ./js/details_leistungen.js
 ./js/details_students.js
-./js/export.js
+./js/sync.js
 ./js/index.js
 ./js/settings.js
 ./js/stay.js

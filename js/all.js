@@ -530,7 +530,7 @@ function listIdx_Select(results, options) {
     var optCount = 0;
     var temp_arr = [];
     var opt, row;
-    opt = new Option("- bite wählen -");
+    opt = new Option("- bitte wählen -");
     clone.appendChild(opt);
     for (var i=0; i<results.rows.length; i++){
         row = results.rows.item(i);
