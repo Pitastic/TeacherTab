@@ -72,8 +72,9 @@ function initDB() {
 	}
 }
 
-// == grundlegende Datenbankinteraktionen==================
-// ========================================================
+// ===================================================== //
+// == grundlegende Datenbankinteraktionen=============== //
+// ===================================================== //
 
 // Alle Klassen auflisten
 function listKlassen(callback) {
@@ -95,7 +96,7 @@ function listKlassen(callback) {
 
 
 // Neue Klasse anlegen
-function addKlasse(bezeichnung) {
+function neueKlasse(bezeichnung) {
 	dbversion = localStorage.getItem("dbversion");
 	dbversion = parseInt(dbversion) + 1
 	localStorage.setItem("dbversion", dbversion);
@@ -151,7 +152,7 @@ function addSettings(dbConnection) {
 
 
 // Klasse löschen
-function deleteKlasse(bezeichnung) {
+function dropKlasse(bezeichnung, callback) {
 	if (bezeichnung == "" || !bezeichnung) {return;}
 	// First: Clear the store
 	var request1 = indexedDB.open(dbname, dbversion);
@@ -192,6 +193,7 @@ function deleteKlasse(bezeichnung) {
 	}
 	request1.onerror = errorHandler;
 	request1.oncomplete = function(e){
+		callback();
 	}
 }
 
@@ -295,8 +297,9 @@ function readData(callback, id) {
 }
 
 
-// == allgemeine Handler ==================================
-// ========================================================
+// ===================================================== //
+// == allgemeine Handler =============================== //
+// ===================================================== //
 
 // Fehler
 function errorHandler(event) {

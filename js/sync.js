@@ -222,6 +222,9 @@ function deleteStudent(studID) {
 
 
 function deleteKlasse(selKlasse){
+    // DEV:
+    // Beim Löschen auf den Callback von indexedDB & den Sync warten... !
+    // ==================================================================
     var syncResult;
     var _element = document.getElementById('syncStatus');
     var _elementTxt = document.getElementById('syncText');
@@ -229,7 +232,7 @@ function deleteKlasse(selKlasse){
     popUp("item0Sync");
     setTimeout(function() {
     if (navigator.onLine){
-        dropDB(selKlasse);
+        dropKlasse(selKlasse);
         if (window.confirm('Du bist online.\nSoll die Klasse auch auf dem SyncServer gelöscht werden ?')){
             _elementTxt.innerHTML = "Lösche Klasse von diesem Gerät und vom SyncServer !";
             $.ajax({
@@ -254,7 +257,7 @@ function deleteKlasse(selKlasse){
             }
     }else{
         _elementTxt.innerHTML = "Lösche Klasse nur von diesem Gerät ! (du bist offline)";
-        dropDB(selKlasse);
+        dropKlasse(selKlasse);
         syncResult = false;
     }
     _element.style.width = "100%";
