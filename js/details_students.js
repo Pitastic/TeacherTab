@@ -57,9 +57,9 @@ function firstListing() {
         // -- Gesamtleistung
         // -- -- im Markup enthalten
         // -- -- Gewichtung
-        var gew_mndl = sessionStorage.gew_mndl*100;
-        var gew_fspz = sessionStorage.gew_fspz*100;
-        var gew_schr = sessionStorage.gew_schr*100;
+        var gew_mndl = SETTINGS.gewichtung["mündlich"]*100;
+        var gew_fspz = SETTINGS.gewichtung["davon fachspezifisch"]*100;
+        var gew_schr = SETTINGS.gewichtung["schriftlich"]*100;
         var gew_divs = document.getElementById('item1_gewichtung').getElementsByTagName('div');
         gew_divs[0].style.width = gew_mndl+"%";
             span = document.createElement('span');
@@ -108,7 +108,7 @@ function firstListing() {
         var fspz_Vok = document.createElement("ul");
         var fspz_Gra = document.createElement("ul");
         // -- -- -- Vok oder Gra
-        if (sessionStorage.getItem('set_fspzDiff') == "false"){
+        if (!SETTINGS.set_fspzDiff){
             // -- -- fspz zusammenfassen
             for (i=0;i<fspz.alle.length;i++){
                 _id = fspz.alle[i];
@@ -333,7 +333,7 @@ function studentDetails(id){
                 // Gesamt Noten (bestehende Ergebnisse aus der Datenbank)
                 var ogesamt = JSON.parse(decodeURIComponent(row.gesamt));
                 var ofspz = JSON.parse(decodeURIComponent(row.ofspz));
-                if (sessionStorage.getItem('set_showVorjahr') == "true") {
+                if (SETTINGS.set_showVorjahr) {
                     var vorjahr = JSON.parse(decodeURIComponent(row.vorjahr));
                     var vorjSpan = document.getElementById('ds_gesamt').getElementsByClassName('Vorjahresnote')[0];
                     vorjSpan.innerHTML += (vorjahr) ? vorjahr.eingetragen+") " : "n/a) ";
@@ -342,7 +342,7 @@ function studentDetails(id){
                 document.getElementById('ds_gesamt').getElementsByClassName('Notendurchschnitt')[0].innerHTML = (ogesamt.rechnerisch) ? ogesamt.rechnerisch.toPrecision(3) : "-";
                 document.getElementById('ds_gesamt_eingetragen').getElementsByTagName('select')[0].value = ogesamt.eingetragen;
                 document.getElementById('ds_mndl').getElementsByClassName('Notendurchschnitt')[0].innerHTML = row.omndl || "-";
-                if (sessionStorage.getItem('set_fspzDiff') == "false"){
+                if (!SETTINGS.set_fspzDiff){
                     document.getElementById('ds_fspz').getElementsByClassName('Notendurchschnitt')[0].innerHTML = ofspz.Gesamt || "-";
                 }else{
                     document.getElementById('ds_fspz_vok').getElementsByClassName('Notendurchschnitt')[0].innerHTML = ofspz.Vokabeln || "-";

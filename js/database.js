@@ -73,6 +73,14 @@ function initDB() {
 }
 
 // ===================================================== //
+// ============ DEV Notizen============================= //
+// ===================================================== //
+/*
+> löschen von Schülern, Leistungen und ganzen Klassen
+	gleich synchronisieren
+*/
+
+// ===================================================== //
 // == grundlegende Datenbankinteraktionen=============== //
 // ===================================================== //
 
@@ -117,10 +125,10 @@ function neueKlasse(bezeichnung) {
 		if (!connection.objectStoreNames.contains(bezeichnung)) {
 				console.log("indexedDB: creating");
 				connection.createObjectStore(bezeichnung, {keyPath: "id", autoIncrement: true});
-				oStore = bezeichnung;
+				klasse = bezeichnung;
 				console.log("indexedDB:", bezeichnung, "created");
 		}else{
-			oStore = bezeichnung;
+			klasse = bezeichnung;
 			console.log("indexedDB:", bezeichnung, "already exists. Do nothing...");
 		}
 	}
@@ -129,22 +137,20 @@ function neueKlasse(bezeichnung) {
 
 // Klassenspezifische Einstellungen anlegen
 function addSettings(dbConnection) {
-	var objectStore = dbConnection.transaction([oStore], "readwrite").objectStore(oStore);
+	var objectStore = dbConnection.transaction([klasse], "readwrite").objectStore(klasse);
 	row = {
 		'id' : 0,
-		'set' : {
-			'klasse' : oStore,
-			'fspzDiff' : 0,
-			'studSort' : 0,
-			'showVorjahr' : 0,
-			'notenverteilung' : {1:95,2:80,3:75,4:50,5:25,6:0},
-			'kompetenzen' : ["Kategorie 1", "Kategorie 2", "Kategorie 3", "Kategorie 4"],
-		},
+		'fspzDiff' : false,
 		'gewichtung' : {
 			'mndl' : 0.6,
 			'fspz' : 0.2,
 			'schr' : 0.4,
 		},
+		'klasse' : klasse,
+		'kompetenzen' : {'Gesamt': "Gesamt", 1:"Kategorie 1", 2:"Kategorie 2", 3:"Kategorie 3", 4:"Kategorie 4"},
+		'notenverteilung' : {1:95,2:80,3:75,4:50,5:25,6:0},
+		'showVorjahr' : false,
+		'studSort' : false,
 	}
 	objectStore.add(row);
 	return;
@@ -199,16 +205,16 @@ function dropKlasse(bezeichnung, callback) {
 
 
 // Neuen Schüler in Klasse anlegen
-function addStudent(data, oStore) {
+function neuerStudent(data, callback) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
 		var connection = event.target.result;
-		var objectStore = connection.transaction([oStore], "readwrite").objectStore(oStore);
+		var objectStore = connection.transaction([klasse], "readwrite").objectStore(klasse);
 		row = {
 			'name' : {
-				'vname' : data['vname'],
-				'nname' : data['nname'],
+				'vname' : data[0],
+				'nname' : data[1],
 				'sex' : "-",
 			},
 			'mndl' : {
@@ -221,6 +227,13 @@ function addStudent(data, oStore) {
 				'alle' : [],
 			},
 			'gesamt' : {
+				'omndl': null,
+				'ofspz': {
+					'gesamt': null,
+					'vokabeln': null,
+					'grammatik': null,
+				},
+				'oschr': null,
 				'rechnerisch': null,
 				'eingetragen': null,
 				'vorjahr': null,
@@ -228,14 +241,18 @@ function addStudent(data, oStore) {
 			'kompetenzen' : [],
 			'changed' : 0,
 		}
-		objectStore.add(row);
-		console.log("indexedDB:", data['vname'], data['nname'], "inserted");
+		var result = objectStore.add(row);
+		result.onerror = errorHandler;
+		result.onsuccess = function(event){
+			var connection = event.target.result;
+			if (callback) {callback(connection);}
+			console.log("indexedDB:", data[0], data[1], "inserted");
+		}
 		connection.close();
 
 		// ---> Garbage Collection
 		connection.onversionchange = function(event) {
 			connection.close();
-
 		};
 	}
 	return;
@@ -243,12 +260,12 @@ function addStudent(data, oStore) {
 
 
 // Schüler aus Klasse löschen
-function deleteStudent(id, oStore) {
+function deleteStudent(id) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
 		var connection = event.target.result;
-		var objectStore = connection.transaction([oStore], "readwrite").objectStore(oStore);
+		var objectStore = connection.transaction([klasse], "readwrite").objectStore(klasse);
 		var result = objectStore.delete(id);
 		result.onerror = errorHandler;
 		result.onsuccess = function(event){console.log("indexedDB: Eintrag ID", id, "gelöscht");}
@@ -270,29 +287,71 @@ function readData(callback, id) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
-		var db = request.result;
-		var objectStore = db.transaction([oStore]).objectStore(oStore);
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse]).objectStore(klasse);
 		id = (id == null) ? 0 : parseInt(id);
 		var result = {};
 		if (id) {
-			var transaction = objectStore.get(id)
-			transaction.onerror = errorHandler;
-			transaction.onsuccess = function(event){
-				db = transaction.result;
-				callback(db);
+			var transaction1 = objectStore.get(id)
+			transaction1.onerror = errorHandler;
+			transaction1.onsuccess = function(event){
+				connection2 = event.target.result;
+				callback(connection2);
 			};
 		}else{
-			var transaction = objectStore.openCursor()
-			transaction.onerror = errorHandler;
-			transaction.onsuccess = function(event){
+			var transaction2 = objectStore.openCursor()
+			transaction2.onerror = errorHandler;
+			transaction2.onsuccess = function(event){
 				var cursor = event.target.result;
 				if (cursor) {
 					result[cursor.key] = cursor.value;
 					cursor.continue();
+				}else{
+					callback(result);
 				}
-				callback(result);
 			}
 		}
+	}
+}
+
+
+// Objekt (jeder Art) updaten in aktueller Klasse
+function updateData(callback, newObjects) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
+		var transaction = objectStore.openCursor()
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			var id, cursor = event.target.result;
+			if (cursor) {
+				id = cursor.value.id;
+				console.log(id);
+				console.log(cursor.key);
+				if (id in newObjects) {
+					toUpdate = cursor.value;
+					for (k in newObjects[id]){
+						toUpdate[k] = newObjects[id][k];
+					}
+					var requestUpdate = cursor.update(toUpdate);
+					requestUpdate.onsuccess = function() {
+						console.log("indexDB: ID", id,"updated...")
+					};
+				}
+				cursor.continue();
+			}else{
+				callback();
+			}
+		}
+
+		connection.close();
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		};
+
 	}
 }
 

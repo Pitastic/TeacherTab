@@ -3,94 +3,108 @@
 
 <head>
 	<meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-    <meta id="dynamicViewport" name="viewport">
-    <script type="text/javascript">
-    if (screen.width > 767) {
-        switch(window.orientation){
-            case 180:
-            case 0:
-                // Portrait = 0 or 180:
-                document.getElementById('dynamicViewport').setAttribute('content', "width=device-width");
-                break;
-            default:
-                // Landscape = 90 or -90:
-                document.getElementById('dynamicViewport').setAttribute('content', "width="+document.documentElement.clientWidth);
-                break;
-        }
-    }
+	<meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta id="dynamicViewport" name="viewport">
+	<script type="text/javascript">
+	if (screen.width > 767) {
+		switch(window.orientation){
+			case 180:
+			case 0:
+				// Portrait = 0 or 180:
+				document.getElementById('dynamicViewport').setAttribute('content', "width=device-width");
+				break;
+			default:
+				// Landscape = 90 or -90:
+				document.getElementById('dynamicViewport').setAttribute('content', "width="+document.documentElement.clientWidth);
+				break;
+		}
+	}
 	</script>
 	
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 	<!-- CSS Media Queries -->
-    <link rel="stylesheet" href="./css/basic.css" />
-    <link rel="stylesheet" href="./css/menu_popups.css">
-    <link rel="stylesheet" href="./css/buttons.css">
-    <link rel="stylesheet" media="only screen and (min-device-width: 768px)" href="./css/ipad.css" />
-    <link rel="stylesheet" media="only screen and (max-device-width: 767px)" href="./css/phone.css" />
+	<link rel="stylesheet" href="./css/basic.css" />
+	<link rel="stylesheet" href="./css/menu_popups.css">
+	<link rel="stylesheet" href="./css/buttons.css">
+	<link rel="stylesheet" media="only screen and (min-device-width: 768px)" href="./css/ipad.css" />
+	<link rel="stylesheet" media="only screen and (max-device-width: 767px)" href="./css/phone.css" />
 
-	<link rel="apple-touch-icon" href="apple-touch-icon.png">
-    
-    <!-- iPad (portrait) SPLASHSCREEN -->
-    <link href="apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (orientation: portrait)" rel="apple-touch-startup-image">
-    <!-- iPad (landscape) SPLASHSCREEN-->
-    <link href="apple-touch-startup-image-748x1024.png" media="(device-width: 768px) and (orientation: landscape)" rel="apple-touch-startup-image">
+	<!--<link rel="apple-touch-icon" href="apple-touch-icon.png">-->
+	<!-- Favicons -->
+	<link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+	
+	<!-- iPad (portrait) SPLASHSCREEN -->
+	<link href="apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (orientation: portrait)" rel="apple-touch-startup-image">
+	<!-- iPad (landscape) SPLASHSCREEN-->
+	<link href="apple-touch-startup-image-748x1024.png" media="(device-width: 768px) and (orientation: landscape)" rel="apple-touch-startup-image">
 	
 	<title>TeacherTab</title>
 </head>
 
 <body ontouchstart>
 <div id="header">
-    <h1>TeacherTab WebApp DEV_</h1>
+	<h1>TeacherTab WebApp DEV_</h1>
 </div>
 
 <!--Übersicht INDEX -->
 <div id="item0" class="uebersicht show">
-    <div class="content">
-        <h2>Willkommen</h2>
-        <div class="styleWrap scrollable">
-        	<div id="indexKlassen" class="indexBox">
-                Liste aller verfügbaren Klassen<br>
-                (Archiv mit '#') :
-                <form>
-                <select id="klasseSelect" onchange="klassenAuswahl(this)">
-                <option>Lade...</option>
-                </select>
-                <a class="button OK stay hide" href="#" id="syncAll">Sync Alle</a>
-                <a class="button OK stay" href="#" id="syncOpen">Öffnen</a>
-                </form>
-                <span>Lade...</span>
-                <span>Version: 0.19a</span>
-        	</div>
-        </div>
-        <div class="styleWrap">
-        	<div class="indexBox">
-        		<a class="button stay" href="#" title="Grundeinstellungen" onclick="popUp('item0First')">Grundeinstellungen</a><br>
-        	    <a class="button HELP stay" href="https://www.teachertab.de" title="Hilfe" target="_blank">TeacherTab.de</a>
-        		<p>
-        		    Eine kleine Einführung zur WebApp, Hilfe und Kontakt findest du auf TeacherTab.de
-        		</p>
-        	</div>
-        </div>
-        <div class="styleWrap Werbung">
-            <script type="text/javascript">
-            google_ad_client = "ca-pub-5341512616014650";
-            /* Square */
-            google_ad_slot = "9424168592";
-            google_ad_width = 200;
-            google_ad_height = 200;
-            </script>
-            <script type="text/javascript">if (navigator.onLine){
-                    document.write('<span>Schenk mir ab und zu einen Klick:<\/span><script type="text/javascript" src="https://pagead2.googlesyndication.com/pagead/show_ads.js"><\/script>')
-                }else{
-                    document.write('<div class="offlineBanner">Du bist im Offline-Modus !</div>')
-                }
-            </script>
-        </div>
-    </div>
-    <div id="dev_info"></div>
+	<div class="content">
+		<h2>Willkommen</h2>
+		<div class="styleWrap scrollable">
+			<div id="indexKlassen" class="indexBox">
+				Liste aller verfügbaren Klassen<br>
+				(Archiv mit '#') :
+				<form>
+				<select id="klasseSelect" onchange="klassenAuswahl(this)">
+				<option>Lade...</option>
+				</select>
+				<a class="button OK stay hide" href="#" id="syncAll">Sync Alle</a>
+				<a class="button OK stay" href="#" id="syncOpen">Öffnen</a>
+				</form>
+				<span>Lade...</span>
+				<span>Version: 0.19a</span>
+			</div>
+		</div>
+		<div class="styleWrap">
+			<div class="indexBox">
+				<a class="button stay" href="#" title="Grundeinstellungen" onclick="popUp('item0First')">Grundeinstellungen</a><br>
+				<a class="button HELP stay" href="https://www.teachertab.de" title="Hilfe" target="_blank">TeacherTab.de</a>
+				<p>
+					Eine kleine Einführung zur WebApp, Hilfe und Kontakt findest du auf TeacherTab.de
+				</p>
+			</div>
+		</div>
+		<div class="styleWrap Werbung">
+			<script type="text/javascript">
+			google_ad_client = "ca-pub-5341512616014650";
+			/* Square */
+			google_ad_slot = "9424168592";
+			google_ad_width = 200;
+			google_ad_height = 200;
+			</script>
+			<script type="text/javascript">if (navigator.onLine){
+					document.write('<span>Schenk mir ab und zu einen Klick:<\/span><script type="text/javascript" src="https://pagead2.googlesyndication.com/pagead/show_ads.js"><\/script>')
+				}else{
+					document.write('<div class="offlineBanner">Du bist im Offline-Modus !</div>')
+				}
+			</script>
+		</div>
+	</div>
+	<div id="dev_info"></div>
 </div>
 <!-- /Index-->
 
@@ -100,21 +114,22 @@
 
 <!-- Klasse hinzufügen -->
 <div id="item0Add" class="popUp">
-    <h3>Klasse hinzufügen</h3>
+	<h3>Klasse hinzufügen</h3>
 	<form>
-	    <ul>
-		    <li>
-			    <input id="nameKlasse" type="text" placeholder="Name / Bezeichnung">
-		    </li>
-		    <li>
+		<ul>
+			<li>
+				<input id="nameKlasse" type="text" placeholder="Name / Bezeichnung">
+			</li>
+			<li>
 				<label>Schuljahr : <select id="jahrKlasse">
 					</select>
 				</label>
 			</li>
-		    <li>
+			<li>
 				<label>Fach : <select id="fachKlasse">
+					<option value="Awt">AWT</option>
 					<option value="Eng">Englisch</option>
-                    <option value="Eng">Musik</option>
+					<option value="Mus">Musik</option>
 					<option value="Nw">Naturwissenschaft</option>
 					<option value="Che">Chemie</option>
 					<option value="Bio">Biologie</option>
@@ -129,81 +144,81 @@
 </div>
 
 <div id="item0Sync" class="popUp">
-    <ul>
-        <li><div id="syncText">Synchronisiere</div><div class="schiene sync"><div class="balken" id="syncStatus"></div></div></li>
-    </ul>
+	<ul>
+		<li><div id="syncText">Synchronisiere</div><div class="schiene sync"><div class="balken" id="syncStatus"></div></div></li>
+	</ul>
 	<div class="close"><a class="stay" id="closeSync" href="#">x</a></div>
 	<div>
-    	<a class="button OK hide stay" href="uebersicht.htm">Öffnen</a>
-    	<a class="button hide stay" href="#" onclick="location.reload()">Zurück</a>
+		<a class="button OK hide stay" href="uebersicht.htm">Öffnen</a>
+		<a class="button hide stay" href="#" onclick="location.reload()">Zurück</a>
 	</div>
 </div>
 
 <div id="item0Export" class="popUp">
-    <h3>Klasse Exportieren</h3>
-    <ul>
-	    <li>Wähle das Format (nur wenn das Gerät den SyncServer erreichen kann)</li>
-	    <li>PDF (empfohlen) : <span>Ausdruck der Datenbank (Druckformat, Daten vom SyncServer)</span></li>
-	    <li>HTML : <span>Inhalt wie in der PDF (Inhalt ist aber noch veränderbar)</span></li>
-	    <li>CSV : <span>Semikolon getrennte Liste (universell, Daten von diesem Gerät)</span></li>
-        <li>Kopie : <span>Klassen-Kopie auf diesem Gerät erstellen, z.B. bei Klassen im 2. Hj.</span></li>
-    </ul>
+	<h3>Klasse Exportieren</h3>
+	<ul>
+		<li>Wähle das Format (nur wenn das Gerät den SyncServer erreichen kann)</li>
+		<li>PDF (empfohlen) : <span>Ausdruck der Datenbank (Druckformat, Daten vom SyncServer)</span></li>
+		<li>HTML : <span>Inhalt wie in der PDF (Inhalt ist aber noch veränderbar)</span></li>
+		<li>CSV : <span>Semikolon getrennte Liste (universell, Daten von diesem Gerät)</span></li>
+		<li>Kopie : <span>Klassen-Kopie auf diesem Gerät erstellen, z.B. bei Klassen im 2. Hj.</span></li>
+	</ul>
 	<div class="close"><a class="stay" href="#">x</a></div>
 	<div>
-    	<a class="button OK stay" href="#" onclick="setTimeout(function(){popUp('item0Copy');},1000);popUpClose(this);">Kopie</a>
-        <a id="export_to_csv" class="button" href="https://www.teachertab.de/webapp/export.htm" title="CSV Export">CSV</a>
-    	<a class="button" href="" id="export_to_html" target="_blank">HTML</a>
-    	<a class="button OK" href="" id="export_to_pdf" target="_blank">PDF</a>
+		<a class="button OK stay" href="#" onclick="setTimeout(function(){popUp('item0Copy');},1000);popUpClose(this);">Kopie</a>
+		<a id="export_to_csv" class="button" href="https://www.teachertab.de/webapp/export.htm" title="CSV Export">CSV</a>
+		<a class="button" href="" id="export_to_html" target="_blank">HTML</a>
+		<a class="button OK" href="" id="export_to_pdf" target="_blank">PDF</a>
 	</div>
 </div>
 
 <div id="item0Copy" class="popUp">
-    <h3>neue Klasse durch Kopieren</h3>
-    <ul>
-        <li><input id="nameCopyKlasse" type="text" placeholder="neuer Klassenname"></li>
-        <li>
-            <label>Schuljahr : <select id="jahrCopyKlasse">
-                </select>
-            </label>
-        </li>
-        <li>
-            <label>Fach : <select id="fachCopyKlasse">
-                <option value="Awt">AWT</option>
-                <option value="Eng">Englisch</option>
-                <option value="Nw">Naturwissenschaft</option>
-                <option value="Che">Chemie</option>
-                <option value="Bio">Biologie</option>
-                <option value="Phy">Physik</option>
-                </select>
-            </label>
-        </li>
-    </ul>
-    <div class="close"><a class="stay" href="#">x</a></div>
-    <div>
-        <a class="button OK" href="#" onclick="copyKlasse(this, sessionStorage.getItem('klasse'))">kopieren</a>
-    </div>
+	<h3>neue Klasse durch Kopieren</h3>
+	<ul>
+		<li><input id="nameCopyKlasse" type="text" placeholder="neuer Klassenname"></li>
+		<li>
+			<label>Schuljahr : <select id="jahrCopyKlasse">
+				</select>
+			</label>
+		</li>
+		<li>
+			<label>Fach : <select id="fachCopyKlasse">
+				<option value="Awt">AWT</option>
+				<option value="Eng">Englisch</option>
+				<option value="Nw">Naturwissenschaft</option>
+				<option value="Che">Chemie</option>
+				<option value="Bio">Biologie</option>
+				<option value="Phy">Physik</option>
+				</select>
+			</label>
+		</li>
+	</ul>
+	<div class="close"><a class="stay" href="#">x</a></div>
+	<div>
+		<a class="button OK" href="#" onclick="copyKlasse(this, sessionStorage.getItem('klasse'))">kopieren</a>
+	</div>
 </div>
 
 <div id="item0First" class="popUp">
-    <h3>SyncServer Einstellungen</h3>
-    <form>
-    <ul>
-        <li>
-            <input id="serverIP" type="text" placeholder="Server IP: 192.168.178.35">
-        </li>
-        <li>
-            <input id="userID" type="text" placeholder="IhrName">
-        </li>
-        <li>
-            <span>
-            Hier kannst du Grundeinstellungen anpassen.<br>Wenn du einen Sync-Server hast, gib dessen Daten ODER lasse einfach die Felder frei und drücke auf Speichern.
-            </span>
-        </li>
-    </ul>
-    </form>
+	<h3>SyncServer Einstellungen</h3>
+	<form>
+	<ul>
+		<li>
+			<input id="serverIP" type="text" placeholder="Server IP: 192.168.178.35">
+		</li>
+		<li>
+			<input id="userID" type="text" placeholder="IhrName">
+		</li>
+		<li>
+			<span>
+			Hier kannst du Grundeinstellungen anpassen.<br>Wenn du einen Sync-Server hast, gib dessen Daten ODER lasse einfach die Felder frei und drücke auf Speichern.
+			</span>
+		</li>
+	</ul>
+	</form>
 	<div class="close"><a class="stay" href="#">x</a></div>
 	<div>
-    	<a class="button OK stay" onclick="settingsAllgemein(this)" href="#">Speichern</a>
+		<a class="button OK stay" onclick="settingsAllgemein(this)" href="#">Speichern</a>
 	</div>
 </div>
 
@@ -211,24 +226,24 @@
 <!-- /popUp-PopUp -->
 
 <nav>
-    <div class="centerWrap-child">
-    <div class="">
-        <a id="btn_Delete" class="button ABORT stay">Löschen</a>
-        <a  id="export" class="button stay" href="#">Export</a>
-        <a id="btn_Add" class="button OK stay" data-name="item0Add" href="#">Hinzufügen</a>
-        <div class="clearer"></div>
-    </div>
-    </div>
-    <div id="btn_refresh" class="button"><a href="#" class="stay" onclick="window.location.reload();"><img src="./img/reload_button.gif"></a></div>
+	<div class="centerWrap-child">
+	<div class="">
+		<a id="btn_Delete" class="button ABORT stay">Löschen</a>
+		<a  id="export" class="button stay" href="#">Export</a>
+		<a id="btn_Add" class="button OK stay" data-name="item0Add" href="#">Hinzufügen</a>
+		<div class="clearer"></div>
+	</div>
+	</div>
+	<div id="btn_refresh" class="button"><a href="#" class="stay" onclick="window.location.reload();"><img src="./img/reload_button.gif"></a></div>
 </nav>
 
 <div id="footer"></div>
 </body>
-    <script src="js/jquery-2.2.3.min.js"></script>
-    <script type="text/javascript" src="js/all.js"></script>
+	<script src="js/jquery-2.2.3.min.js"></script>
+	<script type="text/javascript" src="js/all.js"></script>
 	<script type="text/javascript" src="js/database.js"></script>
 	<script type="text/javascript" src="js/touch.js"></script>
 	<script type="text/javascript" src="js/index.js"></script>
 	<script type="text/javascript" src="js/sync.js"></script>
-    <script type="text/javascript" src="js/stay.js"></script>
+	<script type="text/javascript" src="js/stay.js"></script>
 </html>

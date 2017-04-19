@@ -5,20 +5,22 @@
 var serverIP;
 var userID;
 var knownDevice;
+var isPhone;
 
 var dbversion;
 var oStore;
 var dbname;
+var noSyncCols;
 
 var klasse;
-var vertObj = {};
-var katNObj = {};
-var noSyncCols = ["vorjahr"];
-
-var isPhone = (screen.width > 767) ? false : true;
+var SETTINGS;
 
 
 $(document).ready(function() {
+	// Init Vars
+	noSyncCols = ["vorjahr"];
+	isPhone = (screen.width > 767) ? false : true;
+	
 	// Device ist KEIN Phone
 	if (!isPhone) {
 		window.addEventListener('orientationchange', changeOrientation);
@@ -35,26 +37,9 @@ $(document).ready(function() {
 		knownDevice = false;
 	}
 
-/*
-	if (window.openDatabase){
-		// init DB-Vars
-		var shortName = 'TeacherTab';
-		var version = '1.0';
-		var displayName = 'TeacherTab';
-		var maxSize = 65536;
-		db = openDatabase(shortName, version, displayName, maxSize);
-	}else{
-		alert("No DB Support !");
-	}
-*/
-
 	// Links bleiben in WebApp
 	$.stayInWebApp('a.stay');
 });
-
-// =================================================== //
-// =============== DEV DEV DEV DEV DEV =============== //
-// =================================================== //
 
 
 // =================================================== //
@@ -144,8 +129,8 @@ function calc_Durchschnitt(){
 		'SELECT id, oschr, omndl, ofspz, gesamt FROM '+klasse+' WHERE id !=0', [], function(t, results){
 			// schr und mndl und fspz neuberechnen
 			var omndl, oschr, gesamt, rechnerisch, eingetragen;
-			var gew_mndl = parseFloat(sessionStorage.getItem('gew_mndl'));
-			var gew_schr = parseFloat(sessionStorage.getItem('gew_schr'));
+			var gew_mndl = SETTINGS.gewichtung["mündlich"];
+			var gew_schr = SETTINGS.gewichtung["schriftlich"];
 			for (var i=0;i<results.rows.length;i++){
 				var id = results.rows.item(i).id;
 				// Gesamtnote mit Gewichtung errechnen :
@@ -291,14 +276,14 @@ function RohpunkteAlsNote(val, bol_15pkt){
 		var i;
 		if (!bol_15pkt){
 			for (i=1;i<6;i++){
-				if (val >= parseFloat(vertObj[i])){
+				if (val >= parseFloat(SETTINGS.notenverteilung[i])){
 					return i;
 				}
 			}
 			return 6;
 		}else{
 			for (i=15;i>0;i--){
-				if (val >= parseFloat(vertObj[i])){
+				if (val >= parseFloat(SETTINGS.notenverteilung[i])){
 					return i;
 				}
 			}
@@ -309,6 +294,14 @@ function RohpunkteAlsNote(val, bol_15pkt){
 // =================================================== //
 // ================     Standards     ================ //
 // =================================================== //
+
+function quit (){
+	if(window.confirm('Änderungen synchronisieren ?')){
+		initSyncSQL();
+	}else{
+		window.location = "index.htm";
+	}
+}
 
 function objLength(obj) {
 	var size = 0, key;
@@ -356,7 +349,7 @@ function schnitt(_obj, bol_fspz){
 }
 
 function schnitt_m_f(omndl, ofspz){
-	var gew_fspz = parseFloat(sessionStorage.getItem('gew_fspz'));
+	var gew_fspz = SETTINGS.gewichtung["davon fachspezifisch"];
 	var gew_mndl0 = 1.0 - gew_fspz;
 	if (ofspz > 0 && omndl > 0){
 		return Math.round((omndl*gew_mndl0+ofspz*gew_fspz)*100)/100 || "";
@@ -490,7 +483,7 @@ function fspz_Bezeichnung(){
 // --> Bezeichnungsfeld verinheitlichen
 	var nArt = document.getElementById('notenArt');
 	var gewichtung = document.getElementById('rangeSlide');
-	if (sessionStorage.getItem('set_fspzDiff') == "true"){
+	if (SETTINGS.fspzDiff){
 		var textfield = document.getElementById('notenBezeichnung');
 		var selectfield = document.getElementById('notenBezeichnung_Select');
 		if (nArt.value == "fspz"){
@@ -529,23 +522,23 @@ function popUpClose(thisElement, bol_refresh){
 // ================ Datenbank - Fnctn ================ //
 // =================================================== //
 
-function readSettings(){
+function readSettings(callback){
 	klasse = sessionStorage.getItem('klasse');
-	readDB_id(function(results){
-		var row = results.rows.item(0);
-		// v-Name für ALLE V-erteilungen
-		vertObj = JSON.parse(decodeURIComponent(row.vName));
-		// n-Name für ALLE Kat-N-amen
-		katNObj = JSON.parse(decodeURIComponent(row.nName));
-		// sonstige Einstellungen
-		var settings = JSON.parse(decodeURIComponent(row.sex)) || {};
-		var Gewichtung = JSON.parse(decodeURIComponent(row.gesamt)) || {};
+	readData(function(results){
+		SETTINGS = results[0];
+
+		/* obsolet
 		sessionStorage.setItem('set_fspzDiff', settings.fspzDiff);
-		sessionStorage.setItem('set_studSort', settings.studSort);
-		sessionStorage.setItem('set_showVorjahr', settings.showVorjahr);
-		sessionStorage.setItem('gew_mndl', Gewichtung["mündlich"]);
-		sessionStorage.setItem('gew_fspz', Gewichtung["davon fachspezifisch"]);
-		sessionStorage.setItem('gew_schr', Gewichtung["schriftlich"]);
+		sessionStorage.setItem("set_studSort", settings.studSort);
+		sessionStorage.setItem("set_showVorjahr", settings.showVorjahr);
+		sessionStorage.setItem('gew_mndl', settings.gewichtung["mündlich"]);
+		sessionStorage.setItem('gew_fspz', settings.gewichtung["davon fachspezifisch"]);
+		sessionStorage.setItem('gew_schr', settings.gewichtung["schriftlich"]);
+		*/
+
+		console.log("Settings geladen");
+		callback();
+
 		}, 0);
 }
 
@@ -563,7 +556,7 @@ function renameTable(oldname, newname){
 function readDB(callback, bol_id, option) {
 	if (!option){ option = ["*"] }
 	if (!bol_id){ bol_id = " WHERE id !=0 " }else{bol_id=" "}
-	var order = (sessionStorage.getItem('set_studSort') == "true") ? "sex ," : ""
+	var order = (SETTINGS.set_studSort) ? "sex ," : ""
 	db.transaction(
 		function(transaction){
 		transaction.executeSql(
@@ -597,18 +590,6 @@ function readDB_tables(callback, option) {
 			});
 		}
 	);
-}
-
-function updateDB(column, val, id) {
-	if ((column !== "nName" && column !== "vName") || id == "0"){
-		val = encodeURIComponent(val);
-	}
-	var now = Math.round(new Date().getTime() / 1000);
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		'UPDATE '+klasse+' SET '+column+'="'+val+'", changed='+now+' WHERE id="'+id+'";', [], null, errorHandler);
-		});
 }
 
 function import_Column(from_column, from_klasse, to_column) {

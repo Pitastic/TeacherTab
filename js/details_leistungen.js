@@ -743,13 +743,13 @@ function calc_Stats(bol_Mitschreiber){
 			var tr2 = document.createElement('tr');
 			var tr3 = document.createElement('tr');
 			var td;
-			for (i in vertObj){
-				temp = Math.round(((vertObj[i]/100)*pkt_Gesamt)*10)/10;
+			for (i in SETTINGS.notenverteilung){
+				temp = Math.round(((SETTINGS.notenverteilung[i]/100)*pkt_Gesamt)*10)/10;
 				td = document.createElement('td');
 					td.innerHTML = i;
 				tr1.appendChild(td);
 				td = document.createElement('td');
-					td.innerHTML = vertObj[i]+"%";
+					td.innerHTML = SETTINGS.notenverteilung[i]+"%";
 				tr2.appendChild(td);
 				td = document.createElement('td');
 					td.innerHTML = temp;

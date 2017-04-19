@@ -7,13 +7,14 @@ $(document).ready(function() {
 
 	// -- Buttons
 	document.getElementById('syncOpen').addEventListener('click', function(){
+		// >>>>>>>> DEV: Bisher direktes Öffnen ohne Sync und Dialog
 		klassenAuswahl(document.getElementById('klasseSelect'));
-		if ((klasse !== "[undefined]" && klasse !=="[- bitte wählen -]") && klasse) {
-			//initSyncSQL();
-			//listKlassen(listIdx_Select);
-		}else{
-			alert('Es wurde keine Klasse ausgewählt !');
-		}
+		//initSyncSQL();
+		//listKlassen(listIdx_Select);
+		// >>>>>>>> DEV >
+		popUp("item0Sync");
+		document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
+		// <<<<<<<< DEV <
 	});
 	document.getElementById('btn_Delete').addEventListener('click', function(){
 		if (window.confirm('Bist du sicher, dass du die gesamte Klasse:\n"'+klasse+'"\nlöschen möchtest ?')){
@@ -147,6 +148,8 @@ function klassenAuswahl(selectbox){
 	if (klasseSelect !== "null" && klasseSelect !== "") {
 		sessionStorage.setItem('klasse', klasseSelect);
 		klasse = klasseSelect;
+	}else{
+		alert('Es wurde keine Klasse ausgewählt !');
 	}
 }
 
