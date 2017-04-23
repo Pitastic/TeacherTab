@@ -5,6 +5,7 @@ $(document).ready(function() {
 //		calc_Durchschnitt();
 		// List first View
 		readData(listStudents);
+		readData(listLeistung);
 //		readDB_id(listLeistung, 0, "mndl, fspz, schr");
 	});
 
@@ -117,16 +118,16 @@ function listStudents(results, option) {
 }
 
 function listLeistung(results){
-	var c, r, ul, arr, idx, id_Leistung, dict_L, i;
+	results = results[0];
+	var c, r, ul, idx, id_Leistung, dict_Leistungen, i;
 	var old = document.getElementById("listLeistung").getElementsByTagName('ul');
 	
-	// Array fürs itterieren  durch die Header
-	var columnArray = ['mndl', 'fspz', 'schr'];
-	for (i=0; i<columnArray.length; i++){
+	// Array fürs itterieren durch die Header
+	var art = ['mndl', 'fspz', 'schr'];
+	for (i=0; i<art.length; i++){
 		ul = document.createElement('ul');
-		arr = JSON.parse(decodeURIComponent(results.rows.item(0)[columnArray[i]])).alle;
-		dict_L = JSON.parse(decodeURIComponent(results.rows.item(0)[columnArray[i]]));
-		if (!arr[0]){
+		dict_Leistungen = results.leistungen[art[i]];
+		if (!dict_Leistungen.alle[0]){
 			r = document.createElement('li');
 				c = document.createElement('div');
 					c.className = "keine";
@@ -134,24 +135,24 @@ function listLeistung(results){
 			r.appendChild(c);
 			ul.appendChild(r);
 		}else{
-			for (idx=0; idx<arr.length; idx++){
-				id_Leistung = arr[idx];
+			for (idx=0; idx<dict_Leistungen.alle.length; idx++){
+				id_Leistung = dict_Leistungen.alle[idx];
 				r = document.createElement('li');
-				r.setAttribute('data-l_column', columnArray[i]);
+				r.setAttribute('data-l_column', art[i]);
 				r.setAttribute('data-l_id', id_Leistung);
 					c = document.createElement('div');
 						c.className = "name";
-						c.innerHTML = dict_L[id_Leistung].Bezeichnung;
+						c.innerHTML = dict_Leistungen[id_Leistung].Bezeichnung;
 					r.appendChild(c);
 					c = document.createElement('div');
-						c.innerHTML = dict_L[id_Leistung].Datum;
+						c.innerHTML = dict_Leistungen[id_Leistung].Datum;
 					r.appendChild(c);
 					c = document.createElement('div');
 						c.innerHTML = "&#160;";
-						c.classList.add(dict_L[id_Leistung].Eintragung.toLowerCase());
+						c.classList.add(dict_Leistungen[id_Leistung].Eintragung.toLowerCase());
 					r.appendChild(c);
 					c = document.createElement('div');
-						c.innerHTML = dict_L[id_Leistung].Gewichtung + "x";
+						c.innerHTML = dict_Leistungen[id_Leistung].Gewichtung + "x";
 						c.className = "gewichtung";
 					r.appendChild(c);
 					c = document.createElement('div');

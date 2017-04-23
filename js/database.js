@@ -148,6 +148,11 @@ function addSettings(dbConnection) {
 		},
 		'klasse' : klasse,
 		'kompetenzen' : {'Gesamt': "Gesamt", 1:"Kategorie 1", 2:"Kategorie 2", 3:"Kategorie 3", 4:"Kategorie 4"},
+		'leistungen' : {
+			'mndl': {'alle':[]},
+			'fspz': {'alle':[]},
+			'schr': {'alle':[]},
+		},
 		'notenverteilung' : {1:95,2:80,3:75,4:50,5:25,6:0},
 		'showVorjahr' : false,
 		'studSort' : false,
@@ -328,8 +333,6 @@ function updateData(callback, newObjects) {
 			var id, cursor = event.target.result;
 			if (cursor) {
 				id = cursor.value.id;
-				console.log(id);
-				console.log(cursor.key);
 				if (id in newObjects) {
 					toUpdate = cursor.value;
 					for (k in newObjects[id]){

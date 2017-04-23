@@ -58,12 +58,7 @@ function settingDetails(results){
 				};
 			document.getElementById('item1setting').classList.remove('show');
 			popUp('item1setting_info');
-
-
-			// >>>>>>>> DEV: Select aller Schüler mit readData(callback, id?)
 			readData(gruppierenListe);
-			// <<<<<<<< DEV <
-
 
 		})
 	//-- Vorjahresnoten
