@@ -149,9 +149,9 @@ function addSettings(dbConnection) {
 		'klasse' : klasse,
 		'kompetenzen' : {'Gesamt': "Gesamt", 1:"Kategorie 1", 2:"Kategorie 2", 3:"Kategorie 3", 4:"Kategorie 4"},
 		'leistungen' : {
-			'mndl': {'alle':[]},
-			'fspz': {'alle':[]},
-			'schr': {'alle':[]},
+			'mndl' : {},
+			'fspz' : {},
+			'schr' : {},
 		},
 		'notenverteilung' : {1:95,2:80,3:75,4:50,5:25,6:0},
 		'showVorjahr' : false,
@@ -222,15 +222,9 @@ function neuerStudent(data, callback) {
 				'nname' : data[1],
 				'sex' : "-",
 			},
-			'mndl' : {
-				'alle' : [],
-			},
-			'fspz' : {
-				'alle' : [],
-			},
-			'schr' : {
-				'alle' : [],
-			},
+			'mndl' : {},
+			'fspz' : {},
+			'schr' : {},
 			'gesamt' : {
 				'omndl': null,
 				'ofspz': {
@@ -283,6 +277,38 @@ function deleteStudent(id) {
 		};
 
 		return;
+	}
+}
+
+
+// neue Leistung in aktueller Klasse anlegen
+function neueLeistung(callback, art, Leistung) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
+		var transaction = objectStore.openCursor()
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			var id, cursor = event.target.result;
+			if (cursor) {
+				new_entry = cursor.value;
+				new_entry.leistungen[art][Leistung.id] = Leistung;
+				var requestUpdate = cursor.update(new_entry);
+				requestUpdate.onsuccess = function() {
+					console.log("indexDB: ID", Leistung.id,"updated...")
+					connection.close();
+					callback();
+				};
+			}
+		}
+		
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		};
+
 	}
 }
 

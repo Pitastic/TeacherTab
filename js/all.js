@@ -510,7 +510,10 @@ function fspz_Bezeichnung2(){
 }
 
 function popUpClose(thisElement, bol_refresh){
-	if(bol_refresh){readDB(listStudents, false); readDB_id(listLeistung,0);}
+	if(bol_refresh){
+		readData(listStudents);
+		readData(listLeistung);
+	}
 	thisElement.parentNode.parentNode.classList.remove('showPop');
 	setTimeout(function() {
 		thisElement.parentNode.parentNode.parentNode.classList.add('hide');

@@ -6,7 +6,6 @@ $(document).ready(function() {
 		// List first View
 		readData(listStudents);
 		readData(listLeistung);
-//		readDB_id(listLeistung, 0, "mndl, fspz, schr");
 	});
 
 	// Event-Listener
@@ -34,7 +33,6 @@ $(document).ready(function() {
 // ============ DEV Notizen ============================ //
 // ===================================================== //
 /*
-> listLeistung()
 > calc_Durchschnitt()
 > calc_KatDS()
 */
@@ -127,7 +125,8 @@ function listLeistung(results){
 	for (i=0; i<art.length; i++){
 		ul = document.createElement('ul');
 		dict_Leistungen = results.leistungen[art[i]];
-		if (!dict_Leistungen.alle[0]){
+		// Leeres Leistungsobjekt ?
+		if (Object.keys(dict_Leistungen).length === 0 && dict_Leistungen.constructor === Object){
 			r = document.createElement('li');
 				c = document.createElement('div');
 					c.className = "keine";
@@ -135,8 +134,7 @@ function listLeistung(results){
 			r.appendChild(c);
 			ul.appendChild(r);
 		}else{
-			for (idx=0; idx<dict_Leistungen.alle.length; idx++){
-				id_Leistung = dict_Leistungen.alle[idx];
+			for (id_Leistung in dict_Leistungen){
 				r = document.createElement('li');
 				r.setAttribute('data-l_column', art[i]);
 				r.setAttribute('data-l_id', id_Leistung);
@@ -230,14 +228,14 @@ function massenAdd(el){
 
 
 // neue Leistung
-function neueLeistung(thisElement){
+function addLeistung(thisElement){
 	// Zeitstempel
 	var d = new Date().getTime();
 	// Get Vars aus Input
 	var nBezeichnung = document.getElementById('notenBezeichnung');
 	var nDatum = document.getElementById('notenDatum').value;
 	var nEintragung = document.getElementById('notenEintragung');
-	var nArt = document.getElementById('notenArt');
+	var nArt = document.getElementById('notenArt').value;
 	var nGewicht = parseFloat(document.getElementById('rangeWert').value);
 	
 	// Leistung als Object erstellen
@@ -262,18 +260,13 @@ function neueLeistung(thisElement){
 	};
 	console.log(Leistung);
 	// Leistung in id=0 dict einfügen
-	readDB_id(function(r,id){
-		var _dict = JSON.parse(decodeURIComponent(r.rows.item(0)[nArt.value]));
-		_dict.alle.push(d);
-		_dict[d] = Leistung;
-		updateDB(nArt.value, JSON.stringify(_dict), 0);
-	}, 0, nArt.value);
-	// > Schülerdaten werden erst beim Speichern angelegt
-	// Reset popUp
-	nBezeichnung.value = '';
-	setTimeout(function() {
-		popUpClose(thisElement, true);
-	}, 150);
+	neueLeistung(function() {
+		// Reset popUp
+		nBezeichnung.value = '';
+		setTimeout(function() {
+			popUpClose(thisElement, true)
+		}, 150);
+	}, nArt, Leistung);
 }
 
 

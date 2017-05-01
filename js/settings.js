@@ -26,9 +26,10 @@ function settingDetails(results){
 	}
 	//-- Kompetenz Namen
 	var kompNamen = settings.kompetenzen;
+	console.log(kompNamen)
 	var inputs = document.getElementById('form_KompNamen').getElementsByTagName('input');
 	for (i = 0; i < inputs.length; i++) {
-		inputs[i].value = kompNamen["Kat"+(i+1)] || "";
+		inputs[i].value = kompNamen[i+1] || "";
 	}
 	//-- Gewichtung
 	var Gewichtung = settings.gewichtung;
