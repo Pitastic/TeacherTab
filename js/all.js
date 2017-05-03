@@ -413,7 +413,7 @@ function datum(){
 
 function goBack(){
 	readDB_tables(listIdx_Select,"");
-	slide2('uebersicht0_In', 'item0');
+	slide('uebersicht0_In', 'item0');
 	noTouchSlider();
 }
 
@@ -430,7 +430,7 @@ function itemAbort(names, target_site) {
 	},400);
 }
 
-function slide2(event) {
+function slide(event) {
 	scroll(0,0);
 	var addBtn = document.getElementById('btn_Add');
 	var i, slideElements = document.getElementsByClassName('uebersicht');
@@ -448,7 +448,7 @@ function slide2(event) {
 	sessionStorage.setItem('lastview', slideIndex);
 }
 
-function slide3(slideName){
+function slide2(slideName){
 // Nur für die Übersichten
 	scroll(0,0);
 	var addBtn = document.getElementById('btn_Add');
@@ -472,7 +472,7 @@ function popUp(popWindow){
 	window.addEventListener('keydown', keyFunctions);
 }
 
-function keyFunctions(e){
+function keyFunctions(event){
 	if (event.keyCode == 27){
 		var popUp = document.querySelector('.showPop .close a');
 		popUpClose(popUp, false);
@@ -529,16 +529,6 @@ function readSettings(callback){
 	klasse = sessionStorage.getItem('klasse');
 	readData(function(results){
 		SETTINGS = results[0];
-
-		/* obsolet
-		sessionStorage.setItem('set_fspzDiff', settings.fspzDiff);
-		sessionStorage.setItem("set_studSort", settings.studSort);
-		sessionStorage.setItem("set_showVorjahr", settings.showVorjahr);
-		sessionStorage.setItem('gew_mndl', settings.gewichtung["mündlich"]);
-		sessionStorage.setItem('gew_fspz', settings.gewichtung["davon fachspezifisch"]);
-		sessionStorage.setItem('gew_schr', settings.gewichtung["schriftlich"]);
-		*/
-
 		console.log("Settings geladen");
 		callback();
 

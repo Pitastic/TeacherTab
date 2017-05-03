@@ -15,7 +15,7 @@ $(document).ready(function() {
 	touchListener()
 	// Hide Scrollbars
 	setTimeout(function(){
-		slide3(sessionStorage.getItem('lastview'));
+		slide2(sessionStorage.getItem('lastview'));
 		// Touch-Friendly-Buttons
 		var target_el = document.getElementById('seitenleiste');
 		noTouchThisSlider(target_el);
@@ -55,10 +55,10 @@ function listStudents(results, option) {
 		oschr = row.oschr;
 		r = document.createElement('li');
 		r.setAttribute('data-rowid', row.id);
-			if (row.name.sex && row.name.sex !== "-" && row.name.sex !== "null"){
+			if (row.sort && row.sort !== "-" && row.sort !== "null"){
 				c = document.createElement('div');
 					c.className = "s_flag";
-					c.innerHTML = row.sex;
+					c.innerHTML = row.sort;
 					r.appendChild(c);
 			}
 			c = document.createElement('div');

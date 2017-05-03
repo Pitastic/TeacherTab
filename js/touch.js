@@ -63,7 +63,7 @@ function touchEnd(e){
 	var moveY = Math.abs(slideEndY - slideBeginY);
 	// min Distance
 	if ((moveX > 50) && (moveX > 2*moveY)){
-	    slide2();
+	    slide();
 	}
 	return false;
 }
