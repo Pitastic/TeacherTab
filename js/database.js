@@ -213,14 +213,17 @@ function dropKlasse(bezeichnung, callback) {
 function neuerStudent(data, callback) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
-	request.onsuccess = function(event){
+	request.onsuccess = function(event, rowlist){
 		var connection = event.target.result;
 		var objectStore = connection.transaction([klasse], "readwrite").objectStore(klasse);
-		row = {
+		var rowlist = [];
+		// -- FCK js Object-Handling
+		row = JSON.stringify(
+			{
 			'name' : {
-				'vname' : data[0],
-				'nname' : data[1],
-				'sex' : "-",
+				'nname':"",
+				'vname':"",
+				'sex':"-",
 			},
 			'mndl' : {},
 			'fspz' : {},
@@ -239,13 +242,35 @@ function neuerStudent(data, callback) {
 			},
 			'kompetenzen' : [],
 			'changed' : 0,
+		})
+		// Concat massenAdd if present
+		var newName;
+		if (Array.isArray(data[0])) {
+			for (var i = 0; i < data.length; i++) {
+				newName = JSON.parse(row);
+				newName.name.vname = data[i][1];
+				newName.name.nname = data[i][0];
+				newName.name.sex = "-";
+				rowlist.push(newName);
+				newName = null;
+			}
+		}else{
+			newName = JSON.parse(row);
+			newName.name.vname = data[0];
+			newName.name.nname = data[1];
+			newName.name.sex = "-";
+			rowlist.push(newName);
+			newName = null;
 		}
-		var result = objectStore.add(row);
-		result.onerror = errorHandler;
-		result.onsuccess = function(event){
-			var connection = event.target.result;
-			if (callback) {callback(connection);}
-			console.log("indexedDB:", data[0], data[1], "inserted");
+
+		putNext(0);
+		function putNext(iterator) {
+			if (iterator<rowlist.length) {
+				objectStore.put(rowlist[iterator]).onsuccess = function(){putNext(iterator+1)};
+			} else {   // complete
+				console.log("indexedDB:",i," Schüler eingefügt");
+				if (callback) {callback(connection);}
+			}
 		}
 		connection.close();
 
@@ -253,6 +278,9 @@ function neuerStudent(data, callback) {
 		connection.onversionchange = function(event) {
 			connection.close();
 		};
+	}
+	request.oncomplete = function(){
+		if (callback) {callback(event.target.result)}
 	}
 	return;
 }

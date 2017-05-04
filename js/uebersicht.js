@@ -209,20 +209,23 @@ function massenAdd(el){
 		alert("Du hast vergessen ein Trennzeichen (ggf. mit Leerzeichen) anzugeben !");
 		return false;
 	}
-	var i, a = []; var b = [];
-	a = textblock.value.split(trennZeile);
-	for (i in a){
-		b.push(a[i].split(trennNamen));
+	var i, zeilen = []; var namen = []; var vnn;
+	zeilen = textblock.value.split(trennZeile);
+	for (zeile in zeilen){
+		vnn = zeilen[zeile].split(trennNamen);
+		namen.push([vnn[0].trim(),vnn[1].trim()]);
 	}
-	for (i=0;i<b.length;i++){
-		createRow(b[i][1].trim(),b[i][0].trim(),"-");
-	}
-	setTimeout(function() {
-		textblock.value = "";
-	}, 500);
-	readDB(listStudents, false);
 
-	popUpClose(el);
+
+console.log(namen)
+	neuerStudent(namen, function(){
+		setTimeout(function() {
+			popUpClose(el);
+			readData(listStudents);
+		}, 500);
+		textblock.value = "";
+	});
+
 	return true;
 }
 

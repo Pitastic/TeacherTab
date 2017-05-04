@@ -535,55 +535,6 @@ function readSettings(callback){
 		}, 0);
 }
 
-function renameTable(oldname, newname){
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		'ALTER TABLE '+oldname+' RENAME TO '+newname+';', [], function(t, results){
-			console.log(oldname, "heisst jetzt:", newname);
-			});
-		}
-	);
-}
-
-function readDB(callback, bol_id, option) {
-	if (!option){ option = ["*"] }
-	if (!bol_id){ bol_id = " WHERE id !=0 " }else{bol_id=" "}
-	var order = (SETTINGS.set_studSort) ? "sex ," : ""
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		'SELECT '+option[0]+' FROM '+klasse+' '+bol_id+' ORDER BY '+order+'nName', [], function(t, results){
-			callback(results, option);
-			});
-		}
-	);
-}
-
-function readDB_id(callback, id, option, vars) {
-	if (!option){ option = "*" }
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		'SELECT '+option+' FROM '+klasse+' WHERE id='+id+';', [], function(t, results){
-			callback(results, id, vars);
-			return true;
-		});
-		}
-	);
-	return true;
-}
-
-function readDB_tables(callback, option) {
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		'SELECT * FROM sqlite_master WHERE type="table" ORDER BY name', [], function(t, results){
-			callback(results, option);
-			});
-		}
-	);
-}
 
 function import_Column(from_column, from_klasse, to_column) {
 	var sql_statement = 'UPDATE '+klasse+' SET '+to_column+'=(SELECT '+from_column+' FROM '+from_klasse+' WHERE '+from_klasse+'.nName = '+klasse+'.nName AND '+from_klasse+'.vName = '+klasse+'.vName) WHERE id != 0';
@@ -596,21 +547,6 @@ function import_Column(from_column, from_klasse, to_column) {
 }
 
 
-function createRow(vName, nName){
-	var now = Math.round(new Date().getTime() / 1000);
-	// Leere Objekte (mndl, schr, fspz)
-	var mndl, schr, fspz, omndl, ofspz, oschr, gesamt;
-	gesamt = encodeURIComponent(JSON.stringify({'rechnerisch':0, 'eingetragen': "-"}));
-	mndl = schr = fspz = encodeURIComponent(JSON.stringify({'alle':[],}));
-	omndl = oschr = 0;
-	ofspz = encodeURIComponent(JSON.stringify({'Gesamt':0, 'Vokabeln':0, 'Grammatik':0}));
-	db.transaction(
-		function(transaction){
-		transaction.executeSql('INSERT INTO '+klasse+'(vName, nName, mndl, fspz, schr, omndl, ofspz, oschr, gesamt, changed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [vName, nName, mndl, schr, fspz, omndl, ofspz, oschr, gesamt, now], null, errorHandler);
-		});
-	return true;
-}
-
 function checkColumn(col, type) {
 	type = type || "TEXT";
 	var ergebnis;
@@ -618,29 +554,6 @@ function checkColumn(col, type) {
 		function(transaction){
 		transaction.executeSql('SELECT '+col+' FROM '+klasse+'', [], null, function(){createColumn(col, type)});
 	});
-}
-
-function createColumn(col, typ){
-	db.transaction(
-			function(transaction){
-			transaction.executeSql('ALTER TABLE '+klasse+' ADD COLUMN '+col+' '+typ+'', [], function(){console.log(col+' created')}, errorHandler);
-			});
-}
-
-function dropDB(selKlasse){	// Klasse löschen
-		db.transaction(
-		function(transaction){
-		transaction.executeSql('DROP TABLE '+selKlasse+'',null, null);
-		});
-}
-
-function successHandler(t, r){
-	console.log('>> DB : ...durchgeführt! - Affected:', r.rowsAffected);
-}
-
-function errorHandler(transaction, error){
-	console.log('>> DB : F A I L !!!');
-	console.log(error);
 }
 
 // ==============================================================
