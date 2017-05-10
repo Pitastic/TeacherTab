@@ -320,7 +320,7 @@ function neueLeistung(callback, art, Leistung) {
 		transaction.onerror = errorHandler;
 		transaction.onsuccess = function(event){
 			var id, cursor = event.target.result;
-			if (cursor) {
+			if (cursor && cursor.value.id == 0) {
 				new_entry = cursor.value;
 				new_entry.leistungen[art][Leistung.id] = Leistung;
 				var requestUpdate = cursor.update(new_entry);
@@ -341,16 +341,61 @@ function neueLeistung(callback, art, Leistung) {
 }
 
 
-// ID aus der aktuellen Klasse lesen (default=0, Settings)
+// Leistung aus aktueller Klasse löschen
+function deleteLeistung(callback, art, id) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
+		var transaction = objectStore.openCursor()
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			var cursor = event.target.result;
+			if (cursor){
+				if (cursor.value.id == 0) {
+					new_entry = cursor.value;
+					console.log("indexDB: Delete", new_entry.leistungen[art][id]);
+					delete new_entry.leistungen[art][id];
+					var requestUpdate = cursor.update(new_entry);
+					requestUpdate.onsuccess = function() {
+						cursor.continue();
+					};
+				}else{
+					new_entry = cursor.value;
+					delete new_entry[art][id];
+					var requestUpdate = cursor.update(new_entry);
+					requestUpdate.onsuccess = function() {
+						cursor.continue();
+					};
+				}
+			}else{
+				console.log("indexDB: Leistung (ID", id,"gelöscht...")
+				connection.close();
+				callback();
+			}
+		}
+		
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		};
+
+	}
+}
+
+
+
+// ID aus der aktuellen Klasse lesen (default => Array mit allen)
 function readData(callback, id) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
 		var connection = event.target.result;
 		var objectStore = connection.transaction([klasse]).objectStore(klasse);
-		id = (id == null) ? 0 : parseInt(id);
+		//id = (id == null) ? 0 : parseInt(id);
 		var result = {};
-		if (id) {
+		if (id || id == 0) {
 			var transaction1 = objectStore.get(id)
 			transaction1.onerror = errorHandler;
 			transaction1.onsuccess = function(event){

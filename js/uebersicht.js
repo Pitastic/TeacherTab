@@ -171,7 +171,7 @@ function listLeistung(results){
 			var id_Leistung = this.getAttribute('data-l_id');
 			if (id_Leistung) {
 				sessionStorage.setItem('leistung_id', this.getAttribute('data-l_id'));
-				sessionStorage.setItem('leistung_column', this.getAttribute('data-l_column'));
+				sessionStorage.setItem('leistung_art', this.getAttribute('data-l_column'));
 				itemAbort(['item2'],'details_leistungen.htm');
 			}else{
 				alert("Keine Leistung vorhanden.\nKlick auf den Button 'Hinzufügen' um eine hinzuzufügen");
@@ -261,7 +261,6 @@ function addLeistung(thisElement){
 			'Schlechtester' : undefined,
 			'nMitschr' : undefined,},
 	};
-	console.log(Leistung);
 	// Leistung in id=0 dict einfügen
 	neueLeistung(function() {
 		// Reset popUp

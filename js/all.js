@@ -25,13 +25,14 @@ $(document).ready(function() {
 	if (!isPhone) {
 		window.addEventListener('orientationchange', changeOrientation);
 	}
-	// First Start ?
+	// Not the First Time ?
 	if (localStorage.getItem('TeacherTab')){
 		// DB Support und Init
 		serverIP = localStorage.getItem('serverIP');
 		userID = localStorage.getItem('userID');
 		dbname = userID;
 		knownDevice = true;
+		klasse = sessionStorage.getItem('klasse');
 	}else{
 		// kein DB Init
 		knownDevice = false;
@@ -295,7 +296,7 @@ function RohpunkteAlsNote(val, bol_15pkt){
 // ================     Standards     ================ //
 // =================================================== //
 
-function quit (){
+function quit(){
 	if(window.confirm('Änderungen synchronisieren ?')){
 		initSyncSQL();
 	}else{
@@ -528,10 +529,10 @@ function popUpClose(thisElement, bol_refresh){
 function readSettings(callback){
 	klasse = sessionStorage.getItem('klasse');
 	readData(function(results){
-		SETTINGS = results[0];
+		SETTINGS = results;
+		delete SETTINGS.leistungen;
 		console.log("Settings geladen");
 		callback();
-
 		}, 0);
 }
 
