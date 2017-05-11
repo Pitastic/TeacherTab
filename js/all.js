@@ -326,23 +326,25 @@ function schnitt(_obj, bol_fspz){
 	var _Gra = {};
 	var _Vok = {};
 	if (!bol_fspz){
-		for (i=0;i<_obj.alle.length;i++){
-			_row = _obj[_obj.alle[i]];
-			iAnz += _row.Gewichtung;
-			r = r + parseFloat(_row.Note*_row.Gewichtung);
+		for (_row in _obj){
+		//for (i=0;i<_obj.alle.length;i++){
+			//_row = _obj[_obj.alle[i]];
+			iAnz += _obj[_row].Gewichtung;
+			r = r + parseFloat(_obj[_row].Note*_obj[_row].Gewichtung);
 		}
 		return Math.round((r/iAnz)*100)/100 || "";
 	}else{
 		_Gra.alle = [];
 		_Vok.alle = [];
-		for (i=0;i<_obj.alle.length;i++){
+		for (_row in _obj){
+		//for (i=0;i<_obj.alle.length;i++){
 			// Array mit je Vok und Gra erstellen
-			if (_obj[_obj.alle[i]].Bezeichnung == "Grammatik"){
-				_Gra.alle.push(_obj.alle[i]);
-				_Gra[_obj.alle[i]] = _obj[_obj.alle[i]];
-			}else if (_obj[_obj.alle[i]].Bezeichnung == "Vokabeln"){
-				_Vok.alle.push(_obj.alle[i]);
-				_Vok[_obj.alle[i]] = _obj[_obj.alle[i]];
+			if (_obj[_row].Bezeichnung == "Grammatik"){
+				_Gra.alle.push(_row);
+				_Gra[_row] = _obj[_row];
+			}else if (_obj[_row].Bezeichnung == "Vokabeln"){
+				_Vok.alle.push(_row);
+				_Vok[_row] = _obj[_row];
 			}
 		}
 		return {Vokabeln:schnitt(_Vok)||"", Grammatik:schnitt(_Gra)||"", Gesamt:schnitt(_obj)};

@@ -132,8 +132,6 @@ function leistungsDetails_noten(art, Leistung){
 			if (r == 0) {continue;}
 			row = results[r];
 			eigeneLeistung = row[art][Leistung.id];
-			console.log(row);
-			console.log(eigeneLeistung);
 			// Leistung bei Schüler vorhanden ?
 			if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || !eigeneLeistung.Mitschreiber == "undefined" || !eigeneLeistung.Mitschreiber){
 				eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', 'Kat1':'-', 'Kat2':'-', 'Kat3':'-', 'Kat4':'-',};
@@ -668,6 +666,12 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 		updateData(function(){
 
 /* ALT !
+
+Aufruf: updateSchnitt in database.js
+> calcDS und Schnitt zusammenfassen
+> Schnitt liefert bisher nur leere Strings...
+
+
 
 		readDB_id(function(results, liID, newObject){
 			var old_Leistung = JSON.parse(decodeURIComponent(results.rows.item(0)[column]));

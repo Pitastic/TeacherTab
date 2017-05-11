@@ -78,6 +78,7 @@ function initDB() {
 /*
 > löschen von Schülern, Leistungen und ganzen Klassen
 	gleich synchronisieren
+> calc_DS und Schnitt zusammenfassen
 */
 
 // ===================================================== //
@@ -455,6 +456,54 @@ function updateData(callback, newObjects) {
 		};
 
 	}
+}
+
+
+// Durchschnitte von Leistungen aktualisieren (default = alles bei allen)
+function updateSchnitt(callback, id) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
+		var transaction = objectStore.openCursor();
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			var ds_art, Student, cursor;
+			var art = ["mndl","fspz","schr"];
+			cursor = event.target.result;
+			if (cursor){
+				if ((!id && cursor.value.id) || (id && id == cursor.value.id)) {					
+					Student = cursor.value;
+					for (var i = 0; i < art.length; i++) {
+						ds_art = "o"+art[i];
+						if (ds_art == "ofspz") {
+							// Spezialfall Fspz und Verrechnung mit Mndl beachten
+							Student['gesamt'][ds_art] = schnitt(Student, true);
+							Student['gesamt']['omndl'] = schnitt_m_f(Student['gesamt']['omndl'], Student['gesamt']['ofspz']);						
+						}else{
+							Student['gesamt'][ds_art] = schnitt(Student, false);
+						}
+					}
+					var requestUpdate = cursor.update(Student);
+					requestUpdate.onerror = errorHandler;
+					requestUpdate.onsuccess = function() {
+						console.log("indexDB: Durchschnitt ID", Student.id, "updated...")
+					};
+				}
+				cursor.continue();
+			}else{
+				callback();
+			}
+		connection.close();
+		}
+
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		}
+
+	};
 }
 
 

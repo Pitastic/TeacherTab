@@ -12,7 +12,7 @@ $(document).ready(function() {
 
 function settingDetails(results){
 	var i;
-	var settings = results[0];
+	var settings = results;
 
 	//-- Notenverteilung
 	var vertNoten = settings.notenverteilung;
