@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version: 0.19.0 vom 01.02.2017 (Neue Versionierung)
+# Version: 0.19.4 vom 10.05.2017 (Neue Versionierung)
 
 CACHE:
 # HTML
@@ -20,6 +20,7 @@ export-PDF.htm
 
 # JavaScript
 ./js/all.js
+./js/database.js
 ./js/details_leistungen.js
 ./js/details_students.js
 ./js/sync.js
@@ -42,7 +43,7 @@ export-PDF.htm
 ./img/Slider_rotate.gif
 
 # Jquery
-./js/jquery-2.2.3.min.js
+./js/jquery-3.2.1.min.js
 
 NETWORK:
 *

@@ -12,7 +12,7 @@ $(document).ready(function() {
 
 function settingDetails(results){
 	var i;
-	var settings = results[0];
+	var settings = results;
 
 	//-- Notenverteilung
 	var vertNoten = settings.notenverteilung;
@@ -26,7 +26,6 @@ function settingDetails(results){
 	}
 	//-- Kompetenz Namen
 	var kompNamen = settings.kompetenzen;
-	console.log(kompNamen)
 	var inputs = document.getElementById('form_KompNamen').getElementsByTagName('input');
 	for (i = 0; i < inputs.length; i++) {
 		inputs[i].value = kompNamen[i+1] || "";
@@ -50,13 +49,8 @@ function settingDetails(results){
 			document.getElementById('Abbrechen').innerHTML = "Abbrechen";
 			document.getElementById('Save').onclick = function(){
 				// Gruppierung speichern
-				if (saveGruppen()){
-					setTimeout(function(){
-						window.location = "uebersicht.htm";
-					},750);
-				}
-				document.getElementById('item1setting_gruppen').classList.remove('show');
-				};
+				saveGruppen();
+			};
 			document.getElementById('item1setting').classList.remove('show');
 			popUp('item1setting_info');
 			readData(gruppierenListe);
@@ -101,16 +95,6 @@ function SettingsSave(bol_save){
 		settings.studSort = document.form_sex.stud_Sort.checked;
 		// -- -- Vorjahresnoten
 		settings.showVorjahr = document.form_vorjahr.setVorjahr.checked;
-		
-		// SessionStorage save obsolet
-		/*
-		sessionStorage.setItem('set_fspzDiff', settings.fspzDiff);
-		sessionStorage.setItem("set_studSort", settings.studSort);
-		sessionStorage.setItem("set_showVorjahr", settings.showVorjahr);
-		sessionStorage.setItem('gew_mndl', settings.gewichtung["mündlich"]);
-		sessionStorage.setItem('gew_fspz', settings.gewichtung["davon fachspezifisch"]);
-		sessionStorage.setItem('gew_schr', settings.gewichtung["schriftlich"]);
-		*/
 
 		// DB save und refresh
 		updateData(function(){
@@ -126,22 +110,23 @@ function SettingsSave(bol_save){
 
 
 function gruppierenListe(results){
-	var r, c, len = results.rows.length;
-	var liste = document.getElementById('gruppierenListe');
+	var r, c, liste, ul;
+	liste = document.getElementById('gruppierenListe');
 	ul = document.createElement('ul');
-	for (var i=0; i<len; i++){
-		row = results.rows.item(i);
+	for (i in results){
+		if (i==0) {continue;}
+		row = results[i];
 		r = document.createElement('li');
-			if (row.sex && row.sex !== "-" && row.sex !== "null"){
+			if (row.sort && row.sort !== "-" && row.sort !== "null"){
 				c = document.createElement('div');
 					c.className = "s_flag";
-					c.innerHTML = row.sex;
+					c.innerHTML = row.sort;
 					r.appendChild(c);
 			}
 			r.setAttribute('data-rowid', row.id);
 			c = document.createElement('div');
 				c.className = "name";
-				c.innerHTML = row.nName+', '+row.vName;
+				c.innerHTML = row.name.nname+', '+row.name.vname;
 		r.appendChild(c);
 		ul.appendChild(r);
 		// Eventlistener für dieses li
@@ -185,12 +170,21 @@ function saveVorjahr(el, abort) {
 }
 
 function saveGruppen(){
+	// Gruppierung speichern
+	// (DEV: Gruppe in Element speichern um mehr Gruppen auf einmal speichern zu können)
 	var gruppe = document.getElementById("gruppierer").value;
 	var liste = document.getElementsByClassName("selected");
 	var student, i;
+	newObjects = {};
 	for (i=0;i<liste.length;i++){
 		student = liste[i].getAttribute("data-rowid");
-		updateDB("sex",gruppe,student);
+		newObjects[student] = {'sort': gruppe};
 	}
+	updateData(function(){
+		setTimeout(function(){
+			window.location = "uebersicht.htm";
+		},750);
+		document.getElementById('item1setting_gruppen').classList.remove('show');
+	}, newObjects);
 	return true
 }

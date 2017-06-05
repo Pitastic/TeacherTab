@@ -73,14 +73,6 @@ function initDB() {
 }
 
 // ===================================================== //
-// ============ DEV Notizen============================= //
-// ===================================================== //
-/*
-> löschen von Schülern, Leistungen und ganzen Klassen
-	gleich synchronisieren
-*/
-
-// ===================================================== //
 // == grundlegende Datenbankinteraktionen=============== //
 // ===================================================== //
 
@@ -213,14 +205,17 @@ function dropKlasse(bezeichnung, callback) {
 function neuerStudent(data, callback) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
-	request.onsuccess = function(event){
+	request.onsuccess = function(event, rowlist){
 		var connection = event.target.result;
 		var objectStore = connection.transaction([klasse], "readwrite").objectStore(klasse);
-		row = {
+		var rowlist = [];
+		// -- FCK js Object-Handling
+		row = JSON.stringify(
+			{
 			'name' : {
-				'vname' : data[0],
-				'nname' : data[1],
-				'sex' : "-",
+				'nname':"",
+				'vname':"",
+				'sex':"-",
 			},
 			'mndl' : {},
 			'fspz' : {},
@@ -239,13 +234,35 @@ function neuerStudent(data, callback) {
 			},
 			'kompetenzen' : [],
 			'changed' : 0,
+		})
+		// Concat massenAdd if present
+		var newName;
+		if (Array.isArray(data[0])) {
+			for (var i = 0; i < data.length; i++) {
+				newName = JSON.parse(row);
+				newName.name.vname = data[i][1];
+				newName.name.nname = data[i][0];
+				newName.name.sex = "-";
+				rowlist.push(newName);
+				newName = null;
+			}
+		}else{
+			newName = JSON.parse(row);
+			newName.name.vname = data[0];
+			newName.name.nname = data[1];
+			newName.name.sex = "-";
+			rowlist.push(newName);
+			newName = null;
 		}
-		var result = objectStore.add(row);
-		result.onerror = errorHandler;
-		result.onsuccess = function(event){
-			var connection = event.target.result;
-			if (callback) {callback(connection);}
-			console.log("indexedDB:", data[0], data[1], "inserted");
+
+		putNext(0);
+		function putNext(iterator) {
+			if (iterator<rowlist.length) {
+				objectStore.put(rowlist[iterator]).onsuccess = function(){putNext(iterator+1)};
+			} else {   // complete
+				console.log("indexedDB: Schüler eingefügt");
+				if (callback) {callback(connection);}
+			}
 		}
 		connection.close();
 
@@ -253,6 +270,9 @@ function neuerStudent(data, callback) {
 		connection.onversionchange = function(event) {
 			connection.close();
 		};
+	}
+	request.oncomplete = function(){
+		if (callback) {callback(event.target.result)}
 	}
 	return;
 }
@@ -292,12 +312,12 @@ function neueLeistung(callback, art, Leistung) {
 		transaction.onerror = errorHandler;
 		transaction.onsuccess = function(event){
 			var id, cursor = event.target.result;
-			if (cursor) {
+			if (cursor && cursor.value.id == 0) {
 				new_entry = cursor.value;
 				new_entry.leistungen[art][Leistung.id] = Leistung;
 				var requestUpdate = cursor.update(new_entry);
 				requestUpdate.onsuccess = function() {
-					console.log("indexDB: ID", Leistung.id,"updated...")
+					console.log("indexedDB: ID", Leistung.id,"updated...")
 					connection.close();
 					callback();
 				};
@@ -313,16 +333,60 @@ function neueLeistung(callback, art, Leistung) {
 }
 
 
-// ID aus der aktuellen Klasse lesen (default=0, Settings)
+// Leistung aus aktueller Klasse löschen
+function deleteLeistung(callback, art, id) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
+		var transaction = objectStore.openCursor()
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			var cursor = event.target.result;
+			if (cursor){
+				if (cursor.value.id == 0) {
+					new_entry = cursor.value;
+					console.log("indexDB: Delete", new_entry.leistungen[art][id]);
+					delete new_entry.leistungen[art][id];
+					var requestUpdate = cursor.update(new_entry);
+					requestUpdate.onsuccess = function() {
+						cursor.continue();
+					};
+				}else{
+					new_entry = cursor.value;
+					delete new_entry[art][id];
+					var requestUpdate = cursor.update(new_entry);
+					requestUpdate.onsuccess = function() {
+						cursor.continue();
+					};
+				}
+			}else{
+				console.log("indexDB: Leistung (ID", id,"gelöscht...")
+				connection.close();
+				callback();
+			}
+		}
+		
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		};
+
+	}
+}
+
+
+// ID aus der aktuellen Klasse lesen (default => Array mit allen)
 function readData(callback, id) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
 		var connection = event.target.result;
 		var objectStore = connection.transaction([klasse]).objectStore(klasse);
-		id = (id == null) ? 0 : parseInt(id);
+		//id = (id == null) ? 0 : parseInt(id);
 		var result = {};
-		if (id) {
+		if (id || id == 0) {
 			var transaction1 = objectStore.get(id)
 			transaction1.onerror = errorHandler;
 			transaction1.onsuccess = function(event){
@@ -346,7 +410,7 @@ function readData(callback, id) {
 }
 
 
-// Objekt (jeder Art) updaten in aktueller Klasse
+// Objekt (mit Tiefe von 0 bis 1) updaten in aktueller Klasse
 function updateData(callback, newObjects) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
@@ -384,6 +448,177 @@ function updateData(callback, newObjects) {
 	}
 }
 
+
+// Schüler-Objekte der Leistungen in aktueller Klasse aktualisieren
+function updateLeistung(callback, art, newObjects) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
+		var transaction = objectStore.openCursor()
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			var id, cursor = event.target.result;
+			if (cursor) {
+				id = cursor.value.id;
+				if (id in newObjects) {
+					toUpdate = cursor.value;
+					// Objekte vereinen
+					if (id == 0) {
+						// Eine Ebene tiefer bei ID 0
+						for (l_id in newObjects[id]){
+							Object.assign(toUpdate.leistungen[art][l_id]['Verteilungen'], newObjects[id][l_id]['Verteilungen']);
+						}
+					}else{
+						toUpdate[art] = Object.assign(toUpdate[art], newObjects[id][art]);
+					}
+					var requestUpdate = cursor.update(toUpdate);
+					requestUpdate.onsuccess = function() {
+						console.log("indexedDB: Leistung geupdated bei ID", id, "...");
+					};
+				}
+				cursor.continue();
+			}else{
+				callback();
+			}
+		}
+
+		connection.close();
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		};
+
+	}
+}
+
+
+// Durchschnitte von Leistungen aktualisieren (default = alles bei allen)
+function updateSchnitt(callback, id) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
+		var transaction = objectStore.openCursor();
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			var ds_art, Student, cursor;
+			var art = ["mndl","fspz","schr"];
+			cursor = event.target.result;
+			if (cursor){
+				if ((!id && cursor.value.id) || (id && id == cursor.value.id)) {					
+					Student = cursor.value;
+					// Durchschnitt aller Bereiche
+					for (var i = 0; i < art.length; i++) {
+						ds_art = "o"+art[i];
+						if (ds_art == "ofspz") {
+							// Spezialfall Fspz und Verrechnung mit Mndl beachten
+							Student.gesamt["ofspz"] = schnitt(Student[art[i]], true);
+							Student.gesamt['omndl'] = schnitt_m_f(Student.gesamt['omndl'], Student.gesamt['ofspz'].Gesamt);						
+						}else{
+							Student.gesamt[ds_art] = schnitt(Student[art[i]], false);
+						}
+					}
+					// Kategorien
+					// -- (calc_KatDS [all.js])
+					// Erst möglich, wenn Rohpunkt-Leistungen implementiert sind
+					// --
+					// Durchschnitt insgesamt
+					if (Student.gesamt['omndl'] && Student.gesamt['schriftlich']){
+						Student.gesamt.rechnerisch = Student.gesamt['omndl']*SETTINGS.gewichtung['mündlich'] + Student.gesamt['oschr']*SETTINGS.gewichtung['schriftlich']
+					}else{
+						Student.gesamt.rechnerisch = 0;
+					}
+					// Speichern
+					var requestUpdate = cursor.update(Student);
+					requestUpdate.onerror = errorHandler;
+					requestUpdate.onsuccess = function() {
+						console.log("indexDB: Durchschnitt ID", Student.id, "updated...")
+					};
+				}
+				cursor.continue();
+			}else{
+				callback();
+			}
+		connection.close();
+		}
+
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		}
+
+	};
+}
+
+
+function updateVerteilung(inputs, Pkt_Verteilung, callback){
+//--> Verteilungen ändern, in DB, (laden der Verteilung als callback) ?
+	// =======
+	//	var alleSchuler = document.getElementById('arbeit_leistung');
+	// =======
+	/*
+	In SessionStorage packen ????
+	if (inputs.length>1) {
+		for (i=0; i<inputs.length;i++){
+			wertArray[i] = parseFloat(inputs[i].value);
+			sessionStorage.setItem(Pkt_Verteilung+'_Kat'+(i+1), wertArray[i]);
+		}
+		sessionStorage.setItem(Pkt_Verteilung+'_Gesamt', sum(wertArray));
+	}
+	*/
+	var i, maxPts, wertArray = [];
+	var art = sessionStorage.getItem('leistung_art');
+	var l_id = sessionStorage.getItem('leistung_id');
+	var newObject = { 0: {}};
+	if (inputs.length>1) {
+		// Kategorien
+		for (i=0; i<inputs.length;i++){
+			wertArray[i] = parseFloat(inputs[i].value);
+		}
+		maxPts = sum(wertArray);
+	}else{
+		// MaxPts
+		wertArray = [0, 0, 0, 0]
+		maxPts = inputs[0].value;
+	}
+	// DB - Object
+	newObject[0][l_id] = {'Verteilungen':{},};
+	newObject[0][l_id]['Verteilungen'][Pkt_Verteilung] = {
+		'Kat1': wertArray[0],
+		'Kat2': wertArray[1],
+		'Kat3': wertArray[2],
+		'Kat4': wertArray[3],
+		'Gesamt': maxPts,
+	}
+	
+	// in DB speichern
+	updateLeistung(function(result){
+		//updateVerteilungHTML(Pkt_Verteilung);
+		void(0);
+
+	// Save in SessionStoreage
+	if (inputs.length>1){
+		for (var i = 0; i < wertArray.length; i++) {
+			sessionStorage.setItem(Pkt_Verteilung+'_Kat'+(i+1), wertArray[i]);
+		}
+		sessionStorage.setItem(Pkt_Verteilung+'_Gesamt', maxPts);
+		//updateVerteilungHTML(Pkt_Verteilung);
+		void(0);
+	}else{
+		sessionStorage.setItem('Standard_Gesamt', maxPts);
+	}
+	
+	// ==== Schülerleistung neuberechnen für ggf. geänderte Verteilung
+	//	updateNoten(alleSchuler, false);
+	// ====
+
+	if (callback != null) {callback(result);}
+	
+	}, art, newObject);
+}
 
 // ===================================================== //
 // == allgemeine Handler =============================== //

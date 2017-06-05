@@ -25,13 +25,14 @@ $(document).ready(function() {
 	if (!isPhone) {
 		window.addEventListener('orientationchange', changeOrientation);
 	}
-	// First Start ?
+	// Not the First Time ?
 	if (localStorage.getItem('TeacherTab')){
 		// DB Support und Init
 		serverIP = localStorage.getItem('serverIP');
 		userID = localStorage.getItem('userID');
 		dbname = userID;
 		knownDevice = true;
+		klasse = sessionStorage.getItem('klasse');
 	}else{
 		// kein DB Init
 		knownDevice = false;
@@ -121,35 +122,10 @@ function Schuljahre() {
 		copyBox.appendChild(opt2);
 }
 
-function calc_Durchschnitt(){
-// --> nach neuer Eintragung die Gesamtnote aller Schüler neu berechnen
-	db.transaction(
-	function(transaction){
-	transaction.executeSql(
-		'SELECT id, oschr, omndl, ofspz, gesamt FROM '+klasse+' WHERE id !=0', [], function(t, results){
-			// schr und mndl und fspz neuberechnen
-			var omndl, oschr, gesamt, rechnerisch, eingetragen;
-			var gew_mndl = SETTINGS.gewichtung["mündlich"];
-			var gew_schr = SETTINGS.gewichtung["schriftlich"];
-			for (var i=0;i<results.rows.length;i++){
-				var id = results.rows.item(i).id;
-				// Gesamtnote mit Gewichtung errechnen :
-				// -- Gewichtung mndl-schr
-				omndl = results.rows.item(i).omndl;
-				oschr = results.rows.item(i).oschr;
-				if (oschr == 0 || omndl == 0){
-					rechnerisch = 0;
-				}else{
-					rechnerisch = omndl*gew_mndl+oschr*gew_schr;
-				}
-				eingetragen = JSON.parse(decodeURIComponent(results.rows.item(i).gesamt)).eingetragen;
-				gesamt = encodeURIComponent(JSON.stringify({"rechnerisch": rechnerisch, "eingetragen": eingetragen}));
-				// DB Update
-				transaction.executeSql('UPDATE '+klasse+' SET gesamt="'+gesamt+'" WHERE id="'+id+'";', [], null, errorHandler);
-			}
-		});
-	}
-	);
+function loadVerteilung(Pkt_Verteilung) {
+//--> Laden einer Verteilung (default="Standard") und updaten der Anzeige
+	if (Pkt_Verteilung == null) {Pkt_Verteilung = "Standard"};
+	return;
 }
 
 function updateVerteilungSession() {
@@ -195,53 +171,6 @@ function updateVerteilungHTML(Pkt_Verteilung){
 	}
 	var gesamt_div = document.getElementById('item2_info_gesamt');
 		gesamt_div.innerHTML = "Gesamt : "+gesamtWert;
-}
-
-function updateVerteilung(inputs, Pkt_Verteilung){
-//--> Verteilungen ändern, WebSQL update und SessionStorage update
-	var i, wertArray = [];
-	var alleSchuler = document.getElementById('arbeit_leistung');
-	if (inputs.length>1) {
-		for (i=0; i<inputs.length;i++){
-			wertArray[i] = parseFloat(inputs[i].value);
-			sessionStorage.setItem(Pkt_Verteilung+'_Kat'+(i+1), wertArray[i]);
-		}
-		sessionStorage.setItem(Pkt_Verteilung+'_Gesamt', sum(wertArray));
-	}
-	db.transaction(
-		function(transaction){
-		var column = sessionStorage.getItem('leistung_column');
-		var l_id = sessionStorage.getItem('leistung_id');
-		transaction.executeSql(
-		'SELECT '+column+' FROM '+klasse+' WHERE id="0";', [], function(t, results){
-			var Leistung = JSON.parse(decodeURIComponent(results.rows.item(0)[column]))[l_id];
-			var obj = JSON.parse(decodeURIComponent(results.rows.item(0)[column]));
-			if (inputs.length>1) {
-				Leistung[Pkt_Verteilung] = {
-					"Kat1" : wertArray[0],
-					"Kat2" : wertArray[1],
-					"Kat3" : wertArray[2],
-					"Kat4" : wertArray[3],
-					"Gesamt" : sum(wertArray),
-				};
-			}else{
-				Leistung[Pkt_Verteilung] = {
-					"Gesamt" : inputs,
-				};
-			}
-			if (Leistung.Verteilungen.indexOf(Pkt_Verteilung)<0){
-				Leistung.Verteilungen.push(Pkt_Verteilung);
-			}
-			obj[l_id] = Leistung;
-			updateDB(column, JSON.stringify(obj), 0);
-		}
-		);
-		}
-	);
-	if (inputs.length>1){
-		updateVerteilungHTML(Pkt_Verteilung);
-	}
-	updateNoten(alleSchuler, false);
 }
 
 function updateNoten(liste, bol_singel) {
@@ -295,7 +224,7 @@ function RohpunkteAlsNote(val, bol_15pkt){
 // ================     Standards     ================ //
 // =================================================== //
 
-function quit (){
+function quit(){
 	if(window.confirm('Änderungen synchronisieren ?')){
 		initSyncSQL();
 	}else{
@@ -320,28 +249,28 @@ function sum(n){
 }
 
 function schnitt(_obj, bol_fspz){
+	// Besonderheiten bei Trennung von Vok und Gra beachten !
+	// (noch nicht implementiert...glaube ich)
 	var i, _row, r = 0;
 	var iAnz = 0;
 	var _Gra = {};
 	var _Vok = {};
 	if (!bol_fspz){
-		for (i=0;i<_obj.alle.length;i++){
-			_row = _obj[_obj.alle[i]];
-			iAnz += _row.Gewichtung;
-			r = r + parseFloat(_row.Note*_row.Gewichtung);
+		if (_obj == {}) {
+			return "";
+		}else{
+			for (_row in _obj){
+				iAnz += _obj[_row].Gewichtung;
+				r = r + parseFloat(_obj[_row].Note*_obj[_row].Gewichtung);
+			}
+			return Math.round((r/iAnz)*100)/100 || "";
 		}
-		return Math.round((r/iAnz)*100)/100 || "";
 	}else{
-		_Gra.alle = [];
-		_Vok.alle = [];
-		for (i=0;i<_obj.alle.length;i++){
-			// Array mit je Vok und Gra erstellen
-			if (_obj[_obj.alle[i]].Bezeichnung == "Grammatik"){
-				_Gra.alle.push(_obj.alle[i]);
-				_Gra[_obj.alle[i]] = _obj[_obj.alle[i]];
-			}else if (_obj[_obj.alle[i]].Bezeichnung == "Vokabeln"){
-				_Vok.alle.push(_obj.alle[i]);
-				_Vok[_obj.alle[i]] = _obj[_obj.alle[i]];
+		for (_row in _obj){
+			if (_obj[_row].Bezeichnung == "Grammatik"){
+				_Gra[_row] = _obj[_row];
+			}else if (_obj[_row].Bezeichnung == "Vokabeln"){
+				_Vok[_row] = _obj[_row];
 			}
 		}
 		return {Vokabeln:schnitt(_Vok)||"", Grammatik:schnitt(_Gra)||"", Gesamt:schnitt(_obj)};
@@ -349,6 +278,7 @@ function schnitt(_obj, bol_fspz){
 }
 
 function schnitt_m_f(omndl, ofspz){
+// Schnitt zwischen oMndl und Fspz wird noch nicht berechnet
 	var gew_fspz = SETTINGS.gewichtung["davon fachspezifisch"];
 	var gew_mndl0 = 1.0 - gew_fspz;
 	if (ofspz > 0 && omndl > 0){
@@ -413,7 +343,7 @@ function datum(){
 
 function goBack(){
 	readDB_tables(listIdx_Select,"");
-	slide2('uebersicht0_In', 'item0');
+	slide('uebersicht0_In', 'item0');
 	noTouchSlider();
 }
 
@@ -430,7 +360,7 @@ function itemAbort(names, target_site) {
 	},400);
 }
 
-function slide2(event) {
+function slide(event) {
 	scroll(0,0);
 	var addBtn = document.getElementById('btn_Add');
 	var i, slideElements = document.getElementsByClassName('uebersicht');
@@ -448,7 +378,7 @@ function slide2(event) {
 	sessionStorage.setItem('lastview', slideIndex);
 }
 
-function slide3(slideName){
+function slide2(slideName){
 // Nur für die Übersichten
 	scroll(0,0);
 	var addBtn = document.getElementById('btn_Add');
@@ -472,7 +402,7 @@ function popUp(popWindow){
 	window.addEventListener('keydown', keyFunctions);
 }
 
-function keyFunctions(e){
+function keyFunctions(event){
 	if (event.keyCode == 27){
 		var popUp = document.querySelector('.showPop .close a');
 		popUpClose(popUp, false);
@@ -528,72 +458,13 @@ function popUpClose(thisElement, bol_refresh){
 function readSettings(callback){
 	klasse = sessionStorage.getItem('klasse');
 	readData(function(results){
-		SETTINGS = results[0];
-
-		/* obsolet
-		sessionStorage.setItem('set_fspzDiff', settings.fspzDiff);
-		sessionStorage.setItem("set_studSort", settings.studSort);
-		sessionStorage.setItem("set_showVorjahr", settings.showVorjahr);
-		sessionStorage.setItem('gew_mndl', settings.gewichtung["mündlich"]);
-		sessionStorage.setItem('gew_fspz', settings.gewichtung["davon fachspezifisch"]);
-		sessionStorage.setItem('gew_schr', settings.gewichtung["schriftlich"]);
-		*/
-
+		SETTINGS = results;
+		delete SETTINGS.leistungen;
 		console.log("Settings geladen");
 		callback();
-
 		}, 0);
 }
 
-function renameTable(oldname, newname){
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		'ALTER TABLE '+oldname+' RENAME TO '+newname+';', [], function(t, results){
-			console.log(oldname, "heisst jetzt:", newname);
-			});
-		}
-	);
-}
-
-function readDB(callback, bol_id, option) {
-	if (!option){ option = ["*"] }
-	if (!bol_id){ bol_id = " WHERE id !=0 " }else{bol_id=" "}
-	var order = (SETTINGS.set_studSort) ? "sex ," : ""
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		'SELECT '+option[0]+' FROM '+klasse+' '+bol_id+' ORDER BY '+order+'nName', [], function(t, results){
-			callback(results, option);
-			});
-		}
-	);
-}
-
-function readDB_id(callback, id, option, vars) {
-	if (!option){ option = "*" }
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		'SELECT '+option+' FROM '+klasse+' WHERE id='+id+';', [], function(t, results){
-			callback(results, id, vars);
-			return true;
-		});
-		}
-	);
-	return true;
-}
-
-function readDB_tables(callback, option) {
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		'SELECT * FROM sqlite_master WHERE type="table" ORDER BY name', [], function(t, results){
-			callback(results, option);
-			});
-		}
-	);
-}
 
 function import_Column(from_column, from_klasse, to_column) {
 	var sql_statement = 'UPDATE '+klasse+' SET '+to_column+'=(SELECT '+from_column+' FROM '+from_klasse+' WHERE '+from_klasse+'.nName = '+klasse+'.nName AND '+from_klasse+'.vName = '+klasse+'.vName) WHERE id != 0';
@@ -606,21 +477,6 @@ function import_Column(from_column, from_klasse, to_column) {
 }
 
 
-function createRow(vName, nName){
-	var now = Math.round(new Date().getTime() / 1000);
-	// Leere Objekte (mndl, schr, fspz)
-	var mndl, schr, fspz, omndl, ofspz, oschr, gesamt;
-	gesamt = encodeURIComponent(JSON.stringify({'rechnerisch':0, 'eingetragen': "-"}));
-	mndl = schr = fspz = encodeURIComponent(JSON.stringify({'alle':[],}));
-	omndl = oschr = 0;
-	ofspz = encodeURIComponent(JSON.stringify({'Gesamt':0, 'Vokabeln':0, 'Grammatik':0}));
-	db.transaction(
-		function(transaction){
-		transaction.executeSql('INSERT INTO '+klasse+'(vName, nName, mndl, fspz, schr, omndl, ofspz, oschr, gesamt, changed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [vName, nName, mndl, schr, fspz, omndl, ofspz, oschr, gesamt, now], null, errorHandler);
-		});
-	return true;
-}
-
 function checkColumn(col, type) {
 	type = type || "TEXT";
 	var ergebnis;
@@ -628,29 +484,6 @@ function checkColumn(col, type) {
 		function(transaction){
 		transaction.executeSql('SELECT '+col+' FROM '+klasse+'', [], null, function(){createColumn(col, type)});
 	});
-}
-
-function createColumn(col, typ){
-	db.transaction(
-			function(transaction){
-			transaction.executeSql('ALTER TABLE '+klasse+' ADD COLUMN '+col+' '+typ+'', [], function(){console.log(col+' created')}, errorHandler);
-			});
-}
-
-function dropDB(selKlasse){	// Klasse löschen
-		db.transaction(
-		function(transaction){
-		transaction.executeSql('DROP TABLE '+selKlasse+'',null, null);
-		});
-}
-
-function successHandler(t, r){
-	console.log('>> DB : ...durchgeführt! - Affected:', r.rowsAffected);
-}
-
-function errorHandler(transaction, error){
-	console.log('>> DB : F A I L !!!');
-	console.log(error);
 }
 
 // ==============================================================

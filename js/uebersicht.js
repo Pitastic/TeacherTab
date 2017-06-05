@@ -1,8 +1,9 @@
 $(document).ready(function() {
 	// Funktionen, die auf global SETTINGS warten müssen
 	readSettings(function(){
-		// calc DB-Werte
-//		calc_Durchschnitt();
+		// DEV: ist eventuell an dieser Stelle überflüssig geworden.
+		// Durchschnitte werden nach jeder Eintragung errechnet und gespeichert
+		//		calc_Durchschnitt();
 		// List first View
 		readData(listStudents);
 		readData(listLeistung);
@@ -15,7 +16,7 @@ $(document).ready(function() {
 	touchListener()
 	// Hide Scrollbars
 	setTimeout(function(){
-		slide3(sessionStorage.getItem('lastview'));
+		slide2(sessionStorage.getItem('lastview'));
 		// Touch-Friendly-Buttons
 		var target_el = document.getElementById('seitenleiste');
 		noTouchThisSlider(target_el);
@@ -28,14 +29,6 @@ $(document).ready(function() {
 	}
 	if (isPhone){change_buttons(buttons)}
 });
-
-// ===================================================== //
-// ============ DEV Notizen ============================ //
-// ===================================================== //
-/*
-> calc_Durchschnitt()
-> calc_KatDS()
-*/
 
 
 // ===================================================== //
@@ -55,10 +48,10 @@ function listStudents(results, option) {
 		oschr = row.oschr;
 		r = document.createElement('li');
 		r.setAttribute('data-rowid', row.id);
-			if (row.name.sex && row.name.sex !== "-" && row.name.sex !== "null"){
+			if (row.sort && row.sort !== "-" && row.sort !== "null"){
 				c = document.createElement('div');
 					c.className = "s_flag";
-					c.innerHTML = row.sex;
+					c.innerHTML = row.sort;
 					r.appendChild(c);
 			}
 			c = document.createElement('div');
@@ -171,7 +164,7 @@ function listLeistung(results){
 			var id_Leistung = this.getAttribute('data-l_id');
 			if (id_Leistung) {
 				sessionStorage.setItem('leistung_id', this.getAttribute('data-l_id'));
-				sessionStorage.setItem('leistung_column', this.getAttribute('data-l_column'));
+				sessionStorage.setItem('leistung_art', this.getAttribute('data-l_column'));
 				itemAbort(['item2'],'details_leistungen.htm');
 			}else{
 				alert("Keine Leistung vorhanden.\nKlick auf den Button 'Hinzufügen' um eine hinzuzufügen");
@@ -209,20 +202,23 @@ function massenAdd(el){
 		alert("Du hast vergessen ein Trennzeichen (ggf. mit Leerzeichen) anzugeben !");
 		return false;
 	}
-	var i, a = []; var b = [];
-	a = textblock.value.split(trennZeile);
-	for (i in a){
-		b.push(a[i].split(trennNamen));
+	var i, zeilen = []; var namen = []; var vnn;
+	zeilen = textblock.value.split(trennZeile);
+	for (zeile in zeilen){
+		vnn = zeilen[zeile].split(trennNamen);
+		namen.push([vnn[0].trim(),vnn[1].trim()]);
 	}
-	for (i=0;i<b.length;i++){
-		createRow(b[i][1].trim(),b[i][0].trim(),"-");
-	}
-	setTimeout(function() {
-		textblock.value = "";
-	}, 500);
-	readDB(listStudents, false);
 
-	popUpClose(el);
+
+console.log(namen)
+	neuerStudent(namen, function(){
+		setTimeout(function() {
+			popUpClose(el);
+			readData(listStudents);
+		}, 500);
+		textblock.value = "";
+	});
+
 	return true;
 }
 
@@ -246,19 +242,20 @@ function addLeistung(thisElement){
 		'Eintragung' : nEintragung.value,
 		'DS' : undefined,
 		'Gewichtung' : nGewicht,
-		'Verteilungen' : ['Standard',],
-		'Standard' : {
-			'Kat1' : 0,
-			'Kat2' : 0,
-			'Kat3' : 0,
-			'Kat4' : 0,
-			'Gesamt' : 0,},
+		'Verteilungen' : {
+			'Standard' : {
+				'Kat1' : 0,
+				'Kat2' : 0,
+				'Kat3' : 0,
+				'Kat4' : 0,
+				'Gesamt' : 0,
+			},
+		},
 		'Schreiber' : {
 			'Bester' : undefined,
 			'Schlechtester' : undefined,
 			'nMitschr' : undefined,},
 	};
-	console.log(Leistung);
 	// Leistung in id=0 dict einfügen
 	neueLeistung(function() {
 		// Reset popUp
