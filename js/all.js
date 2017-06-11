@@ -154,25 +154,6 @@ function updateVerteilungSession() {
 	});
 }
 
-function updateVerteilungHTML(Pkt_Verteilung){
-//--> Update der Anzeige anhand von SessionStorage-Daten
-	var i;
-	var werteBox = document.getElementById('item2_info_Verteilung');
-	// Balken Grafik ---
-	var balken = werteBox.getElementsByClassName('balken');
-	var gesamtWert = sessionStorage.getItem(Pkt_Verteilung+'_Gesamt');
-	for ( i=0 ; i<balken.length; i++){
-		var katWert = sessionStorage.getItem(Pkt_Verteilung+'_Kat'+(i+1));
-		var schiene_span = balken[i].parentNode.getElementsByTagName('span')[0];
-		var kat_span = document.getElementById('item2_info_Kat'+(i+1));
-			kat_span.innerHTML = katWert;
-		balken[i].style.width = ((katWert/gesamtWert)*100).toFixed(0) +"%";
-		schiene_span.innerHTML = ((katWert/gesamtWert)*100).toFixed(1) +" %";
-	}
-	var gesamt_div = document.getElementById('item2_info_gesamt');
-		gesamt_div.innerHTML = "Gesamt : "+gesamtWert;
-}
-
 function updateNoten(liste, bol_singel) {
 //--> Punkte in Prozentwerte umrechnen und als Note eintragen
 	var i, gesamtWert, erreicht, note, span;

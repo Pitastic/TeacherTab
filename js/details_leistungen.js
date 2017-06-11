@@ -218,7 +218,12 @@ function leistungsDetails_punkte(art, Leistung){
 		var btn_numfield = document.createElement('a');
 			btn_numfield.className = "button OK";
 			btn_numfield.innerHTML = "100 %";
-			btn_numfield.onclick = function(){editNotenListe(numfield.value, true); numfield_li.className = "inputs saved"};
+			btn_numfield.onclick = function(){
+				updateVerteilung([numfield], "Standard", function(r){
+					editNotenListe(numfield.value, true);
+					numfield_li.className = "inputs saved"
+				})
+			};
 		keyboardMax.appendChild(btn_numfield);
 	keyboard.appendChild(keyboardMax);
 	var selKeys = keyboard.getElementsByTagName('select')[0];
@@ -434,12 +439,12 @@ function leistungsDetails_rohpunkte(art, Leistung){
 	oldInfo_select.parentNode.replaceChild(cloneInfo, oldInfo_select);
 	// - - - - - - - - - - - - - - - -
 	
-	// Verteilungen -- anzeigen und ändern <<<<<<<<<<<<<<<<<<<<<<<<<<<< ------------------ Ausgelassen
+	// Verteilungen -- anzeigen und ändern
 	var popVertOK = popVert.getElementsByClassName("button")[1];
 	var popVertNeu = popVert.getElementsByClassName("button")[0];
 	popVertOK.onclick = function(){
 		var Pkt_Verteilung = cloneVert.value;
-		updateVerteilung(inputs, Pkt_Verteilung);
+		updateVerteilung(inputs, Pkt_Verteilung, updateVerteilungHTML);
 		popUpClose(this,0);
 		};
 	popVertNeu.onclick = function(){
@@ -447,11 +452,10 @@ function leistungsDetails_rohpunkte(art, Leistung){
 		updateVerteilung(inputs, Pkt_Verteilung.value, function(r){item2Save(true, Leistung.Bezeichnung, true);});
 		popUpClose(this,0);
 	};
-	//updateVerteilungSession();
    
 	// - - - Schülerdaten - - -
 	readData(function(results){
-		var i, i2, row, li, div, span, gruppe, eigeneLeistung;
+		var i, i2, row, li, div, span, gruppe, eigeneLeistung, i2Kat;
 		var l_id = sessionStorage.getItem('leistung_id');
 		var old = document.getElementById("arbeit_leistung");
 		var new_el = old.cloneNode(true);
@@ -482,13 +486,14 @@ function leistungsDetails_rohpunkte(art, Leistung){
 			li.appendChild(div);
 			// Kategorien
 			li.setAttribute('data-verteilung', eigeneLeistung.Verteilung);
-			for (i2 of Object.keys(SETTINGS.kompetenzen)){
-				if (i2=="Gesamt") {continue;}
+			for (i2 of [1, 2, 3, 4, "Gesamt"]){
+			//for (i2 of Object.keys(SETTINGS.kompetenzen)){
 				div = document.createElement('div');
 				div.className = "Kategorien";
 				span = document.createElement('span');
 				span.innerHTML = eigeneLeistung[i2];
-				span.setAttribute('data-name', "Kat"+i2);
+				i2Kat = (i2 == "Gesamt") ? i2 : "Kat"+i2;
+				span.setAttribute('data-name', i2Kat);
 				div.appendChild(span);
 				span = document.createElement('span');
 				span.innerHTML = SETTINGS.kompetenzen[i2];
@@ -524,7 +529,7 @@ function leistungsDetails_rohpunkte(art, Leistung){
 		}
 		// > Block einfügen
 		new_el.appendChild(ul);
-		// updateNoten(new_el, false);
+		updateVerteilungHTML();
 		old.parentNode.replaceChild(new_el, old);
 		// - - - - - - - - - - - - - - - -
 		var popEdit = pop.getElementsByTagName('ul')[0].getElementsByTagName('input');
@@ -547,7 +552,7 @@ function leistungsDetails_rohpunkte(art, Leistung){
 
 // Sonstiges
 // =============================================================================
-function editNotenListe(maxPts, changed){
+function editNotenListe(maxPts){
 //--> Ersetzt die Notenliste mit möglichen Punktzahlen in 0,5 Schritten
 	var opt, Liste = document.getElementById('NotenListe_Arbeit').getElementsByTagName('select')[0];
 	Liste.innerHTML = "";
@@ -560,30 +565,30 @@ function editNotenListe(maxPts, changed){
 		opt = new Option(i);
 		Liste.appendChild(opt);
 	}
-	// in SessionStoreage speichern
-	sessionStorage.setItem('Standard_Gesamt', maxPts);
-	if (changed) {	
-		// DB - Object
-		var art = sessionStorage.getItem('leistung_art');
-		var l_id = sessionStorage.getItem('leistung_id');
-		var newObject = { 0: {}};
-		newObject[0][l_id] = {
-			'Verteilungen':{
-				'Standard': {
-					'Kat1': 0,
-					'Kat2': 0,
-					'Kat3': 0,
-					'Kat4': 0,
-					'Gesamt': maxPts,
-				},
-			},
-		};
-		// in DB speichern
-		updateLeistung(function(){void(0)}, art, newObject);
-	}
 	return true;
 }
 
+function updateVerteilungHTML(){
+//--> Update der Anzeige anhand von SessionStorage-Daten
+	var i;
+	var werteBox = document.getElementById('item2_info_Verteilung');
+	var Pkt_Verteilung = werteBox.getElementsByTagName("select")[0].value;
+	// Balken Grafik ---
+	var balken = werteBox.getElementsByClassName('balken');
+	var gesamtWert = sessionStorage.getItem(Pkt_Verteilung+'_Gesamt') || 0;
+	for ( i=0 ; i<balken.length; i++){
+		var katWert = sessionStorage.getItem(Pkt_Verteilung+'_Kat'+(i+1)) || "?";
+		var schiene_span = balken[i].parentNode.getElementsByTagName('span')[0];
+		var kat_span = document.getElementById('item2_info_Kat'+(i+1));
+			kat_span.innerHTML = katWert;
+		if (katWert != "?") {
+			balken[i].style.width = ((katWert/gesamtWert)*100).toFixed(0) +"%";
+			schiene_span.innerHTML = ((katWert/gesamtWert)*100).toFixed(1) +" %";
+		}
+	}
+	var gesamt_div = document.getElementById('item2_info_gesamt');
+		gesamt_div.innerHTML = "Gesamt : "+gesamtWert;
+}
 
 function NotenListe(bol_alternativ){
 //--> Ändert die ausgewählte Zeile onChange mit dem Select Menü
@@ -615,6 +620,7 @@ function editLeistungsDetails(thisElement, uebersicht){
 	var gesamt = 0;
 	var pop = thisElement.parentNode.parentNode;
 	var inputs = pop.getElementsByTagName('ul')[0].getElementsByTagName('input');
+	console.log(inputs);
 	var selectBox = pop.getElementsByTagName('select')[0];
 	for (i=0; i<inputs.length; i++){
 		pkt = (parseFloat(inputs[i].value)) ? parseFloat(inputs[i].value) : 0 ;
@@ -624,8 +630,10 @@ function editLeistungsDetails(thisElement, uebersicht){
 	punkteObj.Gesamt = gesamt;
 	// Neu zeichnen nur der einen Zeile !
 	var line = document.getElementById('item2details').querySelector("[data-rowid="+pop.getAttribute('data-rowid')+"]");
+	console.log(punkteObj);
 	for (i in punkteObj){
-		line.querySelector('[data-name='+i+']').innerHTML = punkteObj[i];
+		console.log(i, punkteObj[i]);
+		line.querySelector('[data-name="'+i+'"]').innerHTML = punkteObj[i];
 	}
 	line.setAttribute('data-verteilung', selectBox.value);
 	line.setAttribute('data-mitschreiber', document.getElementById('mitschreiberTrue').checked);
@@ -633,6 +641,10 @@ function editLeistungsDetails(thisElement, uebersicht){
 	popUpClose(thisElement, false);
 	updateNoten(line, true);
 	calc_Stats(true);
+
+	// --
+	// Hier eventuell gleich in die DB speichern ?
+	// --
 }
 
 // >>>>>>>> Speichern und Verlassen
@@ -685,7 +697,7 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 			if (bol_refresh){
 				setTimeout(function() {
 					window.location.reload();
-				}, 2000);
+				}, 500);
 			}else{
 				setTimeout(function() {
 					if (sessionStorage.getItem('jump_id')) {
@@ -694,7 +706,7 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 					}else{
 						window.location = "uebersicht.htm";
 					}
-				}, 2000);
+				}, 500);
 			}
 		})
 
