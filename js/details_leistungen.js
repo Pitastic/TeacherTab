@@ -4,31 +4,27 @@ $(document).ready(function() {
 	touchListener(['header', 'footer', 'fadeBlack', 'KeyBar'])
 
 	var pop = document.getElementById('item2Set');
-	pop.getElementsByClassName('button OK')[0].addEventListener('click', function(){
 
-		/* --- angefangen (Verteilungsedit)
+	// -- Leistung editieren (Metadaten)
+	pop.getElementsByClassName('button OK')[0].addEventListener('click', function(){
+		var id_Leistung = sessionStorage.getItem('leistung_id');
 		var art = sessionStorage.getItem('leistung_art');
-		var id = sessionStorage.getItem('leistung_id');
-		// --
-		db.transaction(
-			function(transaction){
-			transaction.executeSql(
-			'SELECT mndl, fspz, schr FROM '+klasse+' WHERE id="0";', [], function(t, results){
-				var id_Leistung = sessionStorage.getItem('leistung_id');
-				var column = sessionStorage.getItem('leistung_art');
-				var Leistung = JSON.parse(decodeURIComponent(results.rows.item(0)[column]));
-				Leistung[id_Leistung].Datum = leistungEdit.notenDatum.value;
-				Leistung[id_Leistung].Bezeichnung = leistungEdit.notenBezeichnung.value;
-				Leistung[id_Leistung].Gewichtung = leistungEdit.rangeWert.value;
-				updateDB(column, JSON.stringify(Leistung), 0);
-			});
-			});
-		*/
-		pop.classList.remove('showPop');
-		setTimeout(function() {
-			window.location.reload();
-		}, 500);
+		// neues Objekt aufbauen (lange Kette wegen JS ObjectHandling notwendig)
+		var neueLeistung = {0:{}};
+		neueLeistung[0][id_Leistung] = {
+			'Datum' : leistungEdit.notenDatum.value,
+			'Bezeichnung' : leistungEdit.notenBezeichnung.value,
+			'Gewichtung' : leistungEdit.rangeWert.value,
+		};
+		updateLeistung(function(){
+			pop.classList.remove('showPop');
+			setTimeout(function() {
+				window.location.reload();
+			}, 500);
+		}, art, neueLeistung);
 	});
+
+	// -- Leistung löschen
 	pop.getElementsByClassName('button ABORT')[0].addEventListener('click', function(){
 		var id_Leistung = sessionStorage.getItem('leistung_id');
 		var art_Leistung = sessionStorage.getItem('leistung_art');
@@ -51,6 +47,7 @@ $(document).ready(function() {
 	});
 });
 
+
 // Listings
 // =============================================================================
 // >>>>>>>> Routing - Art der Eintragung filtern
@@ -61,6 +58,7 @@ function leistungsDetails(art, id_Leistung){
 		var Leistung = results.leistungen[art][id_Leistung];
 		sessionStorage.setItem('leistung_gewicht', Leistung.Gewichtung || 1);
 		sessionStorage.setItem('Eintragung', Leistung.Eintragung);
+		
 		// - Edit Pop
 		var editLeistung = document.getElementById("leistungEdit");
 		editLeistung.notenBezeichnung.value = Leistung.Bezeichnung;
@@ -72,6 +70,16 @@ function leistungsDetails(art, id_Leistung){
 		// - Laden der eigentlichen Leistung
 		switch (Leistung.Eintragung) {
 			case "Rohpunkte":
+				// -- Verteilungen
+				var wertArray;
+				for (var v in Leistung.Verteilungen) {
+					wertArray = [];
+					wertArray.push(Leistung.Verteilungen[v].Kat1);
+					wertArray.push(Leistung.Verteilungen[v].Kat2);
+					wertArray.push(Leistung.Verteilungen[v].Kat3);
+					wertArray.push(Leistung.Verteilungen[v].Kat4);
+					verteilungToSession(v, wertArray, false)
+				}
 				leistungsDetails_rohpunkte(art, Leistung, katObj);
 				break;
 			case "Noten":
@@ -487,12 +495,11 @@ function leistungsDetails_rohpunkte(art, Leistung){
 			// Kategorien
 			li.setAttribute('data-verteilung', eigeneLeistung.Verteilung);
 			for (i2 of [1, 2, 3, 4, "Gesamt"]){
-			//for (i2 of Object.keys(SETTINGS.kompetenzen)){
+				i2Kat = (i2 == "Gesamt") ? i2 : "Kat"+i2;
 				div = document.createElement('div');
 				div.className = "Kategorien";
 				span = document.createElement('span');
-				span.innerHTML = eigeneLeistung[i2];
-				i2Kat = (i2 == "Gesamt") ? i2 : "Kat"+i2;
+				span.innerHTML = eigeneLeistung[i2Kat];
 				span.setAttribute('data-name', i2Kat);
 				div.appendChild(span);
 				span = document.createElement('span');
@@ -541,12 +548,14 @@ function leistungsDetails_rohpunkte(art, Leistung){
 	});
 	target_el.classList.add('show');
 	setTimeout(function(){
+		// Schülerleistung berechnen
+		var alleSchuler = document.getElementById('arbeit_leistung');
+		updateNoten(alleSchuler, false);
 		infoEl.classList.add('show');
-			calc_Stats(true);
-		},250);
-	setTimeout(function() {
-		calc_Stats(true);
-	}, 1000);
+			setTimeout(function() {
+				calc_Stats(true);
+			}, 1000);
+		},100);
 }
 
 
@@ -566,6 +575,60 @@ function editNotenListe(maxPts){
 		Liste.appendChild(opt);
 	}
 	return true;
+}
+
+function verteilungToSession(Pkt_Verteilung, wertArray, bol_single) {
+	// Save
+	if (bol_single){
+		sessionStorage.setItem('Standard_Gesamt', wertArray);
+	}else{
+		for (var i = 0; i < wertArray.length; i++) {
+			sessionStorage.setItem(Pkt_Verteilung+'_Kat'+(i+1), wertArray[i]);
+		}
+		sessionStorage.setItem(Pkt_Verteilung+'_Gesamt', sum(wertArray));
+	}
+}
+
+function updateVerteilung(inputs, Pkt_Verteilung, callback){
+//--> Verteilungen ändern, in DB, (laden der Verteilung als callback) ?
+	var i, maxPts, wertArray = [];
+	var art = sessionStorage.getItem('leistung_art');
+	var l_id = sessionStorage.getItem('leistung_id');
+	var newObject = { 0: {}};
+	if (inputs.length>1) {
+		// Kategorien
+		for (i=0; i<inputs.length;i++){
+			wertArray[i] = parseFloat(inputs[i].value);
+		}
+		maxPts = sum(wertArray);
+	}else{
+		// MaxPts
+		wertArray = [0, 0, 0, 0]
+		maxPts = inputs[0].value;
+	}
+	// DB - Object
+	newObject[0][l_id] = {'Verteilungen':{},};
+	newObject[0][l_id]['Verteilungen'][Pkt_Verteilung] = {
+		'Kat1': wertArray[0],
+		'Kat2': wertArray[1],
+		'Kat3': wertArray[2],
+		'Kat4': wertArray[3],
+		'Gesamt': maxPts,
+	}
+	
+	// in DB speichern
+	updateLeistung(function(result){
+
+		// Save in SessionStoreage
+		if (inputs.length==1) {
+			verteilungToSession(Pkt_Verteilung, maxPts, true);
+		}else{
+			verteilungToSession(Pkt_Verteilung, wertArray, false);
+		}
+
+		if (callback != null) {callback(result);}
+	
+	}, art, newObject);
 }
 
 function updateVerteilungHTML(){
@@ -620,7 +683,6 @@ function editLeistungsDetails(thisElement, uebersicht){
 	var gesamt = 0;
 	var pop = thisElement.parentNode.parentNode;
 	var inputs = pop.getElementsByTagName('ul')[0].getElementsByTagName('input');
-	console.log(inputs);
 	var selectBox = pop.getElementsByTagName('select')[0];
 	for (i=0; i<inputs.length; i++){
 		pkt = (parseFloat(inputs[i].value)) ? parseFloat(inputs[i].value) : 0 ;
@@ -630,9 +692,7 @@ function editLeistungsDetails(thisElement, uebersicht){
 	punkteObj.Gesamt = gesamt;
 	// Neu zeichnen nur der einen Zeile !
 	var line = document.getElementById('item2details').querySelector("[data-rowid="+pop.getAttribute('data-rowid')+"]");
-	console.log(punkteObj);
 	for (i in punkteObj){
-		console.log(i, punkteObj[i]);
 		line.querySelector('[data-name="'+i+'"]').innerHTML = punkteObj[i];
 	}
 	line.setAttribute('data-verteilung', selectBox.value);

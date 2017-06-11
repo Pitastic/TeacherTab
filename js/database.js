@@ -468,7 +468,12 @@ function updateLeistung(callback, art, newObjects) {
 					if (id == 0) {
 						// Eine Ebene tiefer bei ID 0
 						for (l_id in newObjects[id]){
-							Object.assign(toUpdate.leistungen[art][l_id]['Verteilungen'], newObjects[id][l_id]['Verteilungen']);
+							if (newObjects[id][l_id].hasOwnProperty("Verteilungen")) {
+								// noch tiefer bei Verteilungen
+								Object.assign(toUpdate.leistungen[art][l_id]['Verteilungen'], newObjects[id][l_id]['Verteilungen']);
+							}else{
+								Object.assign(toUpdate.leistungen[art][l_id], newObjects[id][l_id]);
+							}
 						}
 					}else{
 						toUpdate[art] = Object.assign(toUpdate[art], newObjects[id][art]);
@@ -551,73 +556,6 @@ function updateSchnitt(callback, id) {
 		}
 
 	};
-}
-
-
-function updateVerteilung(inputs, Pkt_Verteilung, callback){
-//--> Verteilungen ändern, in DB, (laden der Verteilung als callback) ?
-	// =======
-	//	var alleSchuler = document.getElementById('arbeit_leistung');
-	// =======
-	/*
-	In SessionStorage packen ????
-	if (inputs.length>1) {
-		for (i=0; i<inputs.length;i++){
-			wertArray[i] = parseFloat(inputs[i].value);
-			sessionStorage.setItem(Pkt_Verteilung+'_Kat'+(i+1), wertArray[i]);
-		}
-		sessionStorage.setItem(Pkt_Verteilung+'_Gesamt', sum(wertArray));
-	}
-	*/
-	var i, maxPts, wertArray = [];
-	var art = sessionStorage.getItem('leistung_art');
-	var l_id = sessionStorage.getItem('leistung_id');
-	var newObject = { 0: {}};
-	if (inputs.length>1) {
-		// Kategorien
-		for (i=0; i<inputs.length;i++){
-			wertArray[i] = parseFloat(inputs[i].value);
-		}
-		maxPts = sum(wertArray);
-	}else{
-		// MaxPts
-		wertArray = [0, 0, 0, 0]
-		maxPts = inputs[0].value;
-	}
-	// DB - Object
-	newObject[0][l_id] = {'Verteilungen':{},};
-	newObject[0][l_id]['Verteilungen'][Pkt_Verteilung] = {
-		'Kat1': wertArray[0],
-		'Kat2': wertArray[1],
-		'Kat3': wertArray[2],
-		'Kat4': wertArray[3],
-		'Gesamt': maxPts,
-	}
-	
-	// in DB speichern
-	updateLeistung(function(result){
-		//updateVerteilungHTML(Pkt_Verteilung);
-		void(0);
-
-	// Save in SessionStoreage
-	if (inputs.length>1){
-		for (var i = 0; i < wertArray.length; i++) {
-			sessionStorage.setItem(Pkt_Verteilung+'_Kat'+(i+1), wertArray[i]);
-		}
-		sessionStorage.setItem(Pkt_Verteilung+'_Gesamt', maxPts);
-		//updateVerteilungHTML(Pkt_Verteilung);
-		void(0);
-	}else{
-		sessionStorage.setItem('Standard_Gesamt', maxPts);
-	}
-	
-	// ==== Schülerleistung neuberechnen für ggf. geänderte Verteilung
-	//	updateNoten(alleSchuler, false);
-	// ====
-
-	if (callback != null) {callback(result);}
-	
-	}, art, newObject);
 }
 
 // ===================================================== //
