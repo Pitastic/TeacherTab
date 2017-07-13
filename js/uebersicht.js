@@ -1,9 +1,6 @@
 $(document).ready(function() {
 	// Funktionen, die auf global SETTINGS warten müssen
 	readSettings(function(){
-		// DEV: ist eventuell an dieser Stelle überflüssig geworden.
-		// Durchschnitte werden nach jeder Eintragung errechnet und gespeichert
-		//		calc_Durchschnitt();
 		// List first View
 		readData(listStudents);
 		readData(listLeistung);
@@ -44,14 +41,14 @@ function listStudents(results, option) {
 		if (i==0) {continue;}
 		row = results[i];
 		omndl = row.gesamt.omndl;
-		ofspz = row.gesamt.ofspz.gesamt;
-		oschr = row.oschr;
+		ofspz = row.gesamt.ofspz.Gesamt;
+		oschr = row.gesamt.oschr;
 		r = document.createElement('li');
 		r.setAttribute('data-rowid', row.id);
-			if (row.sort && row.sort !== "-" && row.sort !== "null"){
+			if (row.name.sex && row.name.sex !== "-" && row.name.sex !== "null"){
 				c = document.createElement('div');
 					c.className = "s_flag";
-					c.innerHTML = row.sort;
+					c.innerHTML = row.name.sex;
 					r.appendChild(c);
 			}
 			c = document.createElement('div');
@@ -87,7 +84,6 @@ function listStudents(results, option) {
 				c.innerHTML = "&gt;";
 				r.appendChild(c);
 		ul.appendChild(r);
-		//calc_KatDs(row.id);
 	}
 	old.parentNode.replaceChild(ul,old);
 	var tr = ul.getElementsByTagName('li');
@@ -259,7 +255,9 @@ function addLeistung(thisElement){
 	// Leistung in id=0 dict einfügen
 	neueLeistung(function() {
 		// Reset popUp
-		nBezeichnung.value = '';
+		if (!SETTINGS.fspzDiff || nArt != "fspz") {
+			nBezeichnung.value = '';
+		}
 		setTimeout(function() {
 			popUpClose(thisElement, true)
 		}, 150);

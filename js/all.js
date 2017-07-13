@@ -82,24 +82,6 @@ function changeOrientation(){
 		}
 }
 
-function createTest (newKlasse) {
-	var now = Math.round(new Date().getTime() / 1000);
-	// Leere Objekte (mndl, schr, fspz)
-	var mndl, schr, fspz;
-	mndl = schr = fspz = encodeURIComponent(JSON.stringify([]));
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		'CREATE TABLE IF NOT EXISTS '+newKlasse+'(id INTEGER PRIMARY KEY AUTOINCREMENT, vName TEXT, nName TEXT, sex TEXT, mndl TEXT, fspz TEXT, schr TEXT, omndl TEXT, oschr TEXT, gesamt TEXT, Kompetenzen TEXT, changed INTEGER);', [], null, errorHandler);
-		transaction.executeSql(
-		'INSERT OR IGNORE INTO '+newKlasse+'(id, mndl, fspz, schr, changed) VALUES (?, ?, ?, ?, ?)', [0, mndl, fspz, schr, now], null, errorHandler);
-		transaction.executeSql(
-		'INSERT OR IGNORE INTO '+newKlasse+'(nName, vName, mndl, fspz, schr, changed) VALUES (?, ?, ?, ?, ?, ?)', ["Humberg", "Cornelia", mndl, fspz, schr, now], null, errorHandler);
-		transaction.executeSql(
-		'INSERT OR IGNORE INTO '+newKlasse+'(nName, vName, mndl, fspz, schr, changed) VALUES (?, ?, ?, ?, ?, ?)', ["Prior", "Michael", mndl, fspz, schr, now], null, errorHandler);
-		});
-}
-
 function Schuljahre() {
 	var selectBox = document.getElementById("jahrKlasse");
 	var copyBox = document.getElementById("jahrCopyKlasse");
@@ -231,7 +213,6 @@ function sum(n){
 
 function schnitt(_obj, bol_fspz){
 	// Besonderheiten bei Trennung von Vok und Gra beachten !
-	// (noch nicht implementiert...glaube ich)
 	var i, _row, r = 0;
 	var iAnz = 0;
 	var _Gra = {};
@@ -259,7 +240,7 @@ function schnitt(_obj, bol_fspz){
 }
 
 function schnitt_m_f(omndl, ofspz){
-// Schnitt zwischen oMndl und Fspz wird noch nicht berechnet
+// Schnitt zwischen oMndl und Fspz
 	var gew_fspz = SETTINGS.gewichtung["davon fachspezifisch"];
 	var gew_mndl0 = 1.0 - gew_fspz;
 	if (ofspz > 0 && omndl > 0){
@@ -270,46 +251,6 @@ function schnitt_m_f(omndl, ofspz){
 		return Math.round((ofspz)*100)/100 || "";
 	}
 	return "";
-}
-
-function calc_KatDs(id){
-//--> Durchschnittserrechnung aller Kats, die mitgeschrieben wurden.
-	// Daten neu berechnen, speichern, Flag löschen
-	db.transaction(
-	function(transaction){
-	transaction.executeSql(
-		'SELECT * FROM '+klasse+' WHERE id = 0 OR id= '+id, [], function(transaction, results){
-			var temp_leistung, i, _id;
-			var schrInfo = JSON.parse(decodeURIComponent(results.rows.item(0).schr));
-			var oschr = JSON.parse(decodeURIComponent(results.rows.item(1).schr));
-			var kat = [0,0,0,0];
-			var kat_S = [0,0,0,0];
-			for (i=0;i<oschr.alle.length;i++){
-				_id = oschr.alle[i];
-				if (schrInfo[_id].Eintragung == "Rohpunkte" && oschr[_id].Mitschreiber == "true"){
-					temp_leistung = schrInfo[_id][oschr[_id].Verteilung];
-					kat[0] += temp_leistung.Kat1;
-					kat[1] += temp_leistung.Kat2;
-					kat[2] += temp_leistung.Kat3;
-					kat[3] += temp_leistung.Kat4;
-					kat_S[0] += oschr[_id].Kat1;
-					kat_S[1] += oschr[_id].Kat2;
-					kat_S[2] += oschr[_id].Kat3;
-					kat_S[3] += oschr[_id].Kat4;
-				}
-			}
-			kat_S[0] = (kat_S[0] !== 0) ? (kat_S[0]/kat[0])*100 : 0;
-			kat_S[1] = (kat_S[1] !== 0) ? (kat_S[1]/kat[1])*100 : 0;
-			kat_S[2] = (kat_S[2] !== 0) ? (kat_S[2]/kat[2])*100 : 0;
-			kat_S[3] = (kat_S[3] !== 0) ? (kat_S[3]/kat[3])*100 : 0;
-			// Werte in DB schreiben
-			var toSave = []
-			for (i=0;i<4;i++){
-				toSave.push(Math.round(kat_S[i]));
-			}
-			updateDB("Kompetenzen",JSON.stringify(toSave),id)
-		}
-	)});
 }
 
 function datum(){

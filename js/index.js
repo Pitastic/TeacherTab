@@ -9,11 +9,8 @@ $(document).ready(function() {
 	document.getElementById('syncOpen').addEventListener('click', function(){
 		// >>>>>>>> DEV: Bisher direktes Öffnen ohne Sync und Dialog
 		klassenAuswahl(document.getElementById('klasseSelect'));
-		//initSyncSQL();
+		initSyncSQL();
 		//listKlassen(listIdx_Select);
-		// >>>>>>>> DEV >
-		popUp("item0Sync");
-		document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
 		// <<<<<<<< DEV <
 	});
 	document.getElementById('btn_Delete').addEventListener('click', function(){
@@ -23,9 +20,11 @@ $(document).ready(function() {
 	});
 	document.getElementById('export').addEventListener('click', function(){
 		klassenAuswahl(document.getElementById('klasseSelect'));
+		/* DEV: Kein Sync, kein Export !
 		export_to_csv(klasse);
 		document.getElementById("export_to_pdf").href = "http://www.teachertab.de/WebApp/export-PDF.htm?klasse="+klasse+"&serverIP="+serverIP+"&userID="+userID;
 		document.getElementById("export_to_html").href = "http://www.teachertab.de/WebApp/export-HTML.htm?klasse="+klasse+"&serverIP="+serverIP+"&userID="+userID;
+		*/
 		popUp('item0Export');
 	});
 	document.getElementById('closeSync').addEventListener('click', function(){

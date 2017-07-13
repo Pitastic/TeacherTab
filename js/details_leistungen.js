@@ -39,7 +39,7 @@ $(document).ready(function() {
 
 	// List first View
 	var art = sessionStorage.getItem('leistung_art');
-	var id_Leistung = sessionStorage.getItem('leistung_id');
+	var id_Leistung = parseInt(sessionStorage.getItem('leistung_id'));
 
 	// Funktionen, die auf global SETTINGS warten müssen
 	readSettings(function(){
@@ -182,14 +182,18 @@ function leistungsDetails_noten(art, Leistung){
 		new_el.appendChild(ul);
 		old.parentNode.replaceChild(new_el, old);
 
-		// Animationen
-		setTimeout(function() {
-			target_el.classList.add('show');
+		// Anzeigen wenn ready
+		var DOMcheck = setInterval( function () {
+			if (document.readyState !== 'complete' ) return;
+			clearInterval( DOMcheck );
+			// DOM Ready !
 			infoEl.classList.add('show');
-		}, 250);
-		setTimeout(function() {
-			calc_Stats(true);
-		}, 1000);
+			target_el.classList.add('show');
+			setTimeout(function(){
+				calc_Stats(true);
+			},1000);
+		}, 100 );
+
 	});
 }
 
@@ -319,14 +323,19 @@ function leistungsDetails_punkte(art, Leistung){
 		new_el.appendChild(ul);
 		old.parentNode.replaceChild(new_el, old);
 
-		setTimeout(function() {
-			target_el.classList.add('show');
+		// Anzeigen wenn ready
+		var DOMcheck = setInterval( function () {
+			if (document.readyState !== 'complete' ) return;
+			clearInterval( DOMcheck );
+			// DOM Ready !
 			infoEl.classList.add('show');
-			editNotenListe(maxPts);
-		}, 250);
-		setTimeout(function() {
-			calc_Stats(true);
-		}, 1000);
+			target_el.classList.add('show');
+			setTimeout(function(){
+				calc_Stats(true);
+				editNotenListe(maxPts);
+			},1000);
+		}, 100 );
+
 	});
 }
 
@@ -359,7 +368,7 @@ function leistungsDetails_rohpunkte(art, Leistung){
 	var i;
 	for (i=1;i<5;i++){
 		var kat_div = document.createElement('div');
-			kat_div.innerHTML = SETTINGS.kompetenzen[i]+" : ";
+			kat_div.innerHTML = SETTINGS.kompetenzen["Kat"+i]+" : ";
 		var kat = document.createElement('span');
 			kat.id = "item2_info_Kat"+i;
 			kat_div.appendChild(kat);
@@ -383,7 +392,7 @@ function leistungsDetails_rohpunkte(art, Leistung){
 	var inputs = popVert.querySelectorAll("[data-kat='kat']");
 	for (i=0; i<inputs.length;i++){
 		var kat_Text = document.createElement('span')
-		kat_Text.innerHTML = SETTINGS.kompetenzen[i+1]+" : ";
+		kat_Text.innerHTML = SETTINGS.kompetenzen["Kat"+(i+1)]+" : ";
 		inputs[i].parentNode.insertBefore(kat_Text, inputs[i]);
 	}
 	var editButtonA = document.createElement('a');
@@ -452,9 +461,13 @@ function leistungsDetails_rohpunkte(art, Leistung){
 	var popVertNeu = popVert.getElementsByClassName("button")[0];
 	popVertOK.onclick = function(){
 		var Pkt_Verteilung = cloneVert.value;
-		updateVerteilung(inputs, Pkt_Verteilung, updateVerteilungHTML);
+		updateVerteilung(inputs, Pkt_Verteilung, function(){
+			var All = document.getElementById('arbeit_leistung');
+			updateVerteilungHTML();
+			updateNoten(All, false);
+		});
 		popUpClose(this,0);
-		};
+	};
 	popVertNeu.onclick = function(){
 		var Pkt_Verteilung = document.getElementById('Pkt_new');
 		updateVerteilung(inputs, Pkt_Verteilung.value, function(r){item2Save(true, Leistung.Bezeichnung, true);});
@@ -474,7 +487,7 @@ function leistungsDetails_rohpunkte(art, Leistung){
 			row = results[r];
 			eigeneLeistung = row[art][Leistung.id];
 			if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || eigeneLeistung.Mitschreiber == "undefined"){
-				eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', '1':'-' , '2':'-' , '3':'-' , '4':'-' , 'Gesamt':'-', 'Verteilung':"Standard"};
+				eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', 'Kat1':'-' , 'Kat2':'-' , 'Kat3':'-' , 'Kat4':'-' , 'Gesamt':'-', 'Verteilung':"Standard"};
 			}
 			li = document.createElement('li');
 				li.setAttribute('data-rowid', "line"+row.id);
@@ -494,13 +507,12 @@ function leistungsDetails_rohpunkte(art, Leistung){
 			li.appendChild(div);
 			// Kategorien
 			li.setAttribute('data-verteilung', eigeneLeistung.Verteilung);
-			for (i2 of [1, 2, 3, 4, "Gesamt"]){
-				i2Kat = (i2 == "Gesamt") ? i2 : "Kat"+i2;
+			for (i2 of ["Kat1", "Kat2", "Kat3", "Kat4", "Gesamt"]){
 				div = document.createElement('div');
 				div.className = "Kategorien";
 				span = document.createElement('span');
-				span.innerHTML = eigeneLeistung[i2Kat];
-				span.setAttribute('data-name', i2Kat);
+				span.innerHTML = eigeneLeistung[i2];
+				span.setAttribute('data-name', i2);
 				div.appendChild(span);
 				span = document.createElement('span');
 				span.innerHTML = SETTINGS.kompetenzen[i2];
@@ -536,26 +548,33 @@ function leistungsDetails_rohpunkte(art, Leistung){
 		}
 		// > Block einfügen
 		new_el.appendChild(ul);
-		updateVerteilungHTML();
 		old.parentNode.replaceChild(new_el, old);
 		// - - - - - - - - - - - - - - - -
 		var popEdit = pop.getElementsByTagName('ul')[0].getElementsByTagName('input');
 		for (i2 = 0; i2 < popEdit.length; i2++) {
 			var kat_Text = document.createElement('span')
-			kat_Text.innerHTML = SETTINGS.kompetenzen[i2+1]+" : ";
+			kat_Text.innerHTML = SETTINGS.kompetenzen["Kat"+(i2+1)]+" : ";
 			popEdit[i2].parentNode.insertBefore(kat_Text, popEdit[i2]);
 		}
-	});
-	target_el.classList.add('show');
-	setTimeout(function(){
-		// Schülerleistung berechnen
-		var alleSchuler = document.getElementById('arbeit_leistung');
-		updateNoten(alleSchuler, false);
-		infoEl.classList.add('show');
-			setTimeout(function() {
+
+		// Anzeigen wenn ready
+		var DOMcheck = setInterval( function () {
+			if (document.readyState !== 'complete' ) return;
+			clearInterval( DOMcheck );
+			// DOM Ready !
+			infoEl.classList.add('show');
+			target_el.classList.add('show');
+			setTimeout(function(){
+				// Schülerleistung berechnen
+				var alleSchuler = document.getElementById('arbeit_leistung');
+				updateNoten(alleSchuler, false);
+				updateVerteilungHTML();
 				calc_Stats(true);
-			}, 1000);
-		},100);
+			},1000);
+		}, 100 );
+
+	});
+
 }
 
 

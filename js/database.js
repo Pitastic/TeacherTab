@@ -134,9 +134,9 @@ function addSettings(dbConnection) {
 		'id' : 0,
 		'fspzDiff' : false,
 		'gewichtung' : {
-			'mndl' : 0.6,
-			'fspz' : 0.2,
-			'schr' : 0.4,
+			"mündlich" : 0.6,
+			"davon fachspezifisch" : 0.2,
+			"schriftlich" : 0.4,
 		},
 		'klasse' : klasse,
 		'kompetenzen' : {'Gesamt': "Gesamt", 1:"Kategorie 1", 2:"Kategorie 2", 3:"Kategorie 3", 4:"Kategorie 4"},
@@ -279,7 +279,7 @@ function neuerStudent(data, callback) {
 
 
 // Schüler aus Klasse löschen
-function deleteStudent(id) {
+function deleteStudent(id, callback) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
@@ -287,13 +287,21 @@ function deleteStudent(id) {
 		var objectStore = connection.transaction([klasse], "readwrite").objectStore(klasse);
 		var result = objectStore.delete(id);
 		result.onerror = errorHandler;
-		result.onsuccess = function(event){console.log("indexedDB: Eintrag ID", id, "gelöscht");}
+		result.onsuccess = function(event){
+			console.log("indexedDB: Eintrag ID", id, "gelöscht");
+			// Schüler auch vom Account löschen, wenn online
+			if (navigator.onLine){
+				SYNC_deleteStudent(id);
+			}else{
+				alert("Kein Kontakt zum SyncServer.\nDer Schüler wurde nur von diesem Gerät entfernt.");
+			}
+			if (callback) {callback(connection);}
+		}
 		connection.close();
 
 		// ---> Garbage Collection
 		connection.onversionchange = function(event) {
 			connection.close();
-
 		};
 
 		return;
@@ -384,7 +392,6 @@ function readData(callback, id) {
 	request.onsuccess = function(event){
 		var connection = event.target.result;
 		var objectStore = connection.transaction([klasse]).objectStore(klasse);
-		//id = (id == null) ? 0 : parseInt(id);
 		var result = {};
 		if (id || id == 0) {
 			var transaction1 = objectStore.get(id)
@@ -426,7 +433,12 @@ function updateData(callback, newObjects) {
 				if (id in newObjects) {
 					toUpdate = cursor.value;
 					for (k in newObjects[id]){
-						toUpdate[k] = newObjects[id][k];
+						// Verschachtelungen assignen, Werte zuordnen
+						if (typeof(newObjects[id][k]) == "object") {
+							Object.assign(toUpdate[k], newObjects[id][k]);
+						}else{
+							toUpdate[k] = newObjects[id][k];
+						}
 					}
 					var requestUpdate = cursor.update(toUpdate);
 					requestUpdate.onsuccess = function() {
@@ -509,12 +521,22 @@ function updateSchnitt(callback, id) {
 		var transaction = objectStore.openCursor();
 		transaction.onerror = errorHandler;
 		transaction.onsuccess = function(event){
-			var ds_art, Student, cursor;
+			var ds_art, neuerStudent, cursor;
 			var art = ["mndl","fspz","schr"];
 			cursor = event.target.result;
+
 			if (cursor){
-				if ((!id && cursor.value.id) || (id && id == cursor.value.id)) {					
-					Student = cursor.value;
+
+				// Allgemeine Daten sichern
+				if (cursor.value.id == 0){
+					infoHeader = JSON.parse(JSON.stringify(cursor.value.leistungen)); // (Variable muss global sein !?)
+				}
+
+				// Schülerdaten
+				if ((!id && cursor.value.id) || (id && id == cursor.value.id)) {
+
+					var Student = cursor.value;
+
 					// Durchschnitt aller Bereiche
 					for (var i = 0; i < art.length; i++) {
 						ds_art = "o"+art[i];
@@ -526,27 +548,56 @@ function updateSchnitt(callback, id) {
 							Student.gesamt[ds_art] = schnitt(Student[art[i]], false);
 						}
 					}
-					// Kategorien
-					// -- (calc_KatDS [all.js])
-					// Erst möglich, wenn Rohpunkt-Leistungen implementiert sind
-					// --
+
 					// Durchschnitt insgesamt
 					if (Student.gesamt['omndl'] && Student.gesamt['schriftlich']){
 						Student.gesamt.rechnerisch = Student.gesamt['omndl']*SETTINGS.gewichtung['mündlich'] + Student.gesamt['oschr']*SETTINGS.gewichtung['schriftlich']
 					}else{
 						Student.gesamt.rechnerisch = 0;
 					}
+
+					// Kompetenzen
+					var kompetenzen = [0,0,0,0,0];
+					var Infos, temp_leistung;
+					// -- Itteriere durch Leistungsart
+					for (var i = 0; i < art.length; i++) {
+						// Itteriere durch Leistung und Auswahl von mitgeschriebenen Objekten erstellen
+						Infos = infoHeader[art[i]];
+						for (l in Infos) {
+							temp_leistung = Student[art[i]][l];
+							// mitgeschrieben und mit Kategrorien ?
+							if (temp_leistung && temp_leistung.Mitschreiber == "true" && temp_leistung.Verteilung) {
+								var hundertProzent = Infos[l].Verteilungen[temp_leistung.Verteilung];
+								// Prozentsummen
+								kompetenzen[0] += temp_leistung.Kat1 / hundertProzent.Kat1;
+								kompetenzen[1] += temp_leistung.Kat2 / hundertProzent.Kat2;
+								kompetenzen[2] += temp_leistung.Kat3 / hundertProzent.Kat3;
+								kompetenzen[3] += temp_leistung.Kat4 / hundertProzent.Kat4;
+								// Counter
+								kompetenzen[4] += 1;
+							}
+						}
+					}
+					Student.kompetenzen = Array(
+						Math.round((kompetenzen[0]/kompetenzen[4])*100)/100 || 0,
+						Math.round((kompetenzen[1]/kompetenzen[4])*100)/100 || 0,
+						Math.round((kompetenzen[2]/kompetenzen[4])*100)/100 || 0,
+						Math.round((kompetenzen[3]/kompetenzen[4])*100)/100 || 0,
+					);
+
 					// Speichern
 					var requestUpdate = cursor.update(Student);
 					requestUpdate.onerror = errorHandler;
 					requestUpdate.onsuccess = function() {
 						console.log("indexDB: Durchschnitt ID", Student.id, "updated...")
 					};
+
 				}
 				cursor.continue();
 			}else{
 				callback();
 			}
+
 		connection.close();
 		}
 

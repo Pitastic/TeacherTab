@@ -157,19 +157,24 @@
 <div id="item0Export" class="popUp">
 	<h3>Klasse Exportieren</h3>
 	<ul>
+		<li>Eintragungen als PDF, CSV-Text oder in Form eines Backups öffnen/herunterladen</li>
+		<li><span>Die Synchronisierúngs- und Export-Funktion steht bisher noch nicht zur Verfügung</span></li>
+	</ul>
+	
+	<div class="close"><a class="stay" href="#">x</a></div>
+	<!-- DEV: Kein Sync, kein Export !
 		<li>Wähle das Format (nur wenn das Gerät den SyncServer erreichen kann)</li>
 		<li>PDF (empfohlen) : <span>Ausdruck der Datenbank (Druckformat, Daten vom SyncServer)</span></li>
 		<li>HTML : <span>Inhalt wie in der PDF (Inhalt ist aber noch veränderbar)</span></li>
 		<li>CSV : <span>Semikolon getrennte Liste (universell, Daten von diesem Gerät)</span></li>
 		<li>Kopie : <span>Klassen-Kopie auf diesem Gerät erstellen, z.B. bei Klassen im 2. Hj.</span></li>
-	</ul>
-	<div class="close"><a class="stay" href="#">x</a></div>
 	<div>
 		<a class="button OK stay" href="#" onclick="setTimeout(function(){popUp('item0Copy');},1000);popUpClose(this);">Kopie</a>
 		<a id="export_to_csv" class="button" href="https://www.teachertab.de/webapp/export.htm" title="CSV Export">CSV</a>
 		<a class="button" href="" id="export_to_html" target="_blank">HTML</a>
 		<a class="button OK" href="" id="export_to_pdf" target="_blank">PDF</a>
 	</div>
+	-->
 </div>
 
 <div id="item0Copy" class="popUp">
@@ -202,16 +207,19 @@
 <div id="item0First" class="popUp">
 	<h3>SyncServer Einstellungen</h3>
 	<form>
+			<input id="serverIP" type="hidden" placeholder="Server IP: 192.168.178.35">
 	<ul>
-		<li>
-			<input id="serverIP" type="text" placeholder="Server IP: 192.168.178.35">
-		</li>
 		<li>
 			<input id="userID" type="text" placeholder="IhrName">
 		</li>
+		<!--
+		<li>
+		</li>
+		-->
 		<li>
 			<span>
-			Hier kannst du Grundeinstellungen anpassen.<br>Wenn du einen Sync-Server hast, gib dessen Daten ODER lasse einfach die Felder frei und drücke auf Speichern.
+			Anhand des Benutzernamens werden die Daten auf deinem Gerät gespeichert.<br>
+			Die Synchronisierúngs-Funktion ist noch nicht verfügbar.
 			</span>
 		</li>
 	</ul>

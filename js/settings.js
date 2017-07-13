@@ -13,7 +13,6 @@ $(document).ready(function() {
 function settingDetails(results){
 	var i;
 	var settings = results;
-
 	//-- Notenverteilung
 	var vertNoten = settings.notenverteilung;
 	var inputs = document.getElementById('form_Notenverteilung').getElementsByTagName('input');
@@ -28,7 +27,7 @@ function settingDetails(results){
 	var kompNamen = settings.kompetenzen;
 	var inputs = document.getElementById('form_KompNamen').getElementsByTagName('input');
 	for (i = 0; i < inputs.length; i++) {
-		inputs[i].value = kompNamen[i+1] || "";
+		inputs[i].value = SETTINGS.kompetenzen['Kat'+(i+1)] || "";
 	}
 	//-- Gewichtung
 	var Gewichtung = settings.gewichtung;
@@ -86,7 +85,7 @@ function SettingsSave(bol_save){
 		settings.kompetenzen = {};
 		settings.kompetenzen["Gesamt"] = "Gesamt";
 		for (i=0;i<inputs.length;i++){
-			settings.kompetenzen[i+1] = inputs[i].value || "Kategorie "+(i+1);
+			settings.kompetenzen["Kat"+(i+1)] = inputs[i].value || "Kategorie "+(i+1);
 		}
 		// -- Sonstige Settings
 		// -- -- Fachspezifisches
@@ -96,14 +95,16 @@ function SettingsSave(bol_save){
 		// -- -- Vorjahresnoten
 		settings.showVorjahr = document.form_vorjahr.setVorjahr.checked;
 
-		// DB save und refresh
+		// DB save und refresh		
 		updateData(function(){
-			readSettings(function(){
-				setTimeout(function(){
-					window.location = 'uebersicht.htm';
-				}, 750)
-				document.getElementById('item1setting').classList.remove('show');
-			});
+			updateSchnitt(function(){
+				readSettings(function(){
+					setTimeout(function(){
+						window.location = 'uebersicht.htm';
+					}, 750)
+					document.getElementById('item1setting').classList.remove('show');
+				});
+			}, 0);
 		}, {0:settings});
 	}
 }
