@@ -1,9 +1,10 @@
 $(document).ready(function() {
 	// Funktionen, die auf global SETTINGS warten müssen
-	readSettings(function(){
+	db_readMultiData(function(r){
 		// Load Settingspage
-		readData(settingDetails, 0);
-	});
+		SETTINGS = r[0];
+		settingDetails(SETTINGS);
+	}, "settings");
 
 	// Style and Listeners
 	touchListener(['header', 'footer', 'fadeBlack']);
@@ -12,9 +13,9 @@ $(document).ready(function() {
 
 function settingDetails(results){
 	var i;
-	var settings = results;
+	var SETTINGS = results;
 	//-- Notenverteilung
-	var vertNoten = settings.notenverteilung;
+	var vertNoten = SETTINGS.notenverteilung;
 	var inputs = document.getElementById('form_Notenverteilung').getElementsByTagName('input');
 	for (i = 0; i < inputs.length; i++) {
 		if (i+1 == 6) {
@@ -24,13 +25,13 @@ function settingDetails(results){
 		}
 	}
 	//-- Kompetenz Namen
-	var kompNamen = settings.kompetenzen;
+	var kompNamen = SETTINGS.kompetenzen;
 	var inputs = document.getElementById('form_KompNamen').getElementsByTagName('input');
 	for (i = 0; i < inputs.length; i++) {
 		inputs[i].value = SETTINGS.kompetenzen['Kat'+(i+1)] || "";
 	}
 	//-- Gewichtung
-	var Gewichtung = settings.gewichtung;
+	var Gewichtung = SETTINGS.gewichtung;
 	i = 0;
 	labels = document.getElementById('form_Gewichtung').getElementsByTagName('label');
 	inputs = document.getElementById('form_Gewichtung').getElementsByTagName('input');
@@ -40,23 +41,25 @@ function settingDetails(results){
 		i++;
 	}
 	//-- Fachspezifische Einstellungen
-	document.form_fspz.differenziert.checked = settings.fspzDiff;
+	document.form_fspz.differenziert.checked = SETTINGS.fspzDiff;
 	//-- Schülerliste
-	document.form_sex.stud_Sort.checked = settings.studSort;
+	document.form_sex.stud_Sort.checked = SETTINGS.studSort;
 	var a_button = document.getElementById('alle_gruppieren').getElementsByTagName('a')[0];
 	a_button.addEventListener('click', function(){
-			document.getElementById('Abbrechen').innerHTML = "Abbrechen";
-			document.getElementById('Save').onclick = function(){
-				// Gruppierung speichern
-				saveGruppen();
-			};
-			document.getElementById('item1setting').classList.remove('show');
-			popUp('item1setting_info');
-			readData(gruppierenListe);
+			db_readMultiData(function(result){
+				document.getElementById('Abbrechen').innerHTML = "Abbrechen";
+				document.getElementById('Save').onclick = function(){
+					// Gruppierung speichern
+					saveGruppen();
+				};
+				document.getElementById('item1setting').classList.remove('show');
+				popUp('item1setting_info');
+				gruppierenListe(result);
+			}, "student");
 
 		})
 	//-- Vorjahresnoten
-	document.form_vorjahr.setVorjahr.checked = settings.showVorjahr;
+	document.form_vorjahr.setVorjahr.checked = SETTINGS.showVorjahr;
 	// Füllen
 	document.getElementById('item1setting').classList.add('show');
 }
@@ -65,7 +68,7 @@ function settingDetails(results){
 function SettingsSave(bol_save){
 	var content = document.getElementById('listSetting');
 	var inputs, i;
-	var settings = {};
+	var settings = SETTINGS;
 	if (bol_save){
 		// -- Gewichtung
 		inputs = document.getElementById('form_Gewichtung').getElementsByTagName('input');
@@ -95,17 +98,16 @@ function SettingsSave(bol_save){
 		// -- -- Vorjahresnoten
 		settings.showVorjahr = document.form_vorjahr.setVorjahr.checked;
 
-		// DB save und refresh		
-		updateData(function(){
-			updateSchnitt(function(){
-				readSettings(function(){
-					setTimeout(function(){
-						window.location = 'uebersicht.htm';
-					}, 750)
-					document.getElementById('item1setting').classList.remove('show');
-				});
+		// DB save und refresh
+		db_replaceData(function(){
+			SETTINGS = settings;
+			db_updateSchnitt(function(){
+				setTimeout(function(){
+					window.location = 'uebersicht.htm';
+				}, 750)
+				document.getElementById('item1setting').classList.remove('show');
 			}, 0);
-		}, {0:settings});
+		}, settings, SETTINGS.id);
 	}
 }
 
@@ -181,7 +183,7 @@ function saveGruppen(){
 		student = liste[i].getAttribute("data-rowid");
 		newObjects[student] = {'sort': gruppe};
 	}
-	updateData(function(){
+	updateData(function(){ // db_
 		setTimeout(function(){
 			window.location = "uebersicht.htm";
 		},750);

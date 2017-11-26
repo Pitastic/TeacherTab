@@ -9,19 +9,22 @@ $(document).ready(function() {
 	pop.getElementsByClassName('button OK')[0].addEventListener('click', function(){
 		var id_Leistung = sessionStorage.getItem('leistung_id');
 		var art = sessionStorage.getItem('leistung_art');
-		// neues Objekt aufbauen (lange Kette wegen JS ObjectHandling notwendig)
-		var neueLeistung = {0:{}};
-		neueLeistung[0][id_Leistung] = {
-			'Datum' : leistungEdit.notenDatum.value,
-			'Bezeichnung' : leistungEdit.notenBezeichnung.value,
-			'Gewichtung' : leistungEdit.rangeWert.value,
-		};
-		updateLeistung(function(){
+		var eintragung = sessionStorage.getItem('Eintragung');
+		var neueLeistung = formLeistung(
+			art, leistungEdit.notenBezeichnung.value,
+			leistungEdit.notenDatum.value,
+			eintragung,
+			leistungEdit.rangeWert.value
+			);
+		neueLeistung.id = parseInt(sessionStorage.getItem('leistung_id'));
+
+		// Datensatz ersetzen
+		db_replaceData(function(){
 			pop.classList.remove('showPop');
 			setTimeout(function() {
 				window.location.reload();
 			}, 500);
-		}, art, neueLeistung);
+		}, neueLeistung);
 	});
 
 	// -- Leistung löschen
@@ -42,63 +45,72 @@ $(document).ready(function() {
 	var id_Leistung = parseInt(sessionStorage.getItem('leistung_id'));
 
 	// Funktionen, die auf global SETTINGS warten müssen
-	readSettings(function(){
-		leistungsDetails(art, id_Leistung);
-	});
+	db_readMultiData(function(r){
+		// Settings laden
+		SETTINGS = r[0];
+		//leistungsDetails(art, id_Leistung); // alter Aufruf
+		db_readSingleData(leistungsDetails, "leistung", id_Leistung);
+	}, "settings");
 });
 
 
 // Listings
 // =============================================================================
 // >>>>>>>> Routing - Art der Eintragung filtern
-function leistungsDetails(art, id_Leistung){
+//function leistungsDetails(art, id_Leistung){
+function leistungsDetails(Leistung){
 	// - - - Kopfdaten - - -
-	readData(function(results){
-		var katObj = results.kompetenzen;
-		var Leistung = results.leistungen[art][id_Leistung];
-		sessionStorage.setItem('leistung_gewicht', Leistung.Gewichtung || 1);
-		sessionStorage.setItem('Eintragung', Leistung.Eintragung);
-		
-		// - Edit Pop
-		var editLeistung = document.getElementById("leistungEdit");
-		editLeistung.notenBezeichnung.value = Leistung.Bezeichnung;
-		editLeistung.notenDatum.value = Leistung.Datum;
-		editLeistung.notenArt.value = art;
-		editLeistung.rangeSlide.value = parseFloat(Leistung.Gewichtung) < 1 ? 0 : parseFloat(Leistung.Gewichtung);
-		editLeistung.rangeWert.value = parseFloat(Leistung.Gewichtung) || 1;
-		fspz_Bezeichnung();
-		// - Laden der eigentlichen Leistung
-		switch (Leistung.Eintragung) {
-			case "Rohpunkte":
-				// -- Verteilungen
-				var wertArray;
-				for (var v in Leistung.Verteilungen) {
-					wertArray = [];
-					wertArray.push(Leistung.Verteilungen[v].Kat1);
-					wertArray.push(Leistung.Verteilungen[v].Kat2);
-					wertArray.push(Leistung.Verteilungen[v].Kat3);
-					wertArray.push(Leistung.Verteilungen[v].Kat4);
-					verteilungToSession(v, wertArray, false)
-				}
-				leistungsDetails_rohpunkte(art, Leistung, katObj);
-				break;
-			case "Noten":
-				leistungsDetails_noten(art, Leistung);
-				break;
-			case "Punkte":
-				leistungsDetails_punkte(art, Leistung);
-				break;
-		}
-	}, 0)
+	//var katObj = results.kompetenzen;
+	//var katObj = SETTINGS.kompetenzen;
+	//var Leistung = results.leistungen[art][id_Leistung]; // jetzt direkt übergeben
+	sessionStorage.setItem('leistung_gewicht', Leistung.Gewichtung || 1);
+	sessionStorage.setItem('Eintragung', Leistung.Eintragung);
+	
+	// - Edit Pop
+	var editLeistung = document.getElementById("leistungEdit");
+	editLeistung.notenBezeichnung.value = Leistung.Bezeichnung;
+	editLeistung.notenDatum.value = Leistung.Datum;
+	editLeistung.notenArt.value = Leistung.subtyp;
+	editLeistung.rangeSlide.value = parseFloat(Leistung.Gewichtung) < 1 ? 0 : parseFloat(Leistung.Gewichtung);
+	editLeistung.rangeWert.value = parseFloat(Leistung.Gewichtung) || 1;
+	fspz_Bezeichnung();
+	// - Laden der eigentlichen Leistung
+	switch (Leistung.Eintragung) {
+		case "Rohpunkte":
+			// -- Verteilungen
+			var wertArray;
+			for (var v in Leistung.Verteilungen) {
+				wertArray = [];
+				wertArray.push(Leistung.Verteilungen[v].Kat1);
+				wertArray.push(Leistung.Verteilungen[v].Kat2);
+				wertArray.push(Leistung.Verteilungen[v].Kat3);
+				wertArray.push(Leistung.Verteilungen[v].Kat4);
+				verteilungToSession(v, wertArray, false)
+			}
+			db_readMultiData(function(results){
+				leistungsDetails_rohpunkte(Leistung,results);
+			}, "student");
+			break;
+		case "Noten":
+			db_readMultiData(function(results){
+				leistungsDetails_noten(Leistung, results);
+			}, "student");
+			break;
+		case "Punkte":
+			db_readMultiData(function(results){
+				leistungsDetails_punkte(Leistung, results);
+			}, "student");
+			break;
+	}
 	return true
 }
 
 // =============================================================================
 // >>>>>>>> nach ganzen Noten
-function leistungsDetails_noten(art, Leistung){
+function leistungsDetails_noten(Leistung, Students){
 	var target_el = document.getElementById("item2details");
 		// Leistungsart sichern
-		target_el.setAttribute('data-l_art', art);
+		target_el.setAttribute('data-l_art', Leistung.subtyp);
 		target_el.setAttribute('data-l_id', Leistung.id);
 	var old = document.getElementById("arbeit_info");
 	var new_el = old.cloneNode(true);
@@ -129,81 +141,79 @@ function leistungsDetails_noten(art, Leistung){
 	document.getElementById('Save').onclick = function(){
 		item2Save(false, Leistung.Bezeichnung);
 	};
+
 	// - - - Schülerdaten - - -
-	readData(function(results){
-		var i, row, li, div, span, gruppe, eigeneLeistung;
-		var old = document.getElementById("arbeit_leistung");
-		var new_el = old.cloneNode(true);
-			new_el.innerHTML = "";
-		var ul = document.createElement('ul');
-		for (var r in results){
-			if (r == 0) {continue;}
-			row = results[r];
-			eigeneLeistung = row[art][Leistung.id];
-			// Leistung bei Schüler vorhanden ?
-			if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || !eigeneLeistung.Mitschreiber == "undefined" || !eigeneLeistung.Mitschreiber){
-				eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', 'Kat1':'-', 'Kat2':'-', 'Kat3':'-', 'Kat4':'-',};
-			}
-			li = document.createElement('li');
-				li.setAttribute('data-rowid', "line"+row.id);
-				li.setAttribute('data-mitschreiber', eigeneLeistung.Mitschreiber);
-			// Name
-			gruppe = row.name.sex && row.name.sex !== "-" && row.name.sex !== "null" ? " ("+row.name.sex+")" : "";
-			div = document.createElement('div');
-				div.className = "Name";
-			span = document.createElement('span');
-				span.innerHTML = row.name.vname;
-				div.appendChild(span);
-			span = document.createElement('span');
-				span.innerHTML = row.name.nname+gruppe;
-				div.appendChild(span);
-			li.appendChild(div);
-			// Note ---- nicht dynamisch
-			div = document.createElement('div');
-				div.className = "Note standalone";
-			span = document.createElement('span');
-				span.innerHTML = eigeneLeistung.Note || "-";
-				div.appendChild(span);
-			// Anfügen
-			li.appendChild(div);
-			ul.appendChild(li);
-
-			// Eventlistener für dieses li
-			var old_select;
-			li.addEventListener('click', function() {
-				// Zeile hervorheben und für Keyboard markieren
-				old_select = ul.getElementsByClassName('selected')[0];
-				if (old_select){old_select.classList.remove('selected');}
-				this.classList.add('selected');
-				selKeys.value = this.getElementsByClassName('Note')[0].getElementsByTagName('span')[0].innerHTML;
-			});
+	var i, row, li, div, span, gruppe, eigeneLeistung;
+	var old = document.getElementById("arbeit_leistung");
+	var new_el = old.cloneNode(true);
+		new_el.innerHTML = "";
+	var ul = document.createElement('ul');
+	for (var r in Students){
+		row = Students[r];
+		eigeneLeistung = row[Leistung.subtyp][Leistung.id];
+		// Leistung bei Schüler vorhanden ?
+		if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || !eigeneLeistung.Mitschreiber == "undefined" || !eigeneLeistung.Mitschreiber){
+			eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', 'Kat1':'-', 'Kat2':'-', 'Kat3':'-', 'Kat4':'-',};
 		}
+		li = document.createElement('li');
+			li.setAttribute('data-rowid', "line"+row.id);
+			li.setAttribute('data-mitschreiber', eigeneLeistung.Mitschreiber);
+		// Name
+		gruppe = row.name.sex && row.name.sex !== "-" && row.name.sex !== "null" ? " ("+row.name.sex+")" : "";
+		div = document.createElement('div');
+			div.className = "Name";
+		span = document.createElement('span');
+			span.innerHTML = row.name.vname;
+			div.appendChild(span);
+		span = document.createElement('span');
+			span.innerHTML = row.name.nname+gruppe;
+			div.appendChild(span);
+		li.appendChild(div);
+		// Note ---- nicht dynamisch
+		div = document.createElement('div');
+			div.className = "Note standalone";
+		span = document.createElement('span');
+			span.innerHTML = eigeneLeistung.Note || "-";
+			div.appendChild(span);
+		// Anfügen
+		li.appendChild(div);
+		ul.appendChild(li);
 
-		new_el.appendChild(ul);
-		old.parentNode.replaceChild(new_el, old);
+		// Eventlistener für dieses li
+		var old_select;
+		li.addEventListener('click', function() {
+			// Zeile hervorheben und für Keyboard markieren
+			old_select = ul.getElementsByClassName('selected')[0];
+			if (old_select){old_select.classList.remove('selected');}
+			this.classList.add('selected');
+			selKeys.value = this.getElementsByClassName('Note')[0].getElementsByTagName('span')[0].innerHTML;
+		});
+	}
 
-		// Anzeigen wenn ready
-		var DOMcheck = setInterval( function () {
-			if (document.readyState !== 'complete' ) return;
-			clearInterval( DOMcheck );
-			// DOM Ready !
-			infoEl.classList.add('show');
-			target_el.classList.add('show');
-			setTimeout(function(){
-				calc_Stats(true);
-			},1000);
-		}, 100 );
+	new_el.appendChild(ul);
+	old.parentNode.replaceChild(new_el, old);
 
-	});
+	// Anzeigen wenn ready
+	var DOMcheck = setInterval( function () {
+		if (document.readyState !== 'complete' ) return;
+		clearInterval( DOMcheck );
+		// DOM Ready !
+		infoEl.classList.add('show');
+		target_el.classList.add('show');
+		setTimeout(function(){
+			calc_Stats(true);
+		},1000);
+	}, 100 );
+
 }
 
 
 // =============================================================================
 // >>>>>>>> nach einfachen Punkten
-function leistungsDetails_punkte(art, Leistung){
+function leistungsDetails_punkte(Leistung, Students){
 	var target_el = document.getElementById("item2details");
 		// Leistungsart sichern
-		target_el.setAttribute('data-l_art', art);
+		target_el.setAttribute('data-l_art', Leistung.subtyp);
 		target_el.setAttribute('data-l_id', Leistung.id);
 	var maxPts = Leistung.Verteilungen.Standard.Gesamt;
 	var old = document.getElementById("arbeit_info");
@@ -262,89 +272,87 @@ function leistungsDetails_punkte(art, Leistung){
 	document.getElementById('Save').onclick = function(){
 		item2Save(false, Leistung.Bezeichnung);
 	};
+
 	// - - - Schülerdaten - - -
-	readData(function(results){
-		var i, row, li, div, span, gruppe, eigeneLeistung;
-		var id_Leistung = sessionStorage.getItem('leistung_id');
-		var old = document.getElementById("arbeit_leistung");
-		var new_el = old.cloneNode(true);
-			new_el.innerHTML = "";
-		var ul = document.createElement('ul');
-		for (var r in results){
-			if (r == 0) {continue;}
-			row = results[r];
-			eigeneLeistung = row[art][Leistung.id];
-			// Leistung bei Schüler vorhanden ?
-			if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || !eigeneLeistung.Mitschreiber == "undefined" || !eigeneLeistung.Mitschreiber){
-				eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', 'Kat1':'-', 'Kat2':'-', 'Kat3':'-', 'Kat4':'-', 'Gesamt': '-'};
-			}
-			li = document.createElement('li');
-				li.setAttribute('data-rowid', "line"+row.id);
-				li.setAttribute('data-mitschreiber', eigeneLeistung.Mitschreiber);
-				// Name
-				gruppe = row.name.sex && row.name.sex !== "-" && row.name.sex !== "null" ? " ("+row.name.sex+")" : "";
-				div = document.createElement('div');
-					div.className = "Name";
-				span = document.createElement('span');
-					span.innerHTML = row.name.vname;
-					div.appendChild(span);
-				span = document.createElement('span');
-					span.innerHTML = row.name.nname+gruppe;
-					div.appendChild(span);
-				li.appendChild(div);
-				// Gesamtpunkte
-				div = document.createElement('div');
-					div.className = "Gesamtpunkte";
-				span = document.createElement('span');
-					span.innerHTML = eigeneLeistung.Gesamt;
-					div.appendChild(span);
-				span = document.createElement('span');
-					span.innerHTML = "Punkte";
-					div.appendChild(span);
-				li.appendChild(div);
-			   // Note ---- nicht dynamisch
-				div = document.createElement('div');
-					div.className = "Note standalone";
-				span = document.createElement('span');
-					span.innerHTML = eigeneLeistung.Note;
-					div.appendChild(span);
-				li.appendChild(div);
-			ul.appendChild(li);
-			// Eventlistener für dieses li
-			var old_select;
-			li.addEventListener('click', function() {
-				// Zeile hervorheben und für Keyboard markieren
-				old_select = ul.getElementsByClassName('selected')[0];
-				if (old_select){old_select.classList.remove('selected');}
-				this.classList.add('selected');
-				selKeys.value = this.getElementsByClassName('Gesamtpunkte')[0].getElementsByTagName('span')[0].innerHTML;
-			});
+	var i, row, li, div, span, gruppe, eigeneLeistung;
+	var id_Leistung = sessionStorage.getItem('leistung_id');
+	var old = document.getElementById("arbeit_leistung");
+	var new_el = old.cloneNode(true);
+		new_el.innerHTML = "";
+	var ul = document.createElement('ul');
+	for (var r in Students){
+		row = Students[r];
+		eigeneLeistung = row[Leistung.subtyp][Leistung.id];
+		// Leistung bei Schüler vorhanden ?
+		if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || !eigeneLeistung.Mitschreiber == "undefined" || !eigeneLeistung.Mitschreiber){
+			eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', 'Kat1':'-', 'Kat2':'-', 'Kat3':'-', 'Kat4':'-', 'Gesamt': '-'};
 		}
-		new_el.appendChild(ul);
-		old.parentNode.replaceChild(new_el, old);
+		li = document.createElement('li');
+			li.setAttribute('data-rowid', "line"+row.id);
+			li.setAttribute('data-mitschreiber', eigeneLeistung.Mitschreiber);
+			// Name
+			gruppe = row.name.sex && row.name.sex !== "-" && row.name.sex !== "null" ? " ("+row.name.sex+")" : "";
+			div = document.createElement('div');
+				div.className = "Name";
+			span = document.createElement('span');
+				span.innerHTML = row.name.vname;
+				div.appendChild(span);
+			span = document.createElement('span');
+				span.innerHTML = row.name.nname+gruppe;
+				div.appendChild(span);
+			li.appendChild(div);
+			// Gesamtpunkte
+			div = document.createElement('div');
+				div.className = "Gesamtpunkte";
+			span = document.createElement('span');
+				span.innerHTML = eigeneLeistung.Gesamt;
+				div.appendChild(span);
+			span = document.createElement('span');
+				span.innerHTML = "Punkte";
+				div.appendChild(span);
+			li.appendChild(div);
+		   // Note ---- nicht dynamisch
+			div = document.createElement('div');
+				div.className = "Note standalone";
+			span = document.createElement('span');
+				span.innerHTML = eigeneLeistung.Note;
+				div.appendChild(span);
+			li.appendChild(div);
+		ul.appendChild(li);
+		// Eventlistener für dieses li
+		var old_select;
+		li.addEventListener('click', function() {
+			// Zeile hervorheben und für Keyboard markieren
+			old_select = ul.getElementsByClassName('selected')[0];
+			if (old_select){old_select.classList.remove('selected');}
+			this.classList.add('selected');
+			selKeys.value = this.getElementsByClassName('Gesamtpunkte')[0].getElementsByTagName('span')[0].innerHTML;
+		});
+	}
+	new_el.appendChild(ul);
+	old.parentNode.replaceChild(new_el, old);
 
-		// Anzeigen wenn ready
-		var DOMcheck = setInterval( function () {
-			if (document.readyState !== 'complete' ) return;
-			clearInterval( DOMcheck );
-			// DOM Ready !
-			infoEl.classList.add('show');
-			target_el.classList.add('show');
-			setTimeout(function(){
-				calc_Stats(true);
-				editNotenListe(maxPts);
-			},1000);
-		}, 100 );
+	// Anzeigen wenn ready
+	var DOMcheck = setInterval( function () {
+		if (document.readyState !== 'complete' ) return;
+		clearInterval( DOMcheck );
+		// DOM Ready !
+		infoEl.classList.add('show');
+		target_el.classList.add('show');
+		setTimeout(function(){
+			calc_Stats(true);
+			editNotenListe(maxPts);
+		},1000);
+	}, 100 );
 
-	});
 }
 
 // =============================================================================
 // >>>>>>>> nach Rohpunkten
-function leistungsDetails_rohpunkte(art, Leistung){
+function leistungsDetails_rohpunkte(Leistung, Students){
 	var target_el = document.getElementById("item2details");
 		// Leistungscolumn sichern
-		target_el.setAttribute('data-l_art', art);
+		target_el.setAttribute('data-l_art', Leistung.subtyp);
 		target_el.setAttribute('data-l_id', Leistung.id);
 	var old = document.getElementById("arbeit_info");
 	var new_el = old.cloneNode(true);
@@ -475,17 +483,15 @@ function leistungsDetails_rohpunkte(art, Leistung){
 	};
    
 	// - - - Schülerdaten - - -
-	readData(function(results){
 		var i, i2, row, li, div, span, gruppe, eigeneLeistung, i2Kat;
 		var l_id = sessionStorage.getItem('leistung_id');
 		var old = document.getElementById("arbeit_leistung");
 		var new_el = old.cloneNode(true);
 			new_el.innerHTML = "";
 		var ul = document.createElement('ul');
-		for (var r in results){
-			if (r == 0) {continue;}
-			row = results[r];
-			eigeneLeistung = row[art][Leistung.id];
+		for (var r in Students){
+			row = Students[r];
+			eigeneLeistung = row[Leistung.subtyp][Leistung.id];
 			if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || eigeneLeistung.Mitschreiber == "undefined"){
 				eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', 'Kat1':'-' , 'Kat2':'-' , 'Kat3':'-' , 'Kat4':'-' , 'Gesamt':'-', 'Verteilung':"Standard"};
 			}
@@ -573,8 +579,6 @@ function leistungsDetails_rohpunkte(art, Leistung){
 			},1000);
 		}, 100 );
 
-	});
-
 }
 
 
@@ -611,9 +615,8 @@ function verteilungToSession(Pkt_Verteilung, wertArray, bol_single) {
 function updateVerteilung(inputs, Pkt_Verteilung, callback){
 //--> Verteilungen ändern, in DB, (laden der Verteilung als callback) ?
 	var i, maxPts, wertArray = [];
-	var art = sessionStorage.getItem('leistung_art');
-	var l_id = sessionStorage.getItem('leistung_id');
-	var newObject = { 0: {}};
+	var l_id = parseInt(sessionStorage.getItem('leistung_id'));
+	var newObject = {};
 	if (inputs.length>1) {
 		// Kategorien
 		for (i=0; i<inputs.length;i++){
@@ -626,17 +629,19 @@ function updateVerteilung(inputs, Pkt_Verteilung, callback){
 		maxPts = inputs[0].value;
 	}
 	// DB - Object
-	newObject[0][l_id] = {'Verteilungen':{},};
-	newObject[0][l_id]['Verteilungen'][Pkt_Verteilung] = {
+	newObject[l_id] = {'Verteilungen':{},};
+	newObject[l_id]['Verteilungen'][Pkt_Verteilung] = {
 		'Kat1': wertArray[0],
 		'Kat2': wertArray[1],
 		'Kat3': wertArray[2],
 		'Kat4': wertArray[3],
 		'Gesamt': maxPts,
 	}
+	newObject[l_id].changed = timestamp();
 	
 	// in DB speichern
-	updateLeistung(function(result){
+	//db_updateLeistung(function(result){
+	db_updateData(function(result){
 
 		// Save in SessionStoreage
 		if (inputs.length==1) {
@@ -647,7 +652,7 @@ function updateVerteilung(inputs, Pkt_Verteilung, callback){
 
 		if (callback != null) {callback(result);}
 	
-	}, art, newObject);
+	}, newObject);
 }
 
 function updateVerteilungHTML(){
@@ -731,7 +736,7 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 //--> Leistungen der Schüler speichern
 	var i;
 	var art = sessionStorage.getItem('leistung_art');
-	var id_Leistung = sessionStorage.getItem('leistung_id');
+	var id_Leistung = parseInt(sessionStorage.getItem('leistung_id'));
 	var liAll = document.getElementById('arbeit_leistung').getElementsByTagName('li');
 	var liID, row, liKat, i2, keyVal, note, newObs = {};
 	for (i=0;i<liAll.length;i++){
@@ -746,6 +751,7 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 		note = row.getElementsByClassName('Note')[0].getElementsByTagName('span');
 		newObs[liID][art][id_Leistung].Mitschreiber = row.getAttribute('data-mitschreiber');
 		newObs[liID][art][id_Leistung].Gewichtung = parseFloat(sessionStorage.getItem('leistung_gewicht'));
+		newObs[liID][art][id_Leistung].changed = timestamp();
 		if (newObs[liID][art][id_Leistung].Mitschreiber == "true"){
 			newObs[liID][art][id_Leistung].Note = note[0].innerHTML;
 			newObs[liID][art][id_Leistung].Bezeichnung = Bezeichnung;
@@ -767,8 +773,8 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 	}
 
 	// Objecte in Schüler Dicts einfügen
-	updateLeistung(function(){
-		updateSchnitt(function(){
+	db_updateData(function(){
+		db_updateSchnitt(function(){
 
 			// Animationen
 			document.getElementById('item2details').classList.remove('show');
@@ -789,7 +795,7 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 			}
 		})
 
-	}, art, newObs);
+	}, newObs);
 }
 
 function item2Abort() {
@@ -948,6 +954,7 @@ function calc_Stats(bol_Mitschreiber){
 
 
 function dropLeistung(){
+	alert("Diese Funktion ist noch nicht auf die neue Datenbankengine umgestellt worden !");
 	db.transaction(
 			function(transaction){
 			transaction.executeSql(

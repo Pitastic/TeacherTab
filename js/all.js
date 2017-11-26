@@ -187,12 +187,8 @@ function RohpunkteAlsNote(val, bol_15pkt){
 // ================     Standards     ================ //
 // =================================================== //
 
-function quit(){
-	if(window.confirm('Änderungen synchronisieren ?')){
-		initSyncSQL();
-	}else{
-		window.location = "index.htm";
-	}
+function isObject(item) {
+	return (item && typeof item === 'object' && !Array.isArray(item));
 }
 
 function objLength(obj) {
@@ -203,6 +199,40 @@ function objLength(obj) {
 	return size;
 }
 
+function mergeObjects(old1, new1){
+	for (k in new1){
+		// Verschachtelungen assignen, Werte zuordnen
+		if (typeof(new1[k]) == "object") {
+			Object.assign(old1[k], new1[k]);
+		}else{
+			old1[k] = new1[k];
+		}
+	}
+	return old1;
+}
+
+
+// Objekte rekursiv zusammenführen:
+// von: https://stackoverflow.com/a/34749873
+function mergeDeep(target, ...sources) {
+	if (!sources.length) return target;
+	var source = sources.shift();
+
+	if (isObject(target) && isObject(source)) {
+		for (var key in source) {
+			if (isObject(source[key])) {
+				if (!target[key]) Object.assign(target, { [key]: {} });
+					mergeDeep(target[key], source[key]);
+				} else {
+					Object.assign(target, { [key]: source[key] });
+				}
+			}
+		}
+
+	return mergeDeep(target, ...sources);
+}
+
+
 function sum(n){
 	var i, r = 0;
 	for (i=0;i<n.length;i++){
@@ -210,6 +240,7 @@ function sum(n){
 	}
 	return r;
 }
+
 
 function schnitt(_obj, bol_fspz){
 	// Besonderheiten bei Trennung von Vok und Gra beachten !
@@ -239,6 +270,7 @@ function schnitt(_obj, bol_fspz){
 	}
 }
 
+
 function schnitt_m_f(omndl, ofspz){
 // Schnitt zwischen oMndl und Fspz
 	var gew_fspz = SETTINGS.gewichtung["davon fachspezifisch"];
@@ -253,6 +285,7 @@ function schnitt_m_f(omndl, ofspz){
 	return "";
 }
 
+
 function datum(){
 	var d = new Date();
 	var monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
@@ -263,10 +296,24 @@ function datum(){
 	return tag+'. '+monat+' '+jahr;
 }
 
+
+function timestamp() {
+	return Math.round(new Date().getTime() / 1000);
+}
+
 function goBack(){
 	readDB_tables(listIdx_Select,"");
 	slide('uebersicht0_In', 'item0');
 	noTouchSlider();
+}
+
+
+function quit(){
+	if(window.confirm('Änderungen synchronisieren ?')){
+		initSyncSQL();
+	}else{
+		window.location = "index.htm";
+	}
 }
 
 // =================================================== //
@@ -363,8 +410,8 @@ function fspz_Bezeichnung2(){
 
 function popUpClose(thisElement, bol_refresh){
 	if(bol_refresh){
-		readData(listStudents);
-		readData(listLeistung);
+		db_readMultiData(listStudents, "student");
+		db_readMultiData(listLeistung, "leistung");
 	}
 	thisElement.parentNode.parentNode.classList.remove('showPop');
 	setTimeout(function() {
@@ -374,39 +421,87 @@ function popUpClose(thisElement, bol_refresh){
 }
 
 // =================================================== //
-// ================ Datenbank - Fnctn ================ //
+// ============= Datenbank - Objekt-Hilfe ============ //
 // =================================================== //
 
-function readSettings(callback){
-	klasse = sessionStorage.getItem('klasse');
-	readData(function(results){
-		SETTINGS = results;
-		delete SETTINGS.leistungen;
-		console.log("Settings geladen");
-		callback();
-		}, 0);
+// Standard Einstellungen
+function formSettings() {
+	return {
+		'typ': "settings",
+		'changed': 0,
+		'fspzDiff' : false,
+		'gewichtung' : {
+			"mündlich" : 0.6,
+			"davon fachspezifisch" : 0.2,
+			"schriftlich" : 0.4,
+		},
+		'klasse' : klasse,
+		'kompetenzen' : {'Gesamt': "Gesamt", 1:"Kategorie 1", 2:"Kategorie 2", 3:"Kategorie 3", 4:"Kategorie 4"},
+		'notenverteilung' : {1:95,2:80,3:75,4:50,5:25,6:0},
+		'showVorjahr' : false,
+		'studSort' : false,
+	};
+}
+
+// Schüler mit ersten Daten
+function formStudent(vName, nName, sex){
+	sex = (sex) ? sex : "-";
+	return {
+		'typ' : "student",
+		'name' : {
+			'nname': nName,
+			'vname': vName,
+			'sex': sex,
+		},
+		'mndl' : {},
+		'fspz' : {},
+		'schr' : {},
+		'gesamt' : {
+			'omndl': null,
+			'ofspz': {
+				'gesamt': null,
+				'vokabeln': null,
+				'grammatik': null,
+			},
+			'oschr': null,
+			'rechnerisch': null,
+			'eingetragen': null,
+			'vorjahr': null,
+		},
+		'kompetenzen' : [],
+		'changed' : 0,
+	}
+}
+
+// Leistung mit ersten Daten
+function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
+	return {
+		'typ': "leistung",
+		'subtyp': art,
+		'changed': 0,
+		'Bezeichnung' : bezeichnung,
+		'Datum' : datum,
+		'Eintragung' : eintragung,
+		'DS' : undefined,
+		'Gewichtung' : gewicht,
+		'Verteilungen' : {
+			'Standard' : {
+				'Kat1' : 0,
+				'Kat2' : 0,
+				'Kat3' : 0,
+				'Kat4' : 0,
+				'Gesamt' : 0,
+			},
+		},
+		'Schreiber' : {
+			'Bester' : undefined,
+			'Schlechtester' : undefined,
+			'nMitschr' : undefined,},
+	};
 }
 
 
-function import_Column(from_column, from_klasse, to_column) {
-	var sql_statement = 'UPDATE '+klasse+' SET '+to_column+'=(SELECT '+from_column+' FROM '+from_klasse+' WHERE '+from_klasse+'.nName = '+klasse+'.nName AND '+from_klasse+'.vName = '+klasse+'.vName) WHERE id != 0';
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		sql_statement, [], successHandler, errorHandler);
-		});
-	return;
-}
 
-
-function checkColumn(col, type) {
-	type = type || "TEXT";
-	var ergebnis;
-	db.transaction(
-		function(transaction){
-		transaction.executeSql('SELECT '+col+' FROM '+klasse+'', [], null, function(){createColumn(col, type)});
-	});
-}
 
 // ==============================================================
 // ================== Smartphone Anpassungen ====================

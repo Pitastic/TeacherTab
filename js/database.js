@@ -77,7 +77,7 @@ function initDB() {
 // ===================================================== //
 
 // Alle Klassen auflisten
-function listKlassen(callback) {
+function db_listKlassen(callback) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
@@ -96,7 +96,7 @@ function listKlassen(callback) {
 
 
 // Neue Klasse anlegen
-function neueKlasse(bezeichnung) {
+function db_neueKlasse(bezeichnung) {
 	dbversion = localStorage.getItem("dbversion");
 	dbversion = parseInt(dbversion) + 1
 	localStorage.setItem("dbversion", dbversion);
@@ -104,7 +104,7 @@ function neueKlasse(bezeichnung) {
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
 		var connection = event.target.result;
-		addSettings(connection);
+		db_addDocument(false, formSettings());
 
 		// ---> Garbage Collection
 		connection.onversionchange = function(event) {
@@ -116,7 +116,11 @@ function neueKlasse(bezeichnung) {
 		var connection = event.target.result;
 		if (!connection.objectStoreNames.contains(bezeichnung)) {
 				console.log("indexedDB: creating");
-				connection.createObjectStore(bezeichnung, {keyPath: "id", autoIncrement: true});
+				// Erstelle ObhectStore
+				var oStore = connection.createObjectStore(bezeichnung, {keyPath: "id", autoIncrement: true});
+				// Erstelle Indexes
+				oStore.createIndex("typ", "typ", { unique: false });
+				// Globale Variable speichern
 				klasse = bezeichnung;
 				console.log("indexedDB:", bezeichnung, "created");
 		}else{
@@ -127,35 +131,8 @@ function neueKlasse(bezeichnung) {
 }
 
 
-// Klassenspezifische Einstellungen anlegen
-function addSettings(dbConnection) {
-	var objectStore = dbConnection.transaction([klasse], "readwrite").objectStore(klasse);
-	row = {
-		'id' : 0,
-		'fspzDiff' : false,
-		'gewichtung' : {
-			"mündlich" : 0.6,
-			"davon fachspezifisch" : 0.2,
-			"schriftlich" : 0.4,
-		},
-		'klasse' : klasse,
-		'kompetenzen' : {'Gesamt': "Gesamt", 1:"Kategorie 1", 2:"Kategorie 2", 3:"Kategorie 3", 4:"Kategorie 4"},
-		'leistungen' : {
-			'mndl' : {},
-			'fspz' : {},
-			'schr' : {},
-		},
-		'notenverteilung' : {1:95,2:80,3:75,4:50,5:25,6:0},
-		'showVorjahr' : false,
-		'studSort' : false,
-	}
-	objectStore.add(row);
-	return;
-}
-
-
 // Klasse löschen
-function dropKlasse(bezeichnung, callback) {
+function db_dropKlasse(bezeichnung, callback) {
 	if (bezeichnung == "" || !bezeichnung) {return;}
 	// First: Clear the store
 	var request1 = indexedDB.open(dbname, dbversion);
@@ -201,66 +178,24 @@ function dropKlasse(bezeichnung, callback) {
 }
 
 
-// Neuen Schüler in Klasse anlegen
-function neuerStudent(data, callback) {
+// Neues Document in DB anlegen (typen-unabhängig)
+function db_addDocument(callback, newObject) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event, rowlist){
 		var connection = event.target.result;
 		var objectStore = connection.transaction([klasse], "readwrite").objectStore(klasse);
-		var rowlist = [];
-		// -- FCK js Object-Handling
-		row = JSON.stringify(
-			{
-			'name' : {
-				'nname':"",
-				'vname':"",
-				'sex':"-",
-			},
-			'mndl' : {},
-			'fspz' : {},
-			'schr' : {},
-			'gesamt' : {
-				'omndl': null,
-				'ofspz': {
-					'gesamt': null,
-					'vokabeln': null,
-					'grammatik': null,
-				},
-				'oschr': null,
-				'rechnerisch': null,
-				'eingetragen': null,
-				'vorjahr': null,
-			},
-			'kompetenzen' : [],
-			'changed' : 0,
-		})
-		// Concat massenAdd if present
-		var newName;
-		if (Array.isArray(data[0])) {
-			for (var i = 0; i < data.length; i++) {
-				newName = JSON.parse(row);
-				newName.name.vname = data[i][1];
-				newName.name.nname = data[i][0];
-				newName.name.sex = "-";
-				rowlist.push(newName);
-				newName = null;
-			}
-		}else{
-			newName = JSON.parse(row);
-			newName.name.vname = data[0];
-			newName.name.nname = data[1];
-			newName.name.sex = "-";
-			rowlist.push(newName);
-			newName = null;
-		}
 
+		// multiples Einfügen oder einzelner Datensatz
+		var rowlist = (Array.isArray(newObject)) ? newObject : [newObject];
+
+		// Speicher-Iteration
 		putNext(0);
 		function putNext(iterator) {
 			if (iterator<rowlist.length) {
 				objectStore.put(rowlist[iterator]).onsuccess = function(){putNext(iterator+1)};
 			} else {   // complete
-				console.log("indexedDB: Schüler eingefügt");
+				console.log("indexedDB: Datensatz eingefügt");
 				if (callback) {callback(connection);}
 			}
 		}
@@ -278,8 +213,38 @@ function neuerStudent(data, callback) {
 }
 
 
+function db_deleteDoc(callback, id){
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse], "readwrite").objectStore(klasse);
+		var result = objectStore.delete(id);
+		result.onerror = errorHandler;
+		result.onsuccess = function(event){
+			console.log("indexedDB: Eintrag ID", id, "gelöscht");
+			// Eintrag auch vom Account löschen, wenn online
+			if (navigator.onLine){
+				sync_deleteDoc(id);
+			}else{
+				alert("Kein Kontakt zum SyncServer.\nDer Eintrag wurde nur von diesem Gerät entfernt.");
+			}
+			if (callback) {callback(connection);}
+		}
+		connection.close();
+
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		};
+
+		return;
+	}
+}
+
+
 // Schüler aus Klasse löschen
-function deleteStudent(id, callback) {
+function db_deleteStudent(id, callback) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
@@ -310,7 +275,7 @@ function deleteStudent(id, callback) {
 
 
 // neue Leistung in aktueller Klasse anlegen
-function neueLeistung(callback, art, Leistung) {
+function db_neueLeistung(callback, art, Leistung) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
@@ -342,7 +307,7 @@ function neueLeistung(callback, art, Leistung) {
 
 
 // Leistung aus aktueller Klasse löschen
-function deleteLeistung(callback, art, id) {
+function db_deleteLeistung(callback, art, id) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
@@ -385,31 +350,58 @@ function deleteLeistung(callback, art, id) {
 }
 
 
-// ID aus der aktuellen Klasse lesen (default => Array mit allen)
-function readData(callback, id) {
+// Einstellungen für globale Variable lesen
+function db_readSettings_old(callback){
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
 		var connection = event.target.result;
+		klasse = sessionStorage.getItem('klasse');		
 		var objectStore = connection.transaction([klasse]).objectStore(klasse);
-		var result = {};
-		if (id || id == 0) {
-			var transaction1 = objectStore.get(id)
-			transaction1.onerror = errorHandler;
-			transaction1.onsuccess = function(event){
-				connection2 = event.target.result;
-				callback(connection2);
-			};
-		}else{
-			var transaction2 = objectStore.openCursor()
-			transaction2.onerror = errorHandler;
-			transaction2.onsuccess = function(event){
-				var cursor = event.target.result;
-				if (cursor) {
-					result[cursor.key] = cursor.value;
-					cursor.continue();
-				}else{
+		var idxTyp = objectStore.index("typ");
+
+		// Select
+		var transaction = idxTyp.get("settings");
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(){
+			SETTINGS = transaction.result;
+			console.log("Settings geladen...");
+			callback(transaction.result);
+		};
+	}
+}
+
+
+// Document anhand Typ und ID selektieren
+function db_readSingleData(callback, typ, id, emptyCall) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var result = false;
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse]).objectStore(klasse);
+		
+		// Typ einschränken
+		var idxTyp = objectStore.index("typ");
+		var keyRange = IDBKeyRange.only(typ);
+		var transaction = idxTyp.openCursor(keyRange);
+		
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			var cursor = event.target.result;
+			if (cursor) {
+				if (!result && id != null && cursor.value.id == id) {
+					// Nur den ersten Treffer speichern
+					result = cursor.value;
+				}
+				// in jedem Fall zu ende Itterieren (muss halt so)
+				cursor.continue();
+			}else{
+				if (result) {
 					callback(result);
+				}else{
+					console.log("Hierzu gibt es noch keine Daten:", typ, id);
+					if (emptyCall) {emptyCall();}
 				}
 			}
 		}
@@ -417,8 +409,94 @@ function readData(callback, id) {
 }
 
 
+// Alle Documente eines Typs selektieren
+function db_readMultiData(callback, typ, emptyCall) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var result = [];
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse]).objectStore(klasse);
+		
+		// Typ einschränken
+		var idxTyp = objectStore.index("typ");
+		var transaction = idxTyp.getAll(typ);
+		
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			result = event.target.result;
+			if (result.length > 0) {
+				callback(result);
+			}else{
+				console.log("In deiner Klasse ist noch zu wenig los dafür:", typ);
+				if (emptyCall) {emptyCall();}
+			}
+		}
+	}
+}
+
+
+// Update eines Documents durch Ersetzen
+function db_replaceData(callback, newObject) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
+		updateRequest = objectStore.put(newObject);
+		updateRequest.onsuccess = function(event){
+			console.log("IndexDB : item", newObject.id, "replaced");
+			callback();
+		}
+
+		connection.close();
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		};
+
+	}
+}
+
+
 // Objekt (mit Tiefe von 0 bis 1) updaten in aktueller Klasse
-function updateData(callback, newObjects) {
+// (Update eines Documents durch Zusammenführung)
+function db_updateData(callback, newObjects) {
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
+		var transaction = objectStore.openCursor()
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			var id, cursor = event.target.result;
+			if (cursor) {
+				id = cursor.value.id;
+				if (newObjects.hasOwnProperty(id.toString())) {
+					var toUpdate = mergeDeep(cursor.value, newObjects[id]);
+					var requestUpdate = cursor.update(toUpdate);
+					requestUpdate.onsuccess = function() {
+						console.log("indexDB: ID", id, "updated...")
+					};
+				}
+				cursor.continue();
+			}else{
+				callback();
+			}
+		}
+
+		connection.close();
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		};
+
+	}
+}
+
+
+function old_db_updateData(callback, newObjects) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
@@ -431,15 +509,7 @@ function updateData(callback, newObjects) {
 			if (cursor) {
 				id = cursor.value.id;
 				if (id in newObjects) {
-					toUpdate = cursor.value;
-					for (k in newObjects[id]){
-						// Verschachtelungen assignen, Werte zuordnen
-						if (typeof(newObjects[id][k]) == "object") {
-							Object.assign(toUpdate[k], newObjects[id][k]);
-						}else{
-							toUpdate[k] = newObjects[id][k];
-						}
-					}
+					var toUpdate = mergeObjects(cursor.value, newObjects[id]);
 					var requestUpdate = cursor.update(toUpdate);
 					requestUpdate.onsuccess = function() {
 						console.log("indexDB: ID", id,"updated...")
@@ -462,7 +532,7 @@ function updateData(callback, newObjects) {
 
 
 // Schüler-Objekte der Leistungen in aktueller Klasse aktualisieren
-function updateLeistung(callback, art, newObjects) {
+function db_updateLeistung(callback, art, newObjects) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
@@ -512,7 +582,7 @@ function updateLeistung(callback, art, newObjects) {
 
 
 // Durchschnitte von Leistungen aktualisieren (default = alles bei allen)
-function updateSchnitt(callback, id) {
+function db_updateSchnitt(callback, id) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
@@ -521,6 +591,10 @@ function updateSchnitt(callback, id) {
 		var transaction = objectStore.openCursor();
 		transaction.onerror = errorHandler;
 		transaction.onsuccess = function(event){
+			alert("updateSchnitt() ist deaktiviert !");
+			callback();
+
+/*
 			var ds_art, neuerStudent, cursor;
 			var art = ["mndl","fspz","schr"];
 			cursor = event.target.result;
@@ -597,7 +671,7 @@ function updateSchnitt(callback, id) {
 			}else{
 				callback();
 			}
-
+*/
 		connection.close();
 		}
 

@@ -1,10 +1,11 @@
 $(document).ready(function() {
 	// Funktionen, die auf global SETTINGS warten müssen
-	readSettings(function(){
+	db_readMultiData(function(r){
+		SETTINGS = r[0];
 		// List first View
-		readData(listStudents);
-		readData(listLeistung);
-	});
+		db_readMultiData(listStudents, "student");
+		db_readMultiData(listLeistung, "leistung", function(){listLeistung([])});
+	}, "settings");
 
 	// Event-Listener
 	addListener();
@@ -32,13 +33,12 @@ $(document).ready(function() {
 // ============ Listings =============================== //
 // ===================================================== //
 
-// Tabellenübersicht der Schüler erstellen
-function listStudents(results, option) {
+// Tabellenübersicht aus Array aller Schüler erstellen
+function listStudents(results) {
 	var c, r, ul, old, row, omndl, ofspz, oschr, gesamt, len;
 	old = document.getElementById("listStudents").getElementsByTagName('ul')[0];
 	ul = document.createElement('ul');
-	for (i in results){
-		if (i==0) {continue;}
+	for (var i = 0; i < results.length; i++) {
 		row = results[i];
 		omndl = row.gesamt.omndl;
 		ofspz = row.gesamt.ofspz.Gesamt;
@@ -104,53 +104,67 @@ function listStudents(results, option) {
 	}
 }
 
+
+// Auflisten aller Leistungen als Tabelle
 function listLeistung(results){
-	results = results[0];
-	var c, r, ul, idx, id_Leistung, dict_Leistungen, i;
+	var c, r, ul, idx, art, id_Leistung, Leistung, hasEntries;
 	var old = document.getElementById("listLeistung").getElementsByTagName('ul');
 	
-	// Array fürs itterieren durch die Header
-	var art = ['mndl', 'fspz', 'schr'];
-	for (i=0; i<art.length; i++){
+	var arten = ['mndl', 'fspz', 'schr'];
+	for (art = 0; art < arten.length; art++){
+		hasEntries = false;
+
+		// Abarbeiten der Listen nach Leistungsart (Leistungs-Loop)
 		ul = document.createElement('ul');
-		dict_Leistungen = results.leistungen[art[i]];
-		// Leeres Leistungsobjekt ?
-		if (Object.keys(dict_Leistungen).length === 0 && dict_Leistungen.constructor === Object){
+		for (idx = 0; idx < results.length; idx++) {
+
+				if (results[idx].subtyp == arten[art]) {
+					// Leistung hat einen Eintrag > auflisten
+					hasEntries = true;
+					Leistung = results[idx];
+
+					r = document.createElement('li');
+					//r.setAttribute('data-l_column', art[idx]); // mit neuem Schema nicht mehr benötigt ?!
+					r.setAttribute('data-l_subtyp', Leistung.subtyp);
+					r.setAttribute('data-l_id', Leistung.id);
+						c = document.createElement('div');
+							c.className = "name";
+							c.innerHTML = Leistung.Bezeichnung;
+						r.appendChild(c);
+						c = document.createElement('div');
+							c.innerHTML = Leistung.Datum;
+						r.appendChild(c);
+						c = document.createElement('div');
+							c.innerHTML = "&#160;";
+							c.classList.add(Leistung.Eintragung.toLowerCase());
+						r.appendChild(c);
+						c = document.createElement('div');
+							c.innerHTML = Leistung.Gewichtung + "x";
+							c.className = "gewichtung";
+						r.appendChild(c);
+						c = document.createElement('div');
+							c.className = "tools right";
+							c.innerHTML = "&gt;";
+						r.appendChild(c);
+					ul.appendChild(r);
+				}
+
+		} // ende des Leistungs-Loops
+
+		if (!hasEntries){
+			// Leistung hatte keine Einträge
 			r = document.createElement('li');
 				c = document.createElement('div');
 					c.className = "keine";
 					c.innerHTML = "- keine -";
 			r.appendChild(c);
 			ul.appendChild(r);
-		}else{
-			for (id_Leistung in dict_Leistungen){
-				r = document.createElement('li');
-				r.setAttribute('data-l_column', art[i]);
-				r.setAttribute('data-l_id', id_Leistung);
-					c = document.createElement('div');
-						c.className = "name";
-						c.innerHTML = dict_Leistungen[id_Leistung].Bezeichnung;
-					r.appendChild(c);
-					c = document.createElement('div');
-						c.innerHTML = dict_Leistungen[id_Leistung].Datum;
-					r.appendChild(c);
-					c = document.createElement('div');
-						c.innerHTML = "&#160;";
-						c.classList.add(dict_Leistungen[id_Leistung].Eintragung.toLowerCase());
-					r.appendChild(c);
-					c = document.createElement('div');
-						c.innerHTML = dict_Leistungen[id_Leistung].Gewichtung + "x";
-						c.className = "gewichtung";
-					r.appendChild(c);
-					c = document.createElement('div');
-						c.className = "tools right";
-						c.innerHTML = "&gt;";
-					r.appendChild(c);
-				ul.appendChild(r);
-			}
 		}
-	old[i].parentNode.replaceChild(ul,old[i]);
-	}
+		
+		old[art].parentNode.replaceChild(ul,old[art]);
+
+	} // ende des Arten-Loops
+
 	// PopUp Datum
 	document.getElementById('notenDatum').value = datum();
 	// Eventlistener	
@@ -160,10 +174,11 @@ function listLeistung(results){
 			var id_Leistung = this.getAttribute('data-l_id');
 			if (id_Leistung) {
 				sessionStorage.setItem('leistung_id', this.getAttribute('data-l_id'));
-				sessionStorage.setItem('leistung_art', this.getAttribute('data-l_column'));
+				//sessionStorage.setItem('leistung_art', this.getAttribute('data-l_column')); // mit neuem Schema nicht mehr benötigt ?!
+				sessionStorage.setItem('leistung_art', this.getAttribute('data-l_subtyp'));
 				itemAbort(['item2'],'details_leistungen.htm');
 			}else{
-				alert("Keine Leistung vorhanden.\nKlick auf den Button 'Hinzufügen' um eine hinzuzufügen");
+				alert("Klick auf den Button 'Hinzufügen' um eine Leistung hinzuzufügen");
 			}
 		});
 	}
@@ -179,12 +194,12 @@ function addStudent(el){
 	var vName = this.vName.value;
 	var nName = this.nName.value;
 	
-	neuerStudent([vName, nName], function(e){
+	db_addDocument(function(e){
 		popUpClose(el);
 		this.vName.value = '';
 		this.nName.value = '';
-		readData(listStudents);
-	});
+		db_readMultiData(listStudents, "student");
+	}, formStudent(vName, nName));
 
 }
 
@@ -202,18 +217,17 @@ function massenAdd(el){
 	zeilen = textblock.value.split(trennZeile);
 	for (zeile in zeilen){
 		vnn = zeilen[zeile].split(trennNamen);
-		namen.push([vnn[0].trim(),vnn[1].trim()]);
+		// Schüler-Objekt in Liste
+		namen.push(formStudent(vnn[0].trim(),vnn[1].trim()));
 	}
 
-
-console.log(namen)
-	neuerStudent(namen, function(){
+	db_addDocument(function(){
 		setTimeout(function() {
 			popUpClose(el);
-			readData(listStudents);
+			db_readMultiData(listStudents, "student");
 		}, 500);
 		textblock.value = "";
-	});
+	}, namen);
 
 	return true;
 }
@@ -231,29 +245,10 @@ function addLeistung(thisElement){
 	var nGewicht = parseFloat(document.getElementById('rangeWert').value);
 	
 	// Leistung als Object erstellen
-	var Leistung = {
-		'id':d,
-		'Bezeichnung' : nBezeichnung.value,
-		'Datum' : nDatum,
-		'Eintragung' : nEintragung.value,
-		'DS' : undefined,
-		'Gewichtung' : nGewicht,
-		'Verteilungen' : {
-			'Standard' : {
-				'Kat1' : 0,
-				'Kat2' : 0,
-				'Kat3' : 0,
-				'Kat4' : 0,
-				'Gesamt' : 0,
-			},
-		},
-		'Schreiber' : {
-			'Bester' : undefined,
-			'Schlechtester' : undefined,
-			'nMitschr' : undefined,},
-	};
-	// Leistung in id=0 dict einfügen
-	neueLeistung(function() {
+	var Leistung = formLeistung(nArt, nBezeichnung.value, nDatum, nEintragung.value, nGewicht);
+
+	// In DB einfügen
+	db_addDocument(function() {
 		// Reset popUp
 		if (!SETTINGS.fspzDiff || nArt != "fspz") {
 			nBezeichnung.value = '';
@@ -261,7 +256,7 @@ function addLeistung(thisElement){
 		setTimeout(function() {
 			popUpClose(thisElement, true)
 		}, 150);
-	}, nArt, Leistung);
+	}, Leistung);
 }
 
 

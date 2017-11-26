@@ -52,7 +52,7 @@ function deleteKlasse(selKlasse){
 	popUp("item0Sync");
 	setTimeout(function() {
 		_elementTxt.innerHTML = "Lösche Klasse von diesem Gerät !";
-		dropKlasse(selKlasse);
+		db_dropKlasse(selKlasse);
 		_element.style.width = "100%";
 		setTimeout(function(){
 				_element.classList.add('ok');
@@ -235,21 +235,21 @@ console.log("pulling...");
 }
 
 
-function SYNC_deleteStudent(studID) {
+function sync_deleteDoc(ID) {
 	$.ajax({
-		url:serverIP+'/deleteStudent.py',
+		url:serverIP+'/deleteDoc.py',
 		type:'post',
 		crossDomain:true,
 		data:{
 			klasse:klasse,
 			user:userID,
-			studID:studID,
+			entry:ID,
 		},
 		dataType:'json',
 		error:function(jqXHR, status, data){console.log("ERROR (status, jqXHR, data):", status, jqXHR, data);},
 		}
 		).done(function(data, status, jqXHR){
-			alert("Schüler vom Gerät und auf dem SyncServer gelöscht !\nTrotzdem musst du diesen Schüler von jedem Gerät selbst löschen, damit er beim Sync nicht wieder hinzugefügt wird.");
+			alert("Eintrag vom Gerät und auf dem SyncServer gelöscht !\nTrotzdem musst du diesen Eintrag von jedem Gerät selbst löschen, damit er beim nächsten Sync nicht wieder hinzugefügt wird.");
 	});
 }
 

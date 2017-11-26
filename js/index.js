@@ -10,7 +10,7 @@ $(document).ready(function() {
 		// >>>>>>>> DEV: Bisher direktes Öffnen ohne Sync und Dialog
 		klassenAuswahl(document.getElementById('klasseSelect'));
 		initSyncSQL();
-		//listKlassen(listIdx_Select);
+		//db_listKlassen(listIdx_Select);
 		// <<<<<<<< DEV <
 	});
 	document.getElementById('btn_Delete').addEventListener('click', function(){
@@ -70,7 +70,7 @@ $(document).ready(function() {
 		// -- Init DB
 		initDB();
 		// -- Liste aller Klassen
-		listKlassen(listIdx_Select);
+		db_listKlassen(listIdx_Select);
 		// -- Set Allgemeine Einstellungen PopUp
 		document.getElementById('userID').value = userID;
 		document.getElementById('serverIP').value = serverIP;
@@ -166,7 +166,7 @@ function addKlasse(thisElement) {
 			fachKlasse.value + ' ' + // Fach
 			nameKlasse.value;  // Name
 		sessionStorage.setItem('klasse', newKlasse);
-		neueKlasse(newKlasse);
+		db_neueKlasse(newKlasse);
 		document.getElementById('item0').classList.remove('show');
 		popUpClose(thisElement);
 		setTimeout(function() {
