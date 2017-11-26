@@ -392,7 +392,7 @@ function item1Save(id){
 		},
 		'gesamt' : {
 			'eingetragen' : parseInt(document.getElementById('ds_gesamt_eingetragen').getElementsByTagName('select')[0].value) || null,
-		}
+		},
 		'changed' : timestamp(),
 	};
 	db_updateData(
