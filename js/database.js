@@ -244,7 +244,7 @@ function db_deleteDoc(callback, id){
 
 
 // Schüler aus Klasse löschen
-function db_deleteStudent(id, callback) {
+function db_deleteStudent_deprecated(id, callback) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
@@ -274,40 +274,8 @@ function db_deleteStudent(id, callback) {
 }
 
 
-// neue Leistung in aktueller Klasse anlegen
-function db_neueLeistung(callback, art, Leistung) {
-	var request = indexedDB.open(dbname, dbversion);
-	request.onerror = errorHandler;
-	request.onsuccess = function(event){
-		var connection = event.target.result;
-		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
-		var transaction = objectStore.openCursor()
-		transaction.onerror = errorHandler;
-		transaction.onsuccess = function(event){
-			var id, cursor = event.target.result;
-			if (cursor && cursor.value.id == 0) {
-				new_entry = cursor.value;
-				new_entry.leistungen[art][Leistung.id] = Leistung;
-				var requestUpdate = cursor.update(new_entry);
-				requestUpdate.onsuccess = function() {
-					console.log("indexedDB: ID", Leistung.id,"updated...")
-					connection.close();
-					callback();
-				};
-			}
-		}
-		
-		// ---> Garbage Collection
-		connection.onversionchange = function(event) {
-			connection.close();
-		};
-
-	}
-}
-
-
 // Leistung aus aktueller Klasse löschen
-function db_deleteLeistung(callback, art, id) {
+function db_deleteLeistung_deprecated(callback, art, id) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
@@ -346,28 +314,6 @@ function db_deleteLeistung(callback, art, id) {
 			connection.close();
 		};
 
-	}
-}
-
-
-// Einstellungen für globale Variable lesen
-function db_readSettings_old(callback){
-	var request = indexedDB.open(dbname, dbversion);
-	request.onerror = errorHandler;
-	request.onsuccess = function(event){
-		var connection = event.target.result;
-		klasse = sessionStorage.getItem('klasse');		
-		var objectStore = connection.transaction([klasse]).objectStore(klasse);
-		var idxTyp = objectStore.index("typ");
-
-		// Select
-		var transaction = idxTyp.get("settings");
-		transaction.onerror = errorHandler;
-		transaction.onsuccess = function(){
-			SETTINGS = transaction.result;
-			console.log("Settings geladen...");
-			callback(transaction.result);
-		};
 	}
 }
 
@@ -496,73 +442,30 @@ function db_updateData(callback, newObjects) {
 }
 
 
-function old_db_updateData(callback, newObjects) {
+// Wendet eine Funktion auf einen Eintrag (Typ/ID) an und updatet mit dem Ergebnis
+function db_dynamicUpdate(callback, toApply, typ, eID) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
 	request.onsuccess = function(event){
 		var connection = event.target.result;
 		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
-		var transaction = objectStore.openCursor()
+		
+		// Typ einschränken
+		var idxTyp = objectStore.index("typ");
+		var keyRange = IDBKeyRange.only(typ);
+		var transaction = idxTyp.openCursor(keyRange);
+
 		transaction.onerror = errorHandler;
 		transaction.onsuccess = function(event){
 			var id, cursor = event.target.result;
 			if (cursor) {
 				id = cursor.value.id;
-				if (id in newObjects) {
-					var toUpdate = mergeObjects(cursor.value, newObjects[id]);
+				if ( (eID != null && eID == id) || eID == null ) {
+					var toUpdate = cursor.value;
+					toUpdate = toApply(toUpdate);
 					var requestUpdate = cursor.update(toUpdate);
 					requestUpdate.onsuccess = function() {
-						console.log("indexDB: ID", id,"updated...")
-					};
-				}
-				cursor.continue();
-			}else{
-				callback();
-			}
-		}
-
-		connection.close();
-		// ---> Garbage Collection
-		connection.onversionchange = function(event) {
-			connection.close();
-		};
-
-	}
-}
-
-
-// Schüler-Objekte der Leistungen in aktueller Klasse aktualisieren
-function db_updateLeistung(callback, art, newObjects) {
-	var request = indexedDB.open(dbname, dbversion);
-	request.onerror = errorHandler;
-	request.onsuccess = function(event){
-		var connection = event.target.result;
-		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
-		var transaction = objectStore.openCursor()
-		transaction.onerror = errorHandler;
-		transaction.onsuccess = function(event){
-			var id, cursor = event.target.result;
-			if (cursor) {
-				id = cursor.value.id;
-				if (id in newObjects) {
-					toUpdate = cursor.value;
-					// Objekte vereinen
-					if (id == 0) {
-						// Eine Ebene tiefer bei ID 0
-						for (l_id in newObjects[id]){
-							if (newObjects[id][l_id].hasOwnProperty("Verteilungen")) {
-								// noch tiefer bei Verteilungen
-								Object.assign(toUpdate.leistungen[art][l_id]['Verteilungen'], newObjects[id][l_id]['Verteilungen']);
-							}else{
-								Object.assign(toUpdate.leistungen[art][l_id], newObjects[id][l_id]);
-							}
-						}
-					}else{
-						toUpdate[art] = Object.assign(toUpdate[art], newObjects[id][art]);
-					}
-					var requestUpdate = cursor.update(toUpdate);
-					requestUpdate.onsuccess = function() {
-						console.log("indexedDB: Leistung geupdated bei ID", id, "...");
+						console.log("indexDB: ID", id, "applied", toApply.name+"()")
 					};
 				}
 				cursor.continue();
@@ -594,7 +497,6 @@ function db_updateSchnitt(callback, id) {
 			alert("updateSchnitt() ist deaktiviert !");
 			callback();
 
-/*
 			var ds_art, neuerStudent, cursor;
 			var art = ["mndl","fspz","schr"];
 			cursor = event.target.result;
@@ -611,67 +513,67 @@ function db_updateSchnitt(callback, id) {
 
 					var Student = cursor.value;
 
-					// Durchschnitt aller Bereiche
-					for (var i = 0; i < art.length; i++) {
-						ds_art = "o"+art[i];
-						if (ds_art == "ofspz") {
-							// Spezialfall Fspz und Verrechnung mit Mndl beachten
-							Student.gesamt["ofspz"] = schnitt(Student[art[i]], true);
-							Student.gesamt['omndl'] = schnitt_m_f(Student.gesamt['omndl'], Student.gesamt['ofspz'].Gesamt);						
-						}else{
-							Student.gesamt[ds_art] = schnitt(Student[art[i]], false);
-						}
-					}
+// Durchschnitt aller Bereiche
+for (var i = 0; i < art.length; i++) {
+	ds_art = "o"+art[i];
+	if (ds_art == "ofspz") {
+		// Spezialfall Fspz und Verrechnung mit Mndl beachten
+		Student.gesamt["ofspz"] = schnitt(Student[art[i]], true);
+		Student.gesamt['omndl'] = schnitt_m_f(Student.gesamt['omndl'], Student.gesamt['ofspz'].Gesamt);						
+	}else{
+		Student.gesamt[ds_art] = schnitt(Student[art[i]], false);
+	}
+}
 
-					// Durchschnitt insgesamt
-					if (Student.gesamt['omndl'] && Student.gesamt['schriftlich']){
-						Student.gesamt.rechnerisch = Student.gesamt['omndl']*SETTINGS.gewichtung['mündlich'] + Student.gesamt['oschr']*SETTINGS.gewichtung['schriftlich']
-					}else{
-						Student.gesamt.rechnerisch = 0;
-					}
+// Durchschnitt insgesamt
+if (Student.gesamt['omndl'] && Student.gesamt['schriftlich']){
+	Student.gesamt.rechnerisch = Student.gesamt['omndl']*SETTINGS.gewichtung['mündlich'] + Student.gesamt['oschr']*SETTINGS.gewichtung['schriftlich']
+}else{
+	Student.gesamt.rechnerisch = 0;
+}
 
-					// Kompetenzen
-					var kompetenzen = [0,0,0,0,0];
-					var Infos, temp_leistung;
-					// -- Itteriere durch Leistungsart
-					for (var i = 0; i < art.length; i++) {
-						// Itteriere durch Leistung und Auswahl von mitgeschriebenen Objekten erstellen
-						Infos = infoHeader[art[i]];
-						for (l in Infos) {
-							temp_leistung = Student[art[i]][l];
-							// mitgeschrieben und mit Kategrorien ?
-							if (temp_leistung && temp_leistung.Mitschreiber == "true" && temp_leistung.Verteilung) {
-								var hundertProzent = Infos[l].Verteilungen[temp_leistung.Verteilung];
-								// Prozentsummen
-								kompetenzen[0] += temp_leistung.Kat1 / hundertProzent.Kat1;
-								kompetenzen[1] += temp_leistung.Kat2 / hundertProzent.Kat2;
-								kompetenzen[2] += temp_leistung.Kat3 / hundertProzent.Kat3;
-								kompetenzen[3] += temp_leistung.Kat4 / hundertProzent.Kat4;
-								// Counter
-								kompetenzen[4] += 1;
-							}
-						}
-					}
-					Student.kompetenzen = Array(
-						Math.round((kompetenzen[0]/kompetenzen[4])*100)/100 || 0,
-						Math.round((kompetenzen[1]/kompetenzen[4])*100)/100 || 0,
-						Math.round((kompetenzen[2]/kompetenzen[4])*100)/100 || 0,
-						Math.round((kompetenzen[3]/kompetenzen[4])*100)/100 || 0,
-					);
+// Kompetenzen
+var kompetenzen = [0,0,0,0,0];
+var Infos, temp_leistung;
+// -- Itteriere durch Leistungsart
+for (var i = 0; i < art.length; i++) {
+	// Itteriere durch Leistung und Auswahl von mitgeschriebenen Objekten erstellen
+	Infos = infoHeader[art[i]];
+	for (l in Infos) {
+		temp_leistung = Student[art[i]][l];
+		// mitgeschrieben und mit Kategrorien ?
+		if (temp_leistung && temp_leistung.Mitschreiber == "true" && temp_leistung.Verteilung) {
+			var hundertProzent = Infos[l].Verteilungen[temp_leistung.Verteilung];
+			// Prozentsummen
+			kompetenzen[0] += temp_leistung.Kat1 / hundertProzent.Kat1;
+			kompetenzen[1] += temp_leistung.Kat2 / hundertProzent.Kat2;
+			kompetenzen[2] += temp_leistung.Kat3 / hundertProzent.Kat3;
+			kompetenzen[3] += temp_leistung.Kat4 / hundertProzent.Kat4;
+			// Counter
+			kompetenzen[4] += 1;
+		}
+	}
+}
+Student.kompetenzen = Array(
+	Math.round((kompetenzen[0]/kompetenzen[4])*100)/100 || 0,
+	Math.round((kompetenzen[1]/kompetenzen[4])*100)/100 || 0,
+	Math.round((kompetenzen[2]/kompetenzen[4])*100)/100 || 0,
+	Math.round((kompetenzen[3]/kompetenzen[4])*100)/100 || 0,
+);
 
-					// Speichern
-					var requestUpdate = cursor.update(Student);
-					requestUpdate.onerror = errorHandler;
-					requestUpdate.onsuccess = function() {
-						console.log("indexDB: Durchschnitt ID", Student.id, "updated...")
-					};
+// Speichern
+var requestUpdate = cursor.update(Student);
+requestUpdate.onerror = errorHandler;
+requestUpdate.onsuccess = function() {
+	console.log("indexDB: Durchschnitt ID", Student.id, "updated...")
+};
 
 				}
 				cursor.continue();
 			}else{
 				callback();
 			}
-*/
+
 		connection.close();
 		}
 

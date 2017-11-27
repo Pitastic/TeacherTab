@@ -101,12 +101,12 @@ function SettingsSave(bol_save){
 		// DB save und refresh
 		db_replaceData(function(){
 			SETTINGS = settings;
-			db_updateSchnitt(function(){
+			handleSchnitt(function(){
 				setTimeout(function(){
 					window.location = 'uebersicht.htm';
 				}, 750)
 				document.getElementById('item1setting').classList.remove('show');
-			}, 0);
+			});
 		}, settings, SETTINGS.id);
 	}
 }

@@ -242,6 +242,99 @@ function sum(n){
 }
 
 
+function datum(){
+	var d = new Date();
+	var monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+	var tag, monat, jahr;
+		tag = d.getDate();
+		monat = monate[d.getMonth()];
+		jahr = d.getFullYear();
+	return tag+'. '+monat+' '+jahr;
+}
+
+
+function timestamp() {
+	return Math.round(new Date().getTime() / 1000);
+}
+
+function goBack(){
+	readDB_tables(listIdx_Select,"");
+	slide('uebersicht0_In', 'item0');
+	noTouchSlider();
+}
+
+
+function quit(){
+	if(window.confirm('Änderungen synchronisieren ?')){
+		initSyncSQL();
+	}else{
+		window.location = "index.htm";
+	}
+}
+
+
+// =================================================== //
+// ================ Durchschnitte === ================ //
+// =================================================== //
+
+
+// Schnitt für einen Schüler berechnen
+function schnitt_gesamt(Student, Leistungen) {
+	var ds_art, neuerStudent;
+	var art = ["mndl","fspz","schr"];
+
+	// Durchschnitt aller Bereiche
+	for (var i = 0; i < art.length; i++) {
+		ds_art = "o"+art[i];
+		if (ds_art == "ofspz") {
+			// Spezialfall Fspz und Verrechnung mit Mndl beachten
+			Student.gesamt["ofspz"] = schnitt(Student[art[i]], true);
+			Student.gesamt['omndl'] = schnitt_m_f(Student.gesamt['omndl'], Student.gesamt['ofspz'].Gesamt);						
+		}else{
+			Student.gesamt[ds_art] = schnitt(Student[art[i]], false);
+		}
+	}
+
+	// Durchschnitt insgesamt
+	if (Student.gesamt['omndl'] && Student.gesamt['schriftlich']){
+		Student.gesamt.rechnerisch = Student.gesamt['omndl']*SETTINGS.gewichtung['mündlich'] + Student.gesamt['oschr']*SETTINGS.gewichtung['schriftlich']
+	}else{
+		Student.gesamt.rechnerisch = 0;
+	}
+
+	// Kompetenzen
+	var kompetenzen = [0,0,0,0,0];
+	var Infos, temp_leistung;
+	// -- Itteriere durch Leistungsart
+	for (var i = 0; i < art.length; i++) {
+		// Itteriere durch Leistung und Auswahl von mitgeschriebenen Objekten erstellen
+		Infos = Leistungen[art[i]];
+		for (l in Infos) {
+			temp_leistung = Student[art[i]][l];
+			// mitgeschrieben und mit Kategrorien ?
+			if (temp_leistung && temp_leistung.Mitschreiber == "true" && temp_leistung.Verteilung) {
+				var hundertProzent = Infos[l].Verteilungen[temp_leistung.Verteilung];
+				// Prozentsummen
+				kompetenzen[0] += temp_leistung.Kat1 / hundertProzent.Kat1;
+				kompetenzen[1] += temp_leistung.Kat2 / hundertProzent.Kat2;
+				kompetenzen[2] += temp_leistung.Kat3 / hundertProzent.Kat3;
+				kompetenzen[3] += temp_leistung.Kat4 / hundertProzent.Kat4;
+				// Counter
+				kompetenzen[4] += 1;
+			}
+		}
+	}
+	Student.kompetenzen = Array(
+		Math.round((kompetenzen[0]/kompetenzen[4])*100)/100 || 0,
+		Math.round((kompetenzen[1]/kompetenzen[4])*100)/100 || 0,
+		Math.round((kompetenzen[2]/kompetenzen[4])*100)/100 || 0,
+		Math.round((kompetenzen[3]/kompetenzen[4])*100)/100 || 0,
+	);
+
+	return Student;
+}
+
+
 function schnitt(_obj, bol_fspz){
 	// Besonderheiten bei Trennung von Vok und Gra beachten !
 	var i, _row, r = 0;
@@ -286,39 +379,11 @@ function schnitt_m_f(omndl, ofspz){
 }
 
 
-function datum(){
-	var d = new Date();
-	var monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
-	var tag, monat, jahr;
-		tag = d.getDate();
-		monat = monate[d.getMonth()];
-		jahr = d.getFullYear();
-	return tag+'. '+monat+' '+jahr;
-}
-
-
-function timestamp() {
-	return Math.round(new Date().getTime() / 1000);
-}
-
-function goBack(){
-	readDB_tables(listIdx_Select,"");
-	slide('uebersicht0_In', 'item0');
-	noTouchSlider();
-}
-
-
-function quit(){
-	if(window.confirm('Änderungen synchronisieren ?')){
-		initSyncSQL();
-	}else{
-		window.location = "index.htm";
-	}
-}
-
 // =================================================== //
 // ================ Slider  Functions ================ //
 // =================================================== //
+
+
 function itemAbort(names, target_site) {
 	var i;
 	for (i=0;i<names.length;i++){
@@ -420,6 +485,7 @@ function popUpClose(thisElement, bol_refresh){
 	window.removeEventListener('keydown', keyFunctions);
 }
 
+
 // =================================================== //
 // ============= Datenbank - Objekt-Hilfe ============ //
 // =================================================== //
@@ -501,6 +567,16 @@ function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
 }
 
 
+// Helper zum geordneten Aufrufen der Schnitt-Update-Datenbankfunktionen
+function handleSchnitt(callback, sID) {
+	db_readMultiData(function(Leistungen){
+		db_dynamicUpdate(
+			callback,
+			function(Student){ // Apply (anonym wegen Argumente)
+				return schnitt_gesamt(Student, Leistungen);
+			}, "student", sID)
+	}, "leistung", function(){console.log("noch keine Leistungen da...")});
+}
 
 
 // ==============================================================

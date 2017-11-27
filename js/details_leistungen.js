@@ -640,7 +640,6 @@ function updateVerteilung(inputs, Pkt_Verteilung, callback){
 	newObject[l_id].changed = timestamp();
 	
 	// in DB speichern
-	//db_updateLeistung(function(result){
 	db_updateData(function(result){
 
 		// Save in SessionStoreage
@@ -774,7 +773,7 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 
 	// Objecte in Schüler Dicts einfügen
 	db_updateData(function(){
-		db_updateSchnitt(function(){
+		handleSchnitt(function(){
 
 			// Animationen
 			document.getElementById('item2details').classList.remove('show');
