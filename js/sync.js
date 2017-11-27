@@ -236,6 +236,8 @@ console.log("pulling...");
 
 
 function sync_deleteDoc(ID) {
+	alert("Syncing: Delete... [disabled]");
+	/*
 	$.ajax({
 		url:serverIP+'/deleteDoc.py',
 		type:'post',
@@ -251,6 +253,7 @@ function sync_deleteDoc(ID) {
 		).done(function(data, status, jqXHR){
 			alert("Eintrag vom Gerät und auf dem SyncServer gelöscht !\nTrotzdem musst du diesen Eintrag von jedem Gerät selbst löschen, damit er beim nächsten Sync nicht wieder hinzugefügt wird.");
 	});
+	*/
 }
 
 

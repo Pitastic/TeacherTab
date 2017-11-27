@@ -41,7 +41,7 @@ $(document).ready(function() {
 	// DEV : Änderung syncen !?!
 	pop.getElementsByClassName('button ABORT')[0].addEventListener('click', function(){
 		if (window.confirm('Bist du sicher, dass du diesen Schüler inklusive allen Eintragungen unwiderruflich löschen möchtest ?')){
-			deleteStudent(id, function(c){window.location = 'details_leistungen.htm';});
+			db_deleteDoc(function(r){window.location = 'details_leistungen.htm';}, id);
 		}
 	});
 

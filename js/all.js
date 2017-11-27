@@ -575,7 +575,11 @@ function handleSchnitt(callback, sID) {
 			function(Student){ // Apply (anonym wegen Argumente)
 				return schnitt_gesamt(Student, Leistungen);
 			}, "student", sID)
-	}, "leistung", function(){console.log("noch keine Leistungen da...")});
+	}, "leistung", function(){
+			console.log("noch keine Leistungen da... Callback!");
+			callback();
+		}
+	);
 }
 
 
