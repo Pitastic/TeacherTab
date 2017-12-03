@@ -136,7 +136,79 @@ function updateVerteilungSession() {
 	});
 }
 
-function updateNoten(liste, bol_singel) {
+
+//-> Errechnen und Anzeigen von eingetragenen Leistungen
+function updateNoten(liste, bol_singel, newObs_init) {
+	// -- Abwärtskompatibilität
+	if (newObs_init == null) {
+		alert("es wird eine veraltete Methode verwendet !");
+		updateNoten_old(liste, bol_singel);
+		return;
+	}else if (Array.isArray(newObs_init)) {
+		var newObs = {};
+		for (var k = 0; k < newObs_init.length; k++) {
+			newObs[newObs_init[k].id] = newObs_init[k];
+		}
+	}else{
+		var newObs = newObs_init;
+	}
+
+	// -- eigentliche Funktion
+	var i, gesamtWert, erreicht, note, span;
+	liste = (bol_singel) ? [liste] : liste.getElementsByTagName('li');
+	var lART = sessionStorage.getItem('leistung_art');
+	var lID = parseInt(sessionStorage.getItem('leistung_id'));
+	for (i=0; i<liste.length; i++){
+		console.log(liste[i].getAttribute("data-rowid"));
+		console.log(newObs);
+		var sID = parseInt(liste[i].getAttribute("data-rowid").substring(4));
+		
+		// Fehlende Daten für das Objekt errechnen und anzeigen
+		if (liste[i].querySelector("[data-name=Gesamt]")) { // Kompetenzen
+			span = liste[i].getElementsByClassName('Note')[0].getElementsByTagName('span');
+			if (newObs[sID][lART][lID] && newObs[sID][lART][lID].Mitschreiber == true) {
+				// Daten vorhanden
+				gesamtWert = sessionStorage.getItem(newObs[sID][lART][lID].Verteilung+'_Gesamt');
+				erreicht = newObs[sID][lART][lID].Gesamt || 0;
+				erreicht_prozent = Math.round((erreicht/gesamtWert)/0.005)*0.5;
+				note = RohpunkteAlsNote(erreicht_prozent, false);
+				// anzeigen
+				span[0].innerHTML = note;
+				span[1].innerHTML =  erreicht_prozent + " %";
+				// Objekt eränzen
+				newObs[sID][lART][lID].Gesamt = erreicht;
+				newObs[sID][lART][lID].Note = note;
+				newObs[sID][lART][lID].Prozent = erreicht_prozent;
+			}else{
+				// keine Daten
+				span[0].innerHTML = "-";
+				span[1].innerHTML =  "%";
+			}
+		
+		}else{ // Punkte / Noten
+			span = liste[i].getElementsByClassName('Note standalone')[0].getElementsByTagName('span')[0];
+			if (newObs[sID][lART][lID] && newObs[sID][lART][lID].Mitschreiber == true) {
+				gesamtWert = sessionStorage.getItem('Standard_Gesamt');
+				erreicht = parseFloat(liste[i].getElementsByClassName('Gesamtpunkte')[0].getElementsByTagName('span')[0].innerHTML);
+				erreicht_prozent = Math.round((erreicht/gesamtWert)/0.005)*0.5;
+				note = RohpunkteAlsNote(erreicht_prozent, false);
+				// anzeigen
+				span.innerHTML = note;
+				// Objekt eränzen
+				newObs[sID][lART][lID].Note = note;
+			}else{
+				// keine Daten
+				span.innerHTML = "-";
+			}
+		}
+
+	}
+
+	return newObs;
+
+}
+
+function updateNoten_old(liste, bol_singel) {
 //--> Punkte in Prozentwerte umrechnen und als Note eintragen
 	var i, gesamtWert, erreicht, note, span;
 	liste = (bol_singel) ? [liste] : liste.getElementsByTagName('li');
@@ -590,7 +662,7 @@ function handleSchnitt(callback, sID) {
 				return schnitt_gesamt(Student, Leistungen);
 			}, "student", sID);
 	}, "leistung", function(){
-			console.log("noch keine Leistungen da... Callback!");
+			console.log("noch keine Leistungen da, kein Scnitt");
 			callback();
 		}
 	);

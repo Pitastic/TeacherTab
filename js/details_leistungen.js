@@ -53,12 +53,8 @@ $(document).ready(function() {
 // Listings
 // =============================================================================
 // >>>>>>>> Routing - Art der Eintragung filtern
-//function leistungsDetails(art, id_Leistung){
 function leistungsDetails(Leistung){
 	// - - - Kopfdaten - - -
-	//var katObj = results.kompetenzen;
-	//var katObj = SETTINGS.kompetenzen;
-	//var Leistung = results.leistungen[art][id_Leistung]; // jetzt direkt übergeben
 	sessionStorage.setItem('leistung_gewicht', Leistung.Gewichtung || 1);
 	sessionStorage.setItem('Eintragung', Leistung.Eintragung);
 	
@@ -108,6 +104,7 @@ function leistungsDetails_noten(Leistung, Students){
 		// Leistungsart sichern
 		target_el.setAttribute('data-l_art', Leistung.subtyp);
 		target_el.setAttribute('data-l_id', Leistung.id);
+		target_el.setAttribute('data-l_name', Leistung.Bezeichnung);
 	var old = document.getElementById("arbeit_info");
 	var new_el = old.cloneNode(true);
 		new_el.innerHTML = "";
@@ -211,6 +208,7 @@ function leistungsDetails_punkte(Leistung, Students){
 		// Leistungsart sichern
 		target_el.setAttribute('data-l_art', Leistung.subtyp);
 		target_el.setAttribute('data-l_id', Leistung.id);
+		target_el.setAttribute('data-l_name', Leistung.Bezeichnung);
 	var maxPts = Leistung.Verteilungen.Standard.Gesamt;
 	var old = document.getElementById("arbeit_info");
 	var new_el = old.cloneNode(true);
@@ -350,6 +348,7 @@ function leistungsDetails_rohpunkte(Leistung, Students){
 		// Leistungscolumn sichern
 		target_el.setAttribute('data-l_art', Leistung.subtyp);
 		target_el.setAttribute('data-l_id', Leistung.id);
+		target_el.setAttribute('data-l_name', Leistung.Bezeichnung);
 	var old = document.getElementById("arbeit_info");
 	var new_el = old.cloneNode(true);
 		new_el.innerHTML = "";
@@ -569,7 +568,7 @@ function leistungsDetails_rohpunkte(Leistung, Students){
 			setTimeout(function(){
 				// Schülerleistung berechnen
 				var alleSchuler = document.getElementById('arbeit_leistung');
-				updateNoten(alleSchuler, false);
+				updateNoten(alleSchuler, false, Students);
 				updateVerteilungHTML();
 				calc_Stats(true);
 			},1000);
@@ -703,28 +702,57 @@ function editLeistungsDetails(thisElement, uebersicht){
 	var pop = thisElement.parentNode.parentNode;
 	var inputs = pop.getElementsByTagName('ul')[0].getElementsByTagName('input');
 	var selectBox = pop.getElementsByTagName('select')[0];
+	
+	var leistung = document.getElementById('item2details');
+	var lID = leistung.getAttribute('data-l_id')
+	var lART = leistung.getAttribute('data-l_art')
+	var lNAME = leistung.getAttribute('data-l_name')
+	var sID = pop.getAttribute('data-rowid').substring(4);
+
+	var mitschreiberTrue = document.getElementById('mitschreiberTrue').checked;
 	for (i=0; i<inputs.length; i++){
 		pkt = (parseFloat(inputs[i].value)) ? parseFloat(inputs[i].value) : 0 ;
 		punkteObj[inputs[i].getAttribute('data-kat')] = pkt;
 		gesamt += pkt;
 	}
 	punkteObj.Gesamt = gesamt;
+
 	// Neu zeichnen nur der einen Zeile !
 	var line = document.getElementById('item2details').querySelector("[data-rowid="+pop.getAttribute('data-rowid')+"]");
 	for (i in punkteObj){
 		line.querySelector('[data-name="'+i+'"]').innerHTML = punkteObj[i];
 	}
 	line.setAttribute('data-verteilung', selectBox.value);
-	line.setAttribute('data-mitschreiber', document.getElementById('mitschreiberTrue').checked);
-	// - Note neu berechenen und eintragen
-	popUpClose(thisElement, false);
-	updateNoten(line, true);
-	calc_Stats(true);
+	line.setAttribute('data-mitschreiber', mitschreiberTrue);
 
-	// --
-	// Hier eventuell gleich in die DB speichern ?
-	// --
+	// Erstellen und ergänzen des Students
+	var Student = {};
+	Student[sID] = {};
+	Student[sID][lART] = {};
+	Student[sID][lART][lID] = {};
+	Student[sID][lART][lID].Bezeichnung = lNAME;
+	Student[sID][lART][lID].Mitschreiber = mitschreiberTrue;
+	Student[sID][lART][lID].changed = timestamp();
+	
+	if (mitschreiberTrue) {
+		Student[sID][lART][lID].Gesamt = gesamt;
+		Student[sID][lART][lID].Gewichtung = 1;
+		Student[sID][lART][lID].Kat1 = punkteObj['Kat1'];
+		Student[sID][lART][lID].Kat2 = punkteObj['Kat2'];
+		Student[sID][lART][lID].Kat3 = punkteObj['Kat3'];
+		Student[sID][lART][lID].Kat4 = punkteObj['Kat4'];
+		Student[sID][lART][lID].Verteilung = selectBox.value;
+	}
+
+	var updatedStudents = updateNoten(line, true, Student);
+
+	// Zeilen in DB speichern
+	db_updateData(function(){
+		calc_Stats(true);
+		popUpClose(thisElement, false);
+	}, updatedStudents);
 }
+
 
 // >>>>>>>> Speichern und Verlassen
 function item2Save(bol_kat, Bezeichnung, bol_refresh){
@@ -766,6 +794,8 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 			}    
 		}
 	}
+
+	console.log(newObs);
 
 	// Objecte in Schüler Dicts einfügen
 	db_updateData(function(){
