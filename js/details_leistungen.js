@@ -29,14 +29,10 @@ $(document).ready(function() {
 
 	// -- Leistung löschen
 	pop.getElementsByClassName('button ABORT')[0].addEventListener('click', function(){
-		var id_Leistung = sessionStorage.getItem('leistung_id');
+		var id_Leistung = parseInt(sessionStorage.getItem('leistung_id'));
 		var art_Leistung = sessionStorage.getItem('leistung_art');
 		if (window.confirm('Bist du sicher, dass du diese Leistung und alle eingetragenen Daten dazu unwiderruflich löschen möchtest ?')){
-			deleteLeistung(function(){
-				setTimeout(function() {
-					window.location = "uebersicht.htm";
-				}, 600);
-			}, art_Leistung, id_Leistung);
+			handleDeleteLeistung(function(r){window.location = 'uebersicht.htm';}, art_Leistung, id_Leistung);
 		}
 	});
 
@@ -773,7 +769,6 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 
 	// Objecte in Schüler Dicts einfügen
 	db_updateData(function(){
-		handleSchnitt(function(){
 
 			// Animationen
 			document.getElementById('item2details').classList.remove('show');
@@ -792,7 +787,6 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 					}
 				}, 500);
 			}
-		})
 
 	}, newObs);
 }

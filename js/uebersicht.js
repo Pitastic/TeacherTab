@@ -2,9 +2,12 @@ $(document).ready(function() {
 	// Funktionen, die auf global SETTINGS warten müssen
 	db_readMultiData(function(r){
 		SETTINGS = r[0];
-		// List first View
-		db_readMultiData(listStudents, "student");
 		db_readMultiData(listLeistung, "leistung", function(){listLeistung([])});
+		// Aktuelle Durchschnitte
+		handleSchnitt(function(){
+			// List first View
+			db_readMultiData(listStudents, "student");
+		})
 	}, "settings");
 
 	// Event-Listener

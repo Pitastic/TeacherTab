@@ -41,7 +41,7 @@ $(document).ready(function() {
 	// DEV : Änderung syncen !?!
 	pop.getElementsByClassName('button ABORT')[0].addEventListener('click', function(){
 		if (window.confirm('Bist du sicher, dass du diesen Schüler inklusive allen Eintragungen unwiderruflich löschen möchtest ?')){
-			db_deleteDoc(function(r){window.location = 'details_leistungen.htm';}, id);
+			db_deleteDoc(function(r){window.location = 'uebersicht.htm';}, id);
 		}
 	});
 
@@ -315,33 +315,42 @@ function studentDetails(row){
 	// Einzelne Leistungen
 	// -- mündlich
 	for (var l_id in mndl){
-		temp_el = document.getElementById(l_id).getElementsByTagName('span')[4];
-		if (mndl[l_id].Note && mndl[l_id].Prozent){
-			note = mndl[l_id].Note+" ("+mndl[l_id].Prozent+")";
-		}else{
-			note = mndl[l_id].Note;
+		temp_el = document.getElementById(l_id) || null;
+		if (temp_el) {
+			temp_el = temp_el.getElementsByTagName('span')[4];
+			if (mndl[l_id].Note && mndl[l_id].Prozent){
+				note = mndl[l_id].Note+" ("+mndl[l_id].Prozent+")";
+			}else{
+				note = mndl[l_id].Note;
+			}
+			temp_el.innerHTML = note || "-";
 		}
-		temp_el.innerHTML = note || "-";
 	}
 	// -- fachspezifisch
 	for (var l_id in fspz){
-		temp_el = document.getElementById(l_id).getElementsByTagName('span')[4];
-		if (fspz[l_id].Note && fspz[l_id].Prozent){
-			note = "("+fspz[l_id].Prozent+") "+fspz[l_id].Note;
-		}else{
-			note = fspz[l_id].Note;
+		temp_el = document.getElementById(l_id) || null;
+		if (temp_el) {
+			temp_el = temp_el.getElementsByTagName('span')[4];
+			if (fspz[l_id].Note && fspz[l_id].Prozent){
+				note = "("+fspz[l_id].Prozent+") "+fspz[l_id].Note;
+			}else{
+				note = fspz[l_id].Note;
+			}
+			temp_el.innerHTML = note || "-";
 		}
-		temp_el.innerHTML = note || "-";
 	}
 	// -- schriftlich
 	for (var l_id in schr){
-		temp_el = document.getElementById(l_id).getElementsByTagName('span')[4];
-		if (schr[l_id].Note && schr[l_id].Prozent){
-			note = schr[l_id].Note+" ("+schr[l_id].Prozent+") ";
-		}else{
-			note = schr[l_id].Note;
+		temp_el = document.getElementById(l_id) || null;
+		if (temp_el) {
+			temp_el = temp_el.getElementsByTagName('span')[4];
+			if (schr[l_id].Note && schr[l_id].Prozent){
+				note = schr[l_id].Note+" ("+schr[l_id].Prozent+") ";
+			}else{
+				note = schr[l_id].Note;
+			}
+				temp_el.innerHTML = note || "-";
 		}
-		temp_el.innerHTML = note || "-";
 	}
 	// Gesamt Noten (bestehende Ergebnisse aus der Datenbank)
 	if (SETTINGS.set_showVorjahr) {

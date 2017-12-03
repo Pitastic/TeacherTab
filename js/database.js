@@ -243,81 +243,6 @@ function db_deleteDoc(callback, id){
 }
 
 
-// Schüler aus Klasse löschen
-function db_deleteStudent_deprecated(id, callback) {
-	var request = indexedDB.open(dbname, dbversion);
-	request.onerror = errorHandler;
-	request.onsuccess = function(event){
-		var connection = event.target.result;
-		var objectStore = connection.transaction([klasse], "readwrite").objectStore(klasse);
-		var result = objectStore.delete(id);
-		result.onerror = errorHandler;
-		result.onsuccess = function(event){
-			console.log("indexedDB: Eintrag ID", id, "gelöscht");
-			// Schüler auch vom Account löschen, wenn online
-			if (navigator.onLine){
-				SYNC_deleteStudent(id);
-			}else{
-				alert("Kein Kontakt zum SyncServer.\nDer Schüler wurde nur von diesem Gerät entfernt.");
-			}
-			if (callback) {callback(connection);}
-		}
-		connection.close();
-
-		// ---> Garbage Collection
-		connection.onversionchange = function(event) {
-			connection.close();
-		};
-
-		return;
-	}
-}
-
-
-// Leistung aus aktueller Klasse löschen
-function db_deleteLeistung_deprecated(callback, art, id) {
-	var request = indexedDB.open(dbname, dbversion);
-	request.onerror = errorHandler;
-	request.onsuccess = function(event){
-		var connection = event.target.result;
-		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
-		var transaction = objectStore.openCursor()
-		transaction.onerror = errorHandler;
-		transaction.onsuccess = function(event){
-			var cursor = event.target.result;
-			if (cursor){
-				if (cursor.value.id == 0) {
-					new_entry = cursor.value;
-					console.log("indexDB: Delete", new_entry.leistungen[art][id]);
-					delete new_entry.leistungen[art][id];
-					var requestUpdate = cursor.update(new_entry);
-					requestUpdate.onsuccess = function() {
-						cursor.continue();
-					};
-				}else{
-					new_entry = cursor.value;
-					delete new_entry[art][id];
-					var requestUpdate = cursor.update(new_entry);
-					requestUpdate.onsuccess = function() {
-						cursor.continue();
-					};
-				}
-			}else{
-				console.log("indexDB: Leistung (ID", id,"gelöscht...")
-				connection.close();
-				callback();
-			}
-		}
-		
-		// ---> Garbage Collection
-		connection.onversionchange = function(event) {
-			connection.close();
-		};
-
-	}
-}
-
-
 // Document anhand Typ und ID selektieren
 function db_readSingleData(callback, typ, id, emptyCall) {
 	var request = indexedDB.open(dbname, dbversion);
@@ -405,8 +330,7 @@ function db_replaceData(callback, newObject) {
 }
 
 
-// Objekt (mit Tiefe von 0 bis 1) updaten in aktueller Klasse
-// (Update eines Documents durch Zusammenführung)
+// Update eines Documents durch Zusammenführung
 function db_updateData(callback, newObjects) {
 	var request = indexedDB.open(dbname, dbversion);
 	request.onerror = errorHandler;
@@ -465,7 +389,7 @@ function db_dynamicUpdate(callback, toApply, typ, eID) {
 					toUpdate = toApply(toUpdate);
 					var requestUpdate = cursor.update(toUpdate);
 					requestUpdate.onsuccess = function() {
-						console.log("indexDB: ID", id, "applied", toApply.name+"()")
+						console.log("indexDB: ID", id, "applied", toApply);
 					};
 				}
 				cursor.continue();

@@ -567,6 +567,20 @@ function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
 }
 
 
+// Helper zum Löschen von Leistunge
+function handleDeleteLeistung(callback, lART, lID) {
+		db_dynamicUpdate(
+			function(r){
+				db_deleteDoc(callback, lID);
+			},
+			function(Student){ // Apply Function
+				delete Student[lART][lID];
+				return Student;
+			},
+		"student");
+}
+
+
 // Helper zum geordneten Aufrufen der Schnitt-Update-Datenbankfunktionen
 function handleSchnitt(callback, sID) {
 	db_readMultiData(function(Leistungen){
@@ -574,7 +588,7 @@ function handleSchnitt(callback, sID) {
 			callback,
 			function(Student){ // Apply (anonym wegen Argumente)
 				return schnitt_gesamt(Student, Leistungen);
-			}, "student", sID)
+			}, "student", sID);
 	}, "leistung", function(){
 			console.log("noch keine Leistungen da... Callback!");
 			callback();
