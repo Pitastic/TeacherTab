@@ -2,8 +2,9 @@
 // ================ Globale Variablen ================ //
 // =================================================== //
 
-var serverIP;
+var SyncServer = "c/api";
 var userID;
+var passW
 var knownDevice;
 var isPhone;
 
@@ -14,6 +15,7 @@ var noSyncCols;
 
 var klasse;
 var SETTINGS;
+var AUTH;
 
 
 $(document).ready(function() {
@@ -28,11 +30,11 @@ $(document).ready(function() {
 	// Not the First Time ?
 	if (localStorage.getItem('TeacherTab')){
 		// DB Support und Init
-		serverIP = localStorage.getItem('serverIP');
 		userID = localStorage.getItem('userID');
+		passW = localStorage.getItem('passW');
+		klasse = sessionStorage.getItem('klasse');
 		dbname = userID;
 		knownDevice = true;
-		klasse = sessionStorage.getItem('klasse');
 	}else{
 		// kein DB Init
 		knownDevice = false;
@@ -40,6 +42,8 @@ $(document).ready(function() {
 
 	// Links bleiben in WebApp
 	$.stayInWebApp('a.stay');
+	// Anmeldestatus
+	checkAuth();
 });
 
 
@@ -137,8 +141,8 @@ function updateVerteilungSession() {
 }
 
 
-//-> Errechnen und Anzeigen von eingetragenen Leistungen
 function updateNoten(liste, bol_singel, newObs_init) {
+//-> Errechnen und Anzeigen von eingetragenen Leistungen
 	// -- Abwärtskompatibilität
 	if (newObs_init == null) {
 		alert("es wird eine veraltete Methode verwendet !");
@@ -205,7 +209,6 @@ function updateNoten(liste, bol_singel, newObs_init) {
 	}
 
 	return newObs;
-
 }
 
 function updateNoten_old(liste, bol_singel) {
@@ -283,7 +286,6 @@ function mergeObjects(old1, new1){
 	return old1;
 }
 
-
 // Objekte rekursiv zusammenführen:
 // von: https://stackoverflow.com/a/34749873
 function mergeDeep(target, ...sources) {
@@ -304,6 +306,10 @@ function mergeDeep(target, ...sources) {
 	return mergeDeep(target, ...sources);
 }
 
+function checkAuth() {
+	AUTH = (localStorage.getItem("auth") == "true") ? true : false;
+	return;
+}
 
 function sum(n){
 	var i, r = 0;
@@ -313,6 +319,31 @@ function sum(n){
 	return r;
 }
 
+function compareKlassen(a,b) {
+//-> Vergleichsfunktion für die Liste aller Klassen
+	if (a[1].bezeichnung < b[1].bezeichnung)
+		return -1;
+	if (a[1].bezeichnung > b[1].bezeichnung)
+		return 1;
+	return 0;
+}
+
+
+function removeDups(arr) {
+//-> Filterfunktion für Array - keine Doppelten
+//-> https://stackoverflow.com/a/15868720
+	var uniq = arr.slice() // slice makes copy of array before sorting it
+	.sort(function(a,b){
+		return a > b;
+	})
+	.reduce(function(a,b){
+		if (a.slice(-1)[0] !== b) a.push(b); // slice(-1)[0] means last item in array without removing it (like .pop())
+		return a;
+	},[]); // this empty array becomes the starting value for a
+
+	// one liner
+	return arr.slice().sort(function(a,b){return a > b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[])
+}
 
 function datum(){
 	var d = new Date();
@@ -324,7 +355,6 @@ function datum(){
 	return tag+'. '+monat+' '+jahr;
 }
 
-
 function timestamp() {
 	return Math.round(new Date().getTime() / 1000);
 }
@@ -334,7 +364,6 @@ function goBack(){
 	slide('uebersicht0_In', 'item0');
 	noTouchSlider();
 }
-
 
 function quit(){
 	if(window.confirm('Änderungen synchronisieren ?')){
@@ -562,8 +591,19 @@ function popUpClose(thisElement, bol_refresh){
 // ============= Datenbank - Objekt-Hilfe ============ //
 // =================================================== //
 
+// Account anlegen
+function createAccount(dbname, lokaleKlassen) {
+	return {
+		'id' : 1, 
+		'username' : dbname,
+		'klassenliste' : {},	// # Alle Klassen auf Gerät und Archiv
+		'local' : [],			// # Alle Klassen auf Gerät
+		'blacklist' : [],		// # Gelöschte Klassen, die nicht wieder ins Archiv dürfen
+	};
+}
+
 // Standard Einstellungen
-function formSettings() {
+function formSettings(id, bezeichnung) {
 	return {
 		'typ': "settings",
 		'changed': 0,
@@ -573,7 +613,8 @@ function formSettings() {
 			"davon fachspezifisch" : 0.2,
 			"schriftlich" : 0.4,
 		},
-		'klasse' : klasse,
+		'klasse' : id,
+		'name' : bezeichnung,
 		'kompetenzen' : {'Gesamt': "Gesamt", 1:"Kategorie 1", 2:"Kategorie 2", 3:"Kategorie 3", 4:"Kategorie 4"},
 		'notenverteilung' : {1:95,2:80,3:75,4:50,5:25,6:0},
 		'showVorjahr' : false,

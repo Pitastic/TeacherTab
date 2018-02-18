@@ -1,9 +1,143 @@
+/*
+- Funktionen von Sync-Funktion trennen
+- DOM-Manipulation in *.js oder all.js in eigene Funktion schieben
+*/
+
+function testCreds(callback) {
+// eingetragene Credentials testen
+	$.ajax({
+		url: SyncServer + '/' + btoa(userID) + '/check',
+		type: 'GET',
+		headers: {
+			"Authorization": "Basic " + btoa(userID + ":" + passW)
+		},
+		timeout: 4000,
+		success: function(jqXHR, status, data){
+			callback(jqXHR['status']);
+		},
+		error: function(jqXHR, status, data){
+			callback(jqXHR['status']);
+		},
+	});
+}
+
+function sync_getAccount(callback, localAccount) {
+// Klassenliste für den Benutzer abfragen
+	if (AUTH) {
+		$.ajax({
+			url: SyncServer + '/' + btoa(userID) + '/account/',
+			type: 'GET',
+			headers: {
+				"Authorization": "Basic " + btoa(userID + ":" + passW)
+			},
+			timeout: 4000,
+			success: function(jqXHR, status, data){
+				console.log(jqXHR);
+				var newData = (jqXHR.msg.data && jqXHR.msg.data.data && jqXHR.msg.data.data != "") ? decryptData(jqXHR.msg.data.data) : {};
+				console.log("(Account) Local:", localAccount); //DEV
+				console.log("(Account) Recieved:", newData); //DEV
+				var merged = mergeAccount(newData, localAccount);
+				console.log("(Account) Merged to:", merged); //DEV
+				// Save and Push back
+				db_replaceData(function(){
+					sync_pushBack(callback, merged, "account");
+				}, merged, "account");
+			},
+			error: function(jqXHR, status, data){
+				console.log("ERROR (status, jqXHR, data):", status, jqXHR, data);
+				callback([status, data, jqXHR]); 
+			},
+		});
+	}else{
+		callback(localAccount);
+	}
+}
+
+function sync_pushBack(callback, Data, uri) {
+// Daten an den Server schicken (generic Function)
+	if (AUTH) {
+		// keine lokalen Daten pushen
+		var pushData = Object.assign({}, Data);
+		if (pushData.hasOwnProperty('local')) {pushData.local = null;}
+		var encrypted = encryptData(pushData);
+		var url = (Array.isArray(uri)) ? uri.filter(function (val) {return val;}).join("/") : uri;
+		url = "/" + url + "/";
+		$.ajax({
+			url: SyncServer + '/' + btoa(userID) + url,
+			type: 'PUT',
+			dataType: 'json',
+			data: { 'data' : encrypted },
+			headers: {
+				"Authorization": "Basic " + btoa(userID + ":" + passW)
+			},
+			timeout: 4000,
+			success: function(jqXHR, status, data){
+				console.log("Push:", pushData); //DEV
+				//DEV console.log("Response:", data);
+				callback(Data); // Callback bekommt gepushten Daten im Klartext
+			},
+			error: function(jqXHR, status, data){
+				console.log("Failed !", jqXHR);
+			},
+		});
+	}else{
+		console.log("Keine Synchronisierung...");
+		callback(pushData); // Callback bekommt gepushten Daten im Klartext
+	}
+}
+
+
+function mergeAccount(newData, localData) {
+//-> Metadaten mergen: Grundvorraussetzungen für Folgeoperationen
+/*
+- Klassenliste wird um lokale Klassenliste ergänzt, wenn Eintrag nicht auf Blacklist
+- Local wird vom Client behalten und nicht gemerged
+*/
+		var account = createAccount(localData.username);
+		account.local = localData.local;
+		//account.klassenliste = Object.assign({}, localData.klassenliste);
+		account.klassenliste = localData.klassenliste;
+		account.blacklist = localData.blacklist;
+
+
+		if (Object.keys(newData).length > 0) {
+
+			if (Object.keys(newData.klassenliste).length > 0) {
+				// Klassenliste ergänzen
+				//DEV console.log("...merge Klassenliste...");
+				for (var hash in newData.klassenliste){
+					//DEV console.log("...check Hash", hash);
+					if (account.klassenliste.hasOwnProperty(hash)) {
+						// -- Konflikt beseitigen (nur neueste übernehmen)
+						//DEV console.log("...Konflikt (recieved / lokal)", newData.klassenliste[hash], account.klassenliste[hash]);
+						account.klassenliste[hash] = (newData.klassenliste[hash].changed > account.klassenliste[hash].changed) ? newData.klassenliste[hash] : account.klassenliste[hash];
+					}else{
+						// -- einfach hinzufügen
+						//DEV console.log("...einfaches Einfügen", newData.klassenliste[hash]);
+						account.klassenliste[hash] = newData.klassenliste[hash];
+					}
+				}
+			}
+
+			// Blacklist ergänzen
+			if (newData.blacklist) {
+				// Konflikt beseitigen (zusammenführen und unique)
+				var newBlacklist = localData.blacklist.concat(newData.blacklist);
+				account.blacklist = removeDups(newBlacklist);
+			}
+
+		}
+
+		return account;
+}
+
+
 function showArchiv(old_arr,sel){
 	var i;
 	var temp_arr = [];
-	if (serverIP){
+	if (SyncServer){
 		$.ajax({
-			url:serverIP+'/ShowAll.py',
+			url:SyncServer+'/ShowAll.py',
 			type:'post',
 			crossDomain:true,
 			data:{
@@ -52,14 +186,15 @@ function deleteKlasse(selKlasse){
 	popUp("item0Sync");
 	setTimeout(function() {
 		_elementTxt.innerHTML = "Lösche Klasse von diesem Gerät !";
-		db_dropKlasse(selKlasse);
 		_element.style.width = "100%";
-		setTimeout(function(){
-				_element.classList.add('ok');
-				_element.innerHTML = "Fertig !";
-				document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
-			},1000);
-		}, 600);
+		db_dropKlasse(selKlasse, function(){
+			setTimeout(function(){
+					_element.classList.add('ok');
+					_element.innerHTML = "Fertig !";
+					document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
+				},1000);
+			}, 600);
+		});
 }
 
 
@@ -72,7 +207,7 @@ function old_initSyncSQL(){
 		_element.style.width = "100%";
 	},500);
 	var syncResult;
-	if (navigator.onLine && serverIP) {
+	if (navigator.onLine && SyncServer) {
 		// Sync oder neu anlegen ?
 		if (klasse.substring(1,4)=="new") {
 			sessionStorage.setItem('klasse',"["+klasse.substring(4,klasse.length));
@@ -92,7 +227,7 @@ function old_initSyncSQL(){
 					console.log("Synchronisiere: "+klasse+" (v"+changed+")");
 					// Serverfragen, welche Version neuer ist:
 					$.ajax({
-						url:serverIP+'/HowAreYou.py',
+						url:SyncServer+'/HowAreYou.py',
 						type:'post',
 						crossDomain:true,
 						data:{
@@ -162,7 +297,7 @@ console.log("pushing...");
 					data += "INSERT OR REPLACE INTO "+klasse+" ("+_fields.join(',')+") VALUES ("+ _values.join(',') + ");";
 				}
 			$.ajax({
-				url:serverIP+'/pushToServer.py',
+				url:SyncServer+'/pushToServer.py',
 				type:'post',
 				crossDomain:true,
 				data:{
@@ -190,7 +325,7 @@ console.log("pushing...");
 function pullToClient(client_stamp, _element) {
 console.log("pulling...");
 	$.ajax({
-		url:serverIP+'/pullFromServer.py',
+		url:SyncServer+'/pullFromServer.py',
 		type:'post',
 		crossDomain:true,
 		data:{
@@ -239,7 +374,7 @@ function sync_deleteDoc(ID) {
 	alert("Syncing: Delete... [disabled]");
 	/*
 	$.ajax({
-		url:serverIP+'/deleteDoc.py',
+		url:SyncServer+'/deleteDoc.py',
 		type:'post',
 		crossDomain:true,
 		data:{
@@ -272,7 +407,7 @@ function old_deleteKlasse(selKlasse){
 		if (window.confirm('Du bist online.\nSoll die Klasse auch auf dem SyncServer gelöscht werden ?')){
 			_elementTxt.innerHTML = "Lösche Klasse von diesem Gerät und vom SyncServer !";
 			$.ajax({
-				url:serverIP+'/deleteKlasse.py',
+				url:SyncServer+'/deleteKlasse.py',
 				type:'post',
 				crossDomain:true,
 				data:{
@@ -472,4 +607,31 @@ function import_sql(sql_string_1, sql_string_2) {
 		transaction.executeSql(
 		sql_string_2+';', [], alert("Einträge erstellt"), errorHandler);
 		});
+}
+
+
+// =================================================== //
+// ================ Helper Functions ================= //
+// =================================================== //
+
+
+function encryptData(readAble){
+//-> Daten verschlüsseln
+	if (readAble != "" && readAble) {
+		readAble = JSON.stringify(readAble);
+		return CryptoJS.AES.encrypt(readAble, passW).toString();
+	}else{
+		return "";
+	}
+}
+
+function decryptData(unKnown){
+//-> JSON Daten entschlüsseln
+	var readAble = CryptoJS.AES.decrypt(unKnown, passW).toString(CryptoJS.enc.Utf8);
+	return JSON.parse(readAble);
+}
+
+function hashData(readAble){
+//-> Daten hashen
+	return CryptoJS.SHA1(readAble).toString();
 }

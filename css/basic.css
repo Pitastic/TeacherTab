@@ -13,6 +13,11 @@ a {
     text-decoration: none;
     color: inherit;
     }
+    a.extern {
+        font-weight: bold;
+        text-decoration: underline;
+        color: blue;
+    }
 menu, ul, li, ol {
     margin: 0; padding: 0;
     list-style: none;
@@ -23,6 +28,12 @@ hr {
     box-shadow: 1px 1px 3px 0 rgb(100,100,100);
 }
 h2 { display: none; }
+
+.msg.error {
+    font-weight: bold;
+    color: red;
+    line-height: 1.5em;
+}
 
 /* Background */
 html, body {

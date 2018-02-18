@@ -49,7 +49,7 @@
         		font-size: initial;
         		font-weight: bold;
         		}
-    .popUp input[type="text"], .popUp input[type="number"], li.inputs input {
+    .popUp input[type="text"], .popUp input[type="number"], .popUp input[type="password"], li.inputs input {
         padding: 0 5px;
         margin: -7px; margin-right: 0;
         width: 96%;
@@ -57,6 +57,10 @@
         }
         .popUp input[type="number"] {
             width: 60%;
+        }
+        /*Credenetials*/
+        #userID, #passW {
+            font-weight: bold;
         }
 		
 		#ds_nach_Prozent, #ds_nach_Noten {

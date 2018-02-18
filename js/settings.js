@@ -107,7 +107,7 @@ function SettingsSave(bol_save){
 				}, 750)
 				document.getElementById('item1setting').classList.remove('show');
 			});
-		}, settings, SETTINGS.id);
+		}, settings, klasse);
 	}
 }
 
