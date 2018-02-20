@@ -86,49 +86,6 @@ function initDB(callback) {
 // == grundlegende Datenbankinteraktionen=============== //
 // ===================================================== //
 
-// Alle Klassen auflisten - DEPRECATED (Account wird generic abgefragt)
-function db_listKlassen(callback) {
-	var request = indexedDB.open(dbname, dbversion);
-	request.onerror = errorHandler;
-	request.onsuccess = function(event){
-		var connection = event.target.result;
-		var objectStore = connection.transaction(["account"], 'readonly').objectStore("account");
-		var transaction = objectStore.openCursor()
-		transaction.onerror = errorHandler;
-		transaction.onsuccess = function(event){
-			var cursor = event.target.result;
-			if (cursor) {
-				if (cursor.value.id == 1) {
-					result = cursor.value.klassenliste;
-				}
-				// in jedem Fall zu ende Itterieren (muss halt so)
-				cursor.continue();
-			}else{
-				callback(result);
-			}
-		}
-	}
-}
-
-
-// Alle Klassen auflisten - DEPRECATED
-function db_listKlassen_old(callback) {
-	var request = indexedDB.open(dbname, dbversion);
-	request.onerror = errorHandler;
-	request.onsuccess = function(event){
-		var connection = request.result;
-		var allStores = connection.objectStoreNames;
-		if (callback) {callback(allStores)}
-
-		// ---> Garbage Collection
-		connection.onversionchange = function(event) {
-			connection.close();
-		};
-
-	}
-	request.onblocked = blockHandler;
-}
-
 
 // Neue Klasse anlegen
 function db_neueKlasse(callback, id, bezeichnung) {
@@ -285,6 +242,27 @@ function db_deleteDoc(callback, id){
 		};
 
 		return;
+	}
+}
+
+
+// Gesamte Klasse selektieren
+function db_readKlasse(callback, targetClass) {
+	if (typeof targetClass == "undefined") {targetClass = klasse;}
+	var request = indexedDB.open(dbname, dbversion);
+	request.onerror = errorHandler;
+	request.onsuccess = function(event){
+		var connection = event.target.result;
+		var objectStore = connection.transaction([targetClass], 'readonly').objectStore(targetClass);
+		var transaction = objectStore.getAll();
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			if (Array.isArray(event.target.result)) {
+				callback(event.target.result[0]);
+			}else{
+				callback(event.target.result);
+			}
+		}
 	}
 }
 
@@ -467,7 +445,7 @@ function db_replaceData(callback, newObject, oStore) {
 		var objectStore = connection.transaction([oStore], 'readwrite').objectStore(oStore);
 		updateRequest = objectStore.put(newObject);
 		updateRequest.onsuccess = function(event){
-			console.log("IndexDB : item", newObject.id, "replaced");
+			console.log("indexedDB: item", newObject.id, "replaced");
 			callback();
 		}
 

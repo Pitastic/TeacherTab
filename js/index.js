@@ -7,12 +7,18 @@ $(document).ready(function() {
 
 	// -- Buttons
 	document.getElementById('syncOpen').addEventListener('click', function(){
-		// >>>>>>>> DEV: Bisher direktes Öffnen ohne Sync und Dialog
+		// Öffnen mit Sync der geählten Klasse
 		klassenAuswahl(document.getElementById('klasseSelect'));
+		db_readKlasse(function(klassenObject){
+			console.log(klassenObject);
+			sync_getKlasse(function(mergedKlasse) {
+				console.log("Finished :", mergedKlasse);
+			}, klassenObject);
+		});
+		/*
+		// ohne Sync:
 		initSyncSQL();
-		//db_listKlassen(listIdx_Select);
-		//db_readGeneric(listIdx_Select, 1, "account");
-		// <<<<<<<< DEV <
+		*/
 	});
 
 	document.getElementById('btn_Delete').addEventListener('click', function(){
@@ -171,7 +177,6 @@ function listIdx_Select(account) {
 	opt = new Option("- bitte wählen -");
 	clone.appendChild(opt);
 
-
 	if (result) {
 		// sort Keys
 		var keylist = [];
@@ -180,9 +185,7 @@ function listIdx_Select(account) {
 		}
 		keylist.sort(compareKlassen);
 		// Schleife durch Optionen
-		var iResult = keylist.length;
-console.log(account.local); //DEV
-		for (var i = 0; i < iResult; i++) {
+		for (var i = 0; i < keylist.length; i++) {
 			var hash = keylist[i][0];
 			var bezeichnung = (account.local.indexOf(hash) === -1) ? "# "+result[hash].bezeichnung : result[hash].bezeichnung;
 			opt = new Option(bezeichnung);
