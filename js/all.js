@@ -14,6 +14,7 @@ var dbname;
 var noSyncCols;
 
 var klasse;
+var klassenbezeichnung;
 var SETTINGS;
 var AUTH;
 
@@ -359,6 +360,20 @@ function timestamp() {
 	return Math.round(new Date().getTime() / 1000);
 }
 
+function uniqueID() {
+	//var part_ts = timestamp().toString().substring(2,9);
+	var part_ts = new Date().getTime().toString().substring(2);
+    var nav = window.navigator;
+    var screen = window.screen;
+    var part_guid = nav.mimeTypes.length;
+	part_guid += nav.plugins.length;
+	part_guid += screen.height || '';
+	part_guid += screen.width || '';
+	part_guid += screen.pixelDepth || '';
+	var id = parseInt(part_guid+part_ts) || parseInt(part_ts);
+	return id;
+}
+
 function goBack(){
 	readDB_tables(listIdx_Select,"");
 	slide('uebersicht0_In', 'item0');
@@ -605,6 +620,7 @@ function createAccount(dbname, lokaleKlassen) {
 // Standard Einstellungen
 function formSettings(id, bezeichnung) {
 	return {
+		'id' : 1,
 		'typ': "settings",
 		'changed': 0,
 		'fspzDiff' : false,
@@ -624,13 +640,18 @@ function formSettings(id, bezeichnung) {
 
 // Schüler mit ersten Daten
 function formStudent(vName, nName, sex){
-	sex = (sex) ? sex : "-";
+// DEV: ID darf nicht autoIncrement sondern muss zufällig einmalig sein !
+// DEV: Andernfalls könnte es Überschneidungen beim Synchronisieren eigentlich verschiednener Datensätze geben
+	sex = (typeof sex == "undefined") ? sex : "-";
+	var id = uniqueID();
 	return {
+		'id' : id,
 		'typ' : "student",
 		'name' : {
 			'nname': nName,
 			'vname': vName,
 			'sex': sex,
+			'changed' :0,
 		},
 		'mndl' : {},
 		'fspz' : {},
@@ -646,15 +667,17 @@ function formStudent(vName, nName, sex){
 			'rechnerisch': null,
 			'eingetragen': null,
 			'vorjahr': null,
+			'changed' :0,
 		},
 		'kompetenzen' : [],
-		'changed' : 0,
 	}
 }
 
 // Leistung mit ersten Daten
 function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
+	var id = uniqueID();
 	return {
+		'id' : id,
 		'typ': "leistung",
 		'subtyp': art,
 		'changed': 0,
@@ -682,15 +705,15 @@ function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
 
 // Helper zum Löschen von Leistunge
 function handleDeleteLeistung(callback, lART, lID) {
-		db_dynamicUpdate(
-			function(r){
-				db_deleteDoc(callback, lID);
-			},
-			function(Student){ // Apply Function
-				delete Student[lART][lID];
-				return Student;
-			},
-		"student");
+	db_dynamicUpdate(
+		function(r){
+			db_deleteDoc(callback, lID);
+		},
+		function(Student){ // Apply Function
+			delete Student[lART][lID];
+			return Student;
+		},
+	"student");
 }
 
 

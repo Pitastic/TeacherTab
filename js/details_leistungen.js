@@ -762,30 +762,38 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 	var id_Leistung = parseInt(sessionStorage.getItem('leistung_id'));
 	var liAll = document.getElementById('arbeit_leistung').getElementsByTagName('li');
 	var liID, row, liKat, i2, keyVal, note, newObs = {};
+	
 	for (i=0;i<liAll.length;i++){
 		// Schüler ID
 		row = liAll[i];
 		liID = row.getAttribute('data-rowid');
 		liID = liID.substring(4, liID.length);
+
 		// neues Objekt aufbauen
 		newObs[liID] = {};
 		newObs[liID][art] = {};
 		newObs[liID][art][id_Leistung] = {}; // lange Kette wegen JS ObjectHandling notwendig
+
 		note = row.getElementsByClassName('Note')[0].getElementsByTagName('span');
+
 		newObs[liID][art][id_Leistung].Mitschreiber = row.getAttribute('data-mitschreiber');
 		newObs[liID][art][id_Leistung].Gewichtung = parseFloat(sessionStorage.getItem('leistung_gewicht'));
 		newObs[liID][art][id_Leistung].changed = timestamp();
+		
 		if (newObs[liID][art][id_Leistung].Mitschreiber == "true"){
 			newObs[liID][art][id_Leistung].Note = note[0].innerHTML;
 			newObs[liID][art][id_Leistung].Bezeichnung = Bezeichnung;
+		
 			if (bol_kat){
 				newObs[liID][art][id_Leistung].Prozent = note[1].innerHTML;
 				newObs[liID][art][id_Leistung].Verteilung = row.getAttribute('data-verteilung');
 				liKat = row.getElementsByClassName('Kategorien');
+		
 				for (i2=0;i2<liKat.length;i2++){
 					keyVal = liKat[i2].getElementsByTagName('span')[0];
 					newObs[liID][art][id_Leistung][keyVal.getAttribute('data-name')] = parseFloat(keyVal.innerHTML);
 				}
+		
 			}else if (row.getElementsByClassName('Gesamtpunkte')[0]){ // if GESAMT Punktzahl is present
 				note = row.getElementsByClassName('Note standalone')[0].getElementsByTagName('span');
 				newObs[liID][art][id_Leistung].Note = note[0].innerHTML;
@@ -795,7 +803,6 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 		}
 	}
 
-	console.log(newObs);
 
 	// Objecte in Schüler Dicts einfügen
 	db_updateData(function(){

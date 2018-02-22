@@ -9,12 +9,15 @@ $(document).ready(function() {
 	document.getElementById('syncOpen').addEventListener('click', function(){
 		// Öffnen mit Sync der geählten Klasse
 		klassenAuswahl(document.getElementById('klasseSelect'));
-		db_readKlasse(function(klassenObject){
-			console.log(klassenObject);
-			sync_getKlasse(function(mergedKlasse) {
-				console.log("Finished :", mergedKlasse);
-			}, klassenObject);
-		});
+		if (klasse && klasse != "-") {
+			db_readKlasse(function(klassenObject){
+				sync_getKlasse(function(mergedKlasse) {
+					console.log("Finished :", mergedKlasse);
+				}, klassenObject);
+			});
+		}else{
+			alert("Es wurde keine Klasse ausgewählt !");
+		}
 		/*
 		// ohne Sync:
 		initSyncSQL();
@@ -22,8 +25,24 @@ $(document).ready(function() {
 	});
 
 	document.getElementById('btn_Delete').addEventListener('click', function(){
-		if (window.confirm('Bist du sicher, dass du die gesamte Klasse:\n"'+klasse+'"\nlöschen möchtest ?')){
-			deleteKlasse(klasse);
+		if (window.confirm('Bist du sicher, dass du die gesamte Klasse:\n"'+klassenbezeichnung+'" ('+klasse+')\nlöschen möchtest ?')){
+			var _element = document.getElementById('syncStatus');
+			var _elementTxt = document.getElementById('syncText');
+			_elementTxt.innerHTML = "Lösche Klasse";
+			popUp("item0Sync");
+			setTimeout(function() {
+				_elementTxt.innerHTML = "Lösche Klasse von diesem Gerät !";
+				_element.style.width = "100%";
+				db_dropKlasse(klasse, function(){
+					setTimeout(function(){
+							sync_deleteKlasse(klasse);
+							_element.classList.add('ok');
+							_element.innerHTML = "Fertig !";
+							document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
+						},1000);
+					}, 600);
+				}
+			);
 		}
 	});
 
@@ -134,7 +153,7 @@ function setAuth(status) {
 
 		// - DOM Manipulation: Meldung !
 		// -- unterscheiden ob Daten oder Verbinungsproblem
-		var msg = "Fehler beim Anmelden";
+		var msg = "unbekannter Fehler beim Anmelden";
 		if (status == "401") {
 			msg += ": Die Zugangsdaten sind entweder falsch oder nicht (mehr) für diese Funktion berechtigt !";
 		}else if (status == "400" || status == "0") {
@@ -143,7 +162,6 @@ function setAuth(status) {
 		var errorMsg = document.querySelector("#item0First .msg.error");
 		errorMsg.innerHTML = msg;
 		errorMsg.classList.remove("hide");
-		console.log(msg);
 
 	}else{
 		// OK: Speichern und neu laden
@@ -175,6 +193,7 @@ function listIdx_Select(account) {
 	var opt;
 
 	opt = new Option("- bitte wählen -");
+	opt.value = "-";
 	clone.appendChild(opt);
 
 	if (result) {
@@ -200,10 +219,11 @@ function listIdx_Select(account) {
 
 
 function klassenAuswahl(selectbox){
-	var klasseSelect = selectbox.value;
-	if (klasseSelect !== "null" && klasseSelect !== "") {
-		sessionStorage.setItem('klasse', klasseSelect);
-		klasse = klasseSelect;
+	var klasseSelect = selectbox;
+	if (klasseSelect.value !== "null" && klasseSelect.value !== "") {
+		sessionStorage.setItem('klasse', klasseSelect.value);
+		klasse = klasseSelect.value;
+		klassenbezeichnung = klasseSelect.selectedOptions[0].innerHTML;
 	}else{
 		alert('Es wurde keine Klasse ausgewählt !');
 	}

@@ -1,22 +1,23 @@
 /*
 - Funktionen von Sync-Funktion trennen
 - DOM-Manipulation in *.js oder all.js in eigene Funktion schieben
+- DEV-Note in all.js - formStudent() über generating IDs
 */
 
 function testCreds(callback) {
 // eingetragene Credentials testen
 	$.ajax({
-		url: SyncServer + '/' + btoa(userID) + '/check',
+		url: SyncServer + '/' + btoa(userID) + '/check/',
 		type: 'GET',
 		headers: {
 			"Authorization": "Basic " + btoa(userID + ":" + passW)
 		},
 		timeout: 4000,
 		success: function(jqXHR, status, data){
-			callback(jqXHR['status']);
+			callback(data.status);
 		},
 		error: function(jqXHR, status, data){
-			callback(jqXHR['status']);
+			callback(data.status);
 		},
 	});
 }
@@ -24,30 +25,27 @@ function testCreds(callback) {
 function sync_getAccount(callback, localAccount) {
 // Klassenliste und Metainfos für den Benutzer abfragen, mergen und weitergeben
 	if (AUTH) {
+		console.log("ACCOUNT: sync/merge");
 		$.ajax({
-			url: SyncServer + '/' + btoa(userID) + '/account/',
+			url: SyncServer + '/' + btoa(userID) + '/account',
 			type: 'GET',
 			headers: {
 				"Authorization": "Basic " + btoa(userID + ":" + passW)
 			},
 			timeout: 4000,
-			success: function(jqXHR, status, data){
+			success: function(data, status, jqXHR){
 				// GET
-				console.log(jqXHR);
-				var newData = (jqXHR.payload && isObject(jqXHR.payload)) ? decryptData(jqXHR.payload.data) : {};
-				console.log("account local:", localAccount); //DEV
-				console.log("account recieved:", newData); //DEV
+				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
 				// Merge
 				var merged = mergeAccount(newData, localAccount);
-				console.log("account merged to:", merged);
 				// Save and Push back
 				db_replaceData(function(){
 					sync_pushBack(callback, merged, "account");
 				}, merged, "account");
 			},
-			error: function(jqXHR, status, data){
+			error: function(data, status, jqXHR){
 				console.log("SYNC-ERROR: Kein Sync des Accounts durchgeführt !");
-				console.log("SYNC-ERROR (status, jqXHR, data):", status, jqXHR, data);
+				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
 				callback(localAccount); 
 			},
 		});
@@ -57,35 +55,47 @@ function sync_getAccount(callback, localAccount) {
 }
 
 
-function sync_getKlasse(callback, klassenObject) {
+function sync_getKlasse(callback, classObjectArray) {
 // Eine Klasse des Benutzers abfragen, mergen und weitergeben
+
+	var klassenHash = classObjectArray[0];
+	// Klasse vorhanden oder nur Hash übereben ?
+	klassenObject = (classObjectArray.length === 1) ? {} : classObjectArray[1];
+	console.log(klassenObject);
+
 	if (AUTH) {
+		console.log("SYNC:", klassenHash);
 		$.ajax({
-			url: SyncServer + '/' + btoa(userID) + '/class/' + klassenObject.klasse,
+			url: SyncServer + '/' + btoa(userID) + '/class/' + klassenHash,
 			type: 'GET',
 			headers: {
 				"Authorization": "Basic " + btoa(userID + ":" + passW)
 			},
 			timeout: 4000,
-			success: function(jqXHR, status, data){
+			success: function(data, status, jqXHR){
 				// GET Klasse
-				console.log("SYNC local:", klassenObject);//DEV 
-				var newData = (jqXHR.payload && isObject(jqXHR.payload)) ? decryptData(jqXHR.payload.data) : {};
-				console.log("SYNC recieved:", newData);//DEV 
+				//DEV console.log("SYNC local:", klassenObject);
+				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
+				//DEV console.log("SYNC recieved:", newData);
 				// Merge Klasse
 				var merged = mergeKlasse(newData, klassenObject);
-				console.log("SYNC merged to:", merged); //DEV
-				// Save and Push back
-				db_replaceData(function(){
-					sync_pushBack(callback, merged, ["class", klassenObject.klasse]);
-				}, merged, klassenObject.klasse);
-				/*
-				callback(klassenObject); //DEV
-				*/
+				if (merged) {
+					//DEV console.log("SYNC merged to:", merged);
+					// (Create)
+					db_neueKlasse(function(){
+						// Save lokal
+						db_replaceData(function(){
+							// Push zurück zu Server
+							sync_pushBack(callback, merged, ["class", klassenHash]);
+						}, merged, klassenHash, true);
+					}, klassenHash, merged[1].name)
+				}else{
+					alert("Die Klasse konnte nicht abgerufen werden, weil weder auf dem Server noch auf deinem Gerät Daten dazu gefunden wurden !\nDer Eintrag ist eine Karteileiche !");
+				}
 			},
-			error: function(jqXHR, status, data){
-				console.log("SYNC-ERROR: Kein Sync der Klasse "+klassenObject.name+" ("+klassenObject.klasse+") durchgeführt !");
-				console.log("SYNC-ERROR (status, jqXHR, data):", status, jqXHR, data);
+			error: function(data, status, jqXHR){
+				console.log("SYNC-ERROR: Kein Sync der Klasse "+klassenObject.name+" ("+klassenHash+") durchgeführt !");
+				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
 				callback(klassenObject); 
 			},
 		});
@@ -108,14 +118,14 @@ function sync_getMultiKlasses(callback, klassenListe) {
 				"Authorization": "Basic " + btoa(userID + ":" + passW)
 			},
 			timeout: 4000,
-			success: function(jqXHR, status, data){
+			success: function(data, status, jqXHR){
 				/*
 				Klassen abrufen und mergen (eigene Funtkion)
 				*/
 			},
-			error: function(jqXHR, status, data){
+			error: function(data, status, jqXHR){
 				console.log("SYNC-ERROR: Kein Sync der Klassenliste", hashList, "durchgeführt !");
-				console.log("SYNC-ERROR (status, jqXHR, data):", status, jqXHR, data);
+				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
 				callback(klassenObject); 
 			},
 		});
@@ -142,14 +152,14 @@ function sync_pushBack(callback, Data, uri) {
 				"Authorization": "Basic " + btoa(userID + ":" + passW)
 			},
 			timeout: 4000,
-			success: function(jqXHR, status, data){
-				console.log("Push:", pushData); //DEV
-				console.log("Response:", data); //DEV 
-				console.log("Geänderte Zeilen:", jqXHR.payload); //DEV
+			success: function(data, status, jqXHR){
+				//DEV console.log("Push:", pushData);
+				//DEV console.log("Response:", jqXHR);
+				console.log("SYNC:", data.payload, " changed dataset(s) on server");
 				callback(Data); // Callback bekommt gepushten Daten im Klartext
 			},
-			error: function(jqXHR, status, data){
-				console.log("Failed !", jqXHR);
+			error: function(data, status, jqXHR){
+				console.log("Failed !", data);
 			},
 		});
 	}else{
@@ -168,28 +178,39 @@ function mergeAccount(newData, localData) {
 
 	if (Object.keys(newData).length > 0) {
 
-		if (Object.keys(newData.klassenliste).length > 0) {
-			// Klassenliste ergänzen
-			//DEV console.log("...merge Klassenliste...");
-			for (var hash in newData.klassenliste){
-				//DEV console.log("...check Hash", hash);
-				if (account.klassenliste.hasOwnProperty(hash)) {
-					// -- Konflikt beseitigen (nur neueste übernehmen)
-					//DEV console.log("...Konflikt (recieved / lokal)", newData.klassenliste[hash], account.klassenliste[hash]);
-					account.klassenliste[hash] = (newData.klassenliste[hash].changed > account.klassenliste[hash].changed) ? newData.klassenliste[hash] : account.klassenliste[hash];
-				}else{
-					// -- einfach hinzufügen
-					//DEV console.log("...einfaches Einfügen", newData.klassenliste[hash]);
-					account.klassenliste[hash] = newData.klassenliste[hash];
-				}
-			}
-		}
-
 		// Blacklist ergänzen
 		if (newData.blacklist) {
 			// Konflikt beseitigen (zusammenführen und unique)
 			var newBlacklist = localData.blacklist.concat(newData.blacklist);
 			account.blacklist = removeDups(newBlacklist);
+		}
+
+		// Lokale Klassenliste mit (ggf. neuer) Blacklist bereinigen
+		var localHashes = Object.keys(account.klassenliste);
+		for (var i = account.blacklist.length - 1; i >= 0; i--) {
+			if (localHashes.indexOf(account.blacklist[i]) > -1){
+				delete account.klassenliste[account.blacklist[i]];
+			}
+		}
+		
+		// Klassenliste ergänzen
+		if (Object.keys(newData.klassenliste).length > 0) {
+			//DEV console.log("...merge Klassenliste...");
+			for (var hash in newData.klassenliste){
+				if (account.blacklist.indexOf(hash) === -1) {
+					// Hash nicht lokal vorhanden und nicht auf Blacklist
+					//DEV console.log("...check Hash", hash);
+					if (account.klassenliste.hasOwnProperty(hash)) {
+						// -- Konflikt beseitigen (nur neueste übernehmen)
+						//DEV console.log("...Konflikt (recieved / lokal)", newData.klassenliste[hash], account.klassenliste[hash]);
+						account.klassenliste[hash] = (newData.klassenliste[hash].changed > account.klassenliste[hash].changed) ? newData.klassenliste[hash] : account.klassenliste[hash];
+					}else{
+						// -- einfach hinzufügen
+						//DEV console.log("...einfaches Einfügen", newData.klassenliste[hash]);
+						account.klassenliste[hash] = newData.klassenliste[hash];
+					}
+				}
+			}
 		}
 
 	}
@@ -199,48 +220,125 @@ function mergeAccount(newData, localData) {
 
 
 function mergeKlasse(newData, localData) {
-//-> Metadaten mergen: Grundvorraussetzungen für Folgeoperationen
-/*
-- Objekte Mergen
-- neues Objekt für SYNC zurückgeben
-- Flag zurückgeben ob
---> gepusht werden muss,
---> lokal gespeichert werden muss
---> oder beides
-*/
-	// Sind Daten auf dem Server vorhanden ?
-	if (Object.keys(newData).length > 0) {
+//-> Klasse mergen: Liste mit Objekten rekursiv zusammenführen
+	if(Object.keys(newData).length === 0 && Object.keys(localData).length === 0) {
+		// Weder Daten auf Server noch lokal - Something went wrong...
+		console.log("MERGE-ERROR: Object-Key ist weder in neuen noch in lokalen Daten vorhanden ?!");
+		return false;
 
-		// Merge - Loop
+	}else if (Object.keys(newData).length === 0) {
+
+		// Es sind keine Daten auf dem Server vorhanden => localData zurückgeben
+		console.log("MERGE: no action - return localData");
+		return localData;
+
+	}else if (Object.keys(localData).length === 0) {
+
+		// Es sind keine Daten lokal vorhanden => newData zurückgeben
+		console.log("MERGE: no action - return newData");
+		return newData;
+
+	}else{
+
+		// Es sind Daten vorhanden => TRICKY Merge - Loop
+		console.log("MERGE: localData and newData - return TRICKY");
 		var Klasse = {};
+
 		// -- Liste mit allen Keys beider Objecte (unique)
-		var keyList = [];
+		var keyList = Object.keys(localData).concat(Object.keys(newData));
+		keyList = removeDups(keyList);
+
 		// -- Loop mittels Key-Liste
-		for (row in keyList){
+		for (var row, i = keyList.length - 1; i >= 0; i--) {
+			row = keyList[i]
+
 			if (isObject(newData[row]) && isObject(localData[row])) {
+
 				// -- Konflikt beseitigen (nur neueste übernehmen)
-				// changed der Kategorien vergleichen
+				
+				if (newData[row].typ != "student") {
+					// changed der Kategorien vergleichen
+					//DEV console.log("MERGE: id", row, " NORMAL mode");
+					Klasse[row] = (newData[row].changed > localData[row].changed) ? newData[row] : localData[row];
+
+				}else{
+					// Attribut 'changed' bei Typ 'student' differenzierter betrachten
+					//DEV console.log("MERGE: id", row, "TRICKY mode");
+					Klasse[row] = Object.assign({}, localData[row]);
+					
+					// Name
+					delete Klasse[row].name
+					Klasse[row].name = (newData[row].name.changed > localData[row].name.changed) ? newData[row].name : localData[row].name;
+					
+					// Gesamt
+					delete Klasse[row].gesamt
+					Klasse[row].gesamt = (newData[row].gesamt.changed > localData[row].gesamt.changed) ? newData[row].gesamt : localData[row].gesamt;
+					
+					// Leistungen mündlich
+					// -- Leistungs-Loop
+					var leistungsArten = ["mndl", "fspz", "schr"];
+					for (var l = leistungsArten.length - 1; l >= 0; l--) {
+						var lArt = leistungsArten[l];
+						Klasse[row][lArt] = {};
+						
+						// -- Liste mit allen Keys beider Objecte (unique)
+						var artKeyList = Object.keys(localData[row][lArt]).concat(Object.keys(newData[row][lArt]));
+						artKeyList = removeDups(artKeyList);
+
+						// -- Alle Leistungen einer Art (nach ID)
+						for (var k in artKeyList){
+							var lID = artKeyList[k];
+
+							if (isObject(newData[row][lArt][lID]) && isObject(localData[row][lArt][lID])) {
+								// -- Konflikt beseitigen (nur neueste übernehmen)
+								Klasse[row][lArt][lID] = (newData[row][lArt][lID].changed > localData[row][lArt][lID].changed) ? newData[row][lArt][lID] : localData[row][lArt][lID];
+								//DEV console.log("MERGE: art", lArt, ", lID", lID, " is TRICKY");
+
+							}else if (isObject(newData[row][lArt][lID]) && !isObject(localData[row][lArt][lID])) {
+								// -- nur in neuen Daten vorhanden
+								Klasse[row][lArt][lID] = newData[row][lArt][lID];
+								//DEV console.log("MERGE: art", lArt, ", lID", lID, "von newData");
+
+							}else if (!isObject(newData[row][lArt][lID]) && isObject(localData[row][lArt][lID])) {
+								// -- nur in lokalen Daten vorhanden
+								Klasse[row][lArt][lID] = localData[row][lArt][lID];
+								//DEV console.log("MERGE: art", lArt, ", lID", lID, "von localData");
+
+							}else{
+								console.log("MERGE-ERROR: art", lArt, ", lID", lID, " ist nirgends vorhanden ?!"); //DEV
+
+							}
+						}
+					}
+
+				}
+
 			}else if (isObject(newData[row]) && !isObject(localData[row])) {
 				// -- nur in neuen Daten vorhanden
-				Klasse[row] = Object.assign({}, newData[row]);
+				//DEV console.log("MERGE: id", row, "von newData");
+				Klasse[row] = newData[row];
+
 			}else if (!isObject(newData[row]) && isObject(localData[row])) {
 				// -- nur in lokalen Daten vorhanden
-				Klasse[row] = Object.assign({}, localData[row]);
-			}else{
-				console.log("Klassen-Merge FEHLER: Object-Key ist weder in neuen noch in lokalen Daten !");
+				//DEV console.log("MERGE: id", row, "von localData");
+				Klasse[row] = localData[row];
+
 			}
 		}
 
 		// merged zurückgeben
 		return Klasse;
 
-	}else{
-
-		// localData unverändert zurückgeben
-		return localData;
-
 	}
+}
 
+function sync_deleteKlasse(selKlasse){
+//>> Fake Delete-Sync bis zur Umstellung
+	if (AUTH) {
+		console.log("SYNC-ERROR: Löschen von Klassen auf dem Server noch nicht möglich (NOT IMPLEMENTED)");
+	}else{
+		console.log("SYNC: Kein Account mit entsprechenden Berechtigungen eingerichtet");
+	}
 }
 
 
@@ -290,27 +388,6 @@ function initSyncSQL(){
 	_element.innerHTML = "Funktion noch nicht verfügbar !";
 	document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
 }
-
-
-function deleteKlasse(selKlasse){
-//>> Fake Delete-Sync bis zur Umstellung
-	var _element = document.getElementById('syncStatus');
-	var _elementTxt = document.getElementById('syncText');
-	_elementTxt.innerHTML = "Lösche Klasse";
-	popUp("item0Sync");
-	setTimeout(function() {
-		_elementTxt.innerHTML = "Lösche Klasse von diesem Gerät !";
-		_element.style.width = "100%";
-		db_dropKlasse(selKlasse, function(){
-			setTimeout(function(){
-					_element.classList.add('ok');
-					_element.innerHTML = "Fertig !";
-					document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
-				},1000);
-			}, 600);
-		});
-}
-
 
 function old_initSyncSQL(){
 	popUp("item0Sync");

@@ -38,6 +38,7 @@ $(document).ready(function() {
 
 // Tabellenübersicht aus Array aller Schüler erstellen
 function listStudents(results) {
+	if (typeof results === 'undefined') {results = [];}
 	var c, r, ul, old, row, omndl, ofspz, oschr, gesamt, len;
 	old = document.getElementById("listStudents").getElementsByTagName('ul')[0];
 	ul = document.createElement('ul');
@@ -110,6 +111,7 @@ function listStudents(results) {
 
 // Auflisten aller Leistungen als Tabelle
 function listLeistung(results){
+	if (typeof results === 'undefined') {results = [];}
 	var c, r, ul, idx, art, id_Leistung, Leistung, hasEntries;
 	var old = document.getElementById("listLeistung").getElementsByTagName('ul');
 	

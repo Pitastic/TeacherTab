@@ -4,9 +4,17 @@ $(document).ready(function() {
 	db_readMultiData(function(r){
 		// Settings laden
 		SETTINGS = r[0];
+
 		// List first View
-		db_readMultiData(firstListing, "leistung", function(){firstListing([])});
-		db_readSingleData(studentDetails, "student", id);
+		db_readMultiData(function(r){
+			firstListing(r, function(){
+		
+				// Fülle first View
+				db_readSingleData(studentDetails, "student", id);
+		
+			})
+		}, "leistung")
+	
 	}, "settings");
 
 	// Event-Listener
@@ -18,6 +26,7 @@ $(document).ready(function() {
 	pop.getElementsByClassName('button OK')[0].addEventListener('click', function(){
 		document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = document.getElementById('vName').value+" "+document.getElementById('nName').value;
 		popUpClose(this);
+		// DEV : deaktiviert ????
 		/*
 		var newStudent = {};
 		newStudent[id] = {
@@ -65,7 +74,8 @@ $(document).ready(function() {
 
 
 // Maske mit Standardeintragungen erstellen
-function firstListing(results) {
+function firstListing(results, callback) {
+	if (typeof results === 'undefined') {results = [];}
 	// - Alle Leistungen vorbereiten und auflisten
 	var i, i2, span, div;
 	var ul, li, h3;
@@ -294,6 +304,9 @@ function firstListing(results) {
 	schr_div.appendChild(h3);
 	schr_div.appendChild(ul);
 
+
+	// Listing abgeschlossen - Callback
+	callback();
 	return;
 }
 
@@ -392,18 +405,21 @@ function studentDetails(row){
 function item1Save(id){
 //--> ggf. neue Schülerdaten aktualisieren und Note eintragen
 	var pop = document.getElementById('item0edit');
+	changed = timestamp();
 	var newStudent = {};
 	newStudent[id] = {
 		'name' : {
 			'nname' : document.getElementById('nName').value,
 			'vname' : document.getElementById('vName').value,
 			'sex' : document.getElementById('s_flag').value,
+			'changed' : changed,
 		},
 		'gesamt' : {
 			'eingetragen' : parseInt(document.getElementById('ds_gesamt_eingetragen').getElementsByTagName('select')[0].value) || null,
+			'changed' : changed,
 		},
-		'changed' : timestamp(),
 	};
+
 	db_updateData(
 		function(r){
 			// Animation
