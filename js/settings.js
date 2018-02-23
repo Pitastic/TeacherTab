@@ -4,7 +4,7 @@ $(document).ready(function() {
 		// Load Settingspage
 		SETTINGS = r[0];
 		settingDetails(SETTINGS);
-	}, "settings");
+	}, "settings", console.log);
 
 	// Style and Listeners
 	touchListener(['header', 'footer', 'fadeBlack']);

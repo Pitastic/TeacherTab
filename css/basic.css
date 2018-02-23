@@ -52,21 +52,16 @@ html, body {
 #fadeBlack { 
     position: fixed; top: 0; bottom: 0;
     left: 0; right: 0; z-index: 4;
-    background-color: rgba(0,0,0,0.7);
+    -webkit-transition: background 1s ease-out;
+    -moz-transition: background 1s ease-out;
+    -o-transition: background 1s ease-out;
+    transition: background 1s ease-out;
 }
-#progress { /*loading (inaktiv)*/
-    position: absolute;
-    top: 150px; left: 50%;
-    margin-left: -75px;
-    height: 150px; width: 150px;
-    border-radius: 8px;
-    font-weight: bold;
-    line-height: 150px;
-    color: white;
-    background-color: rgba(10,10,10,0.5);
-    text-align: center;
-    z-index: 10;
+    #fadeBlack.show { 
+        background-color: rgba(0,0,0,0.7);
     }
+
+
 .styleWrap {
     border: 2px solid rgb(230,230,230);
     border-radius: 3px;
@@ -105,9 +100,15 @@ html, body {
     -o-transition: all 1s ease-out 1s;
     transition: all 1s ease-out 1s;
 }
+    #syncInnerText {
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        text-align: center;
+    }
     #syncStatus{
         background-color: gray;
-        text-align: center;
+        text-align: right;
         -webkit-transition: all 1s ease-out;
         -moz-transition: all 1s ease-out;
         -o-transition: all 1s ease-out;

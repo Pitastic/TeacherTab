@@ -89,44 +89,49 @@ function initDB(callback) {
 
 // Neue Klasse anlegen
 function db_neueKlasse(callback, id, bezeichnung) {
-	dbversion = localStorage.getItem("dbversion_"+userID);
-	dbversion = parseInt(dbversion) + 1
-	localStorage.setItem("dbversion_"+userID, dbversion);
 	var db = indexedDB.open(dbname, dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
-		db_addDocument(false, formSettings(id, bezeichnung));
-
-		// ---> Garbage Collection
-		connection.onversionchange = function(event) {
-			connection.close();
-
-		};
-	}
-	db.onupgradeneeded = function(event){
-		var connection = event.target.result;
+		
 		if (!connection.objectStoreNames.contains(id)) {
-				console.log("IDB: creating");
-				// Erstelle ObhectStore
+			// Store noch nicht vorhanden, Upgrade needed
+			// 1. Close old
+			connection.close();
+			
+			// 2. Open new
+			dbversion = localStorage.getItem("dbversion_"+userID);
+			dbversion = parseInt(dbversion) + 1
+			localStorage.setItem("dbversion_"+userID, dbversion);
+
+			var newdb = indexedDB.open(dbname, dbversion);
+			newdb.onerror = errorHandler;
+			newdb.onupgradeneeded = function(event){
+				var connection = event.target.result;
+				console.log("IDB: creating Class");
+				// Erstelle ObjectStore
 				var oStore = connection.createObjectStore(id, {keyPath: "id", autoIncrement: true});
 				// Erstelle Indexes
-				oStore.createIndex("typ", "typ", { unique: false });
-				
-				// Neue Klasse in Account-Array einfügen
-				var changed = timestamp();
-				db_simpleUpdate(function(){
-					callback();
-				}, 1, "klassenliste", "addKlasse", [id, {'bezeichnung': bezeichnung, 'id' : id, 'changed' : changed}], "account");
-				
+				oStore.createIndex("typ", "typ", { unique: false });				
 				// Globale Variable speichern
 				klasse = id;
 				console.log("IDB:", bezeichnung, " (", id, ") created");
+			}
+			newdb.onsuccess = function(event){SettingsRequest(event, id, bezeichnung, callback)};
+
 		}else{
-			klasse = id;
+			// Store ist vorhanden, kein Upgrade notwendig
 			console.log("IDB:", bezeichnung, " (", id, ") already exists. Do nothing...");
+			SettingsRequest(event, id, bezeichnung, callback);
 		}
+
+
 	}
+	
+	// ---> Garbage Collection
+	db.onversionchange = function(event) {
+		event.target.transaction.db.close();
+	};
 }
 
 
@@ -139,6 +144,8 @@ function db_dropKlasse(oStore, callback) {
 		var connection = event.target.result;
 
 		if (connection.objectStoreNames.contains(oStore)) {
+		// DEV: Wegen DB-Block
+		//if (true) {
 			// oStore existiert lokal - Clear
 			var objectStore = connection.transaction(oStore, "readwrite").objectStore(oStore);
 			var result_clear = objectStore.clear();
@@ -207,11 +214,11 @@ function db_addDocument(callback, newObject, oStore) {
 			if (iterator<rowlist.length) {
 				objectStore.put(rowlist[iterator]).onsuccess = function(){putNext(iterator+1)};
 			} else {   // complete
-				console.log("IDB: Datensatz eingefügt");
+				console.log("IDB: Datensatz eingefügt (", iterator, "mal)");
 				if (callback) {callback(connection);}
 			}
 		}
-		connection.close();
+		//connection.close();
 
 		// ---> Garbage Collection
 		connection.onversionchange = function(event) {
@@ -275,13 +282,23 @@ function db_readKlasse(callback, targetClass) {
 				for (var i = resultList.length - 1; i >= 0; i--) {
 					result[resultList[i].id] = resultList[i];
 				}
-
+				
+				// Close and Callback
+				event.target.transaction.db.close();
 				callback([targetClass, result]);
 			}
+
 		}else{
+			// Close and Callback
+			connection.close();
 			callback([targetClass]);
 		}
 	}
+
+	// ---> Garbage Collection
+	db.onversionchange = function(event) {
+		event.target.transaction.db.close();
+	};
 }
 
 
@@ -304,6 +321,8 @@ function db_readGeneric(callback, id, oStore) {
 				// in jedem Fall zu ende Itterieren (muss halt so)
 				cursor.continue();
 			}else{
+				// Close and Callback
+				connection.close();
 				callback(result);
 			}
 		}
@@ -336,6 +355,10 @@ function db_readSingleData(callback, typ, id, emptyCall) {
 				// in jedem Fall zu ende Itterieren (muss halt so)
 				cursor.continue();
 			}else{
+
+				// Close and Callback
+				connection.close();
+				
 				if (result) {
 					callback(result);
 				}else{
@@ -364,6 +387,10 @@ function db_readMultiData(callback, typ, emptyCall) {
 		transaction.onerror = errorHandler;
 		transaction.onsuccess = function(event){
 			result = event.target.result;
+
+			// Close and Callback
+			connection.close();
+
 			if (result.length > 0) {
 				callback(result);
 			}else{
@@ -425,7 +452,9 @@ function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 						// in Klassenliste
 						toUpdate.klassenliste[val[0]] = val[1];
 						// in Local
-						toUpdate.local.push(val[0]);
+						if (toUpdate.local.indexOf(val[0]) === -1) {
+							toUpdate.local.push(val[0]);
+						}
 
 					// Klasse aus Account entfernen
 					}else if (mode == "delKlasse") {
@@ -593,10 +622,43 @@ function db_dynamicUpdate(callback, toApply, typ, eID) {
 function errorHandler(event) {
 	console.log("IDB: operation went wrong:");
 	console.log("IDB:", event);
+	updateStatus(100, "!", "Fehler beim Zugriff auf die lokale Datenbank", true);
 	return;
 }
 
 // Belegte Connection
 function blockHandler(event) {
-	console.log("DB is blocked !", event.target.result);
+	event.target.result.close();
+	console.log("IDB: Blocked ! ...closing Connections");
 }
+
+// Settings erstellen
+function SettingsRequest(event, id, bezeichnung, callback){
+	var connectionSR = event.target.result;
+	var checkRequest = connectionSR.transaction(id).objectStore(id).get(1)
+		checkRequest.onerror = errorHandler;
+		checkRequest.onsuccess = function(event){
+			event.target.transaction.db.close();
+
+			if (!event.target.result){
+				// keine ID 1 vorhanden, SETTINGS schreiben:
+				console.log("IDB: adding Settings");
+				db_addDocument(false, formSettings(id, bezeichnung));
+			}
+			
+			// Neue Klasse in Account-Array einfügen
+			var changed = timestamp();
+			console.log("IDB: adding Class to Account");
+			db_simpleUpdate(callback, 1, "klassenliste", "addKlasse", [id, {'bezeichnung': bezeichnung, 'id' : id, 'changed' : changed}], "account");
+		
+		}
+		checkRequest.oncomplete = function(event){
+			event.target.transaction.db.close();
+		}
+
+
+		// ---> Garbage Collection
+		checkRequest.onversionchange = function(event) {
+			event.target.transaction.db.close();
+		};
+};

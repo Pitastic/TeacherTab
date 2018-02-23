@@ -1,7 +1,7 @@
 /*
 - Funktionen von Sync-Funktion trennen
-- DOM-Manipulation in *.js oder all.js in eigene Funktion schieben
-- DEV-Note in all.js - formStudent() über generating IDs
+- DEV-Note: Clean Blacklist Funktion zum Zurücksetzen der Syncsperre in "Grundeinstellungen" o.ä.
+- DEV-Note: Background Sync bei etwas Inaktivität alle X Minuten
 */
 
 function testCreds(callback) {
@@ -12,12 +12,13 @@ function testCreds(callback) {
 		headers: {
 			"Authorization": "Basic " + btoa(userID + ":" + passW)
 		},
-		timeout: 4000,
-		success: function(jqXHR, status, data){
-			callback(data.status);
+		timeout: 2500,
+		success: function(data, status, jqXHR){
+			console.log(data, status, jqXHR);
+			callback(jqXHR.status);
 		},
-		error: function(jqXHR, status, data){
-			callback(data.status);
+		error: function(jqXHR, status, msg){
+			callback(jqXHR.status);
 		},
 	});
 }
@@ -61,7 +62,6 @@ function sync_getKlasse(callback, classObjectArray) {
 	var klassenHash = classObjectArray[0];
 	// Klasse vorhanden oder nur Hash übereben ?
 	klassenObject = (classObjectArray.length === 1) ? {} : classObjectArray[1];
-	console.log(klassenObject);
 
 	if (AUTH) {
 		console.log("SYNC:", klassenHash);
@@ -74,13 +74,13 @@ function sync_getKlasse(callback, classObjectArray) {
 			timeout: 4000,
 			success: function(data, status, jqXHR){
 				// GET Klasse
-				//DEV console.log("SYNC local:", klassenObject);
+				console.log("SYNC local:", klassenObject);//DEV 
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
-				//DEV console.log("SYNC recieved:", newData);
+				console.log("SYNC recieved:", newData);//DEV 
 				// Merge Klasse
 				var merged = mergeKlasse(newData, klassenObject);
 				if (merged) {
-					//DEV console.log("SYNC merged to:", merged);
+					console.log("SYNC merged to:", merged);//DEV 
 					// (Create)
 					db_neueKlasse(function(){
 						// Save lokal
@@ -175,6 +175,10 @@ function mergeAccount(newData, localData) {
 	account.blacklist = localData.blacklist; // wird um lokale Blacklist ergänzt und anschließend ge-uniqued
 	account.local = localData.local; // (wird vom Client behalten und nicht gemerged)
 
+	// ggf. Doppelte aufräumen
+	account.blacklist = removeDups(account.blacklist);
+	account.local = removeDups(account.local);
+
 
 	if (Object.keys(newData).length > 0) {
 
@@ -185,34 +189,47 @@ function mergeAccount(newData, localData) {
 			account.blacklist = removeDups(newBlacklist);
 		}
 
-		// Lokale Klassenliste mit (ggf. neuer) Blacklist bereinigen
+		// Lokale Klassenliste mit (ggf. neuer) Blacklist bereinigen (Verzeichnis)
 		var localHashes = Object.keys(account.klassenliste);
+		var localStores = Object.keys(account.local);
+		dbToGo = 0;
+		dbFinished = 0;
 		for (var i = account.blacklist.length - 1; i >= 0; i--) {
 			if (localHashes.indexOf(account.blacklist[i]) > -1){
-				delete account.klassenliste[account.blacklist[i]];
-			}
-		}
-		
-		// Klassenliste ergänzen
-		if (Object.keys(newData.klassenliste).length > 0) {
-			//DEV console.log("...merge Klassenliste...");
-			for (var hash in newData.klassenliste){
-				if (account.blacklist.indexOf(hash) === -1) {
-					// Hash nicht lokal vorhanden und nicht auf Blacklist
-					//DEV console.log("...check Hash", hash);
-					if (account.klassenliste.hasOwnProperty(hash)) {
-						// -- Konflikt beseitigen (nur neueste übernehmen)
-						//DEV console.log("...Konflikt (recieved / lokal)", newData.klassenliste[hash], account.klassenliste[hash]);
-						account.klassenliste[hash] = (newData.klassenliste[hash].changed > account.klassenliste[hash].changed) ? newData.klassenliste[hash] : account.klassenliste[hash];
-					}else{
-						// -- einfach hinzufügen
-						//DEV console.log("...einfaches Einfügen", newData.klassenliste[hash]);
-						account.klassenliste[hash] = newData.klassenliste[hash];
-					}
-				}
+				// Immer Eintrag aus Verzeichnis löschen und wenn vorhanden auch oStore aus DB
+				dbToGo += 1;
+				console.log("toDelete", toDelete);
+				db_dropKlasse(account.blacklist[i], function(){
+					dbFinished += 1;
+					console.log("finishedDeletes", finishedDeletes);
+				})
 			}
 		}
 
+		// Auf eventuelle Lösch-Operationen der DB warten
+		waitForDB(function(){
+			// Klassenliste ergänzen
+			if (Object.keys(newData.klassenliste).length > 0) {
+				console.log("...merge Klassenliste...");//DEV
+				for (var hash in newData.klassenliste){
+					if (account.blacklist.indexOf(hash) === -1) {
+						// Hash nicht lokal vorhanden und nicht auf Blacklist
+						//DEV console.log("...check Hash", hash);
+						if (account.klassenliste.hasOwnProperty(hash)) {
+							// -- Konflikt beseitigen (nur neueste übernehmen)
+							//DEV console.log("...Konflikt (recieved / lokal)", newData.klassenliste[hash], account.klassenliste[hash]);
+							account.klassenliste[hash] = (newData.klassenliste[hash].changed > account.klassenliste[hash].changed) ? newData.klassenliste[hash] : account.klassenliste[hash];
+						}else{
+							// -- einfach hinzufügen
+							//DEV console.log("...einfaches Einfügen", newData.klassenliste[hash]);
+							account.klassenliste[hash] = newData.klassenliste[hash];
+						}
+					}
+				}
+			}
+			
+			return account;
+		});
 	}
 
 	return account;

@@ -9,7 +9,6 @@ var knownDevice;
 var isPhone;
 
 var dbversion;
-var oStore;
 var dbname;
 var noSyncCols;
 
@@ -17,6 +16,14 @@ var klasse;
 var klassenbezeichnung;
 var SETTINGS;
 var AUTH;
+
+var dbToGo;
+var dbFinished;
+var perfStart;
+var perfEnd;
+
+// --> GLOBALS als Dictionary mit allen globalen Variablen einführen
+// (muss bei jedem Vorkommen renamed werden...)
 
 
 $(document).ready(function() {
@@ -259,6 +266,66 @@ function RohpunkteAlsNote(val, bol_15pkt){
 	}else{return "-"}
 }
 
+function klassenSyncHandler(){
+//-> Synchronisierung, Animation und Weiterleitung
+	popUp("item0Sync");
+
+	// Animation, Sync und DB
+	var progress = 0;
+	progress += 10;
+	updateStatus(progress, progress+" %", "Synchronisiere: Lokale Daten lesen");
+	
+	db_readKlasse(function(klassenObject){
+		
+		progress += 40; // Statusbar
+		updateStatus(progress, progress+" %", "Synchronisiere: Serverdaten anfordern");
+		
+		sync_getKlasse(function(mergedKlasse) {
+
+			perfEnd = performance.now(); // DEV
+			console.log("INFO: Finished opening Class in " + Math.round((perfEnd - perfStart), 1) + " milliseconds."); // DEV
+			
+			progress += 40; // Statusbar
+			updateStatus(progress, progress+" %", "Synchronisiere: Daten entschlüsseln und zusammenführen...");
+			
+			setTimeout(function(){
+				progress += 10; // Statusbar
+				updateStatus(progress, progress+" %", "Synchronisation erfolgreich !");
+				// --- Klasse aufrufen ---
+				document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
+			},500);
+
+		}, klassenObject);
+
+	});
+}
+
+function updateStatus(progress, statustext, statustitle, elements, error){
+//-> Animation der Statusleiste im PopUp
+	if (document.getElementById('item0Sync')) {
+		// Elemente
+		if (!elements || typeof elements == "undefined") {elements = [];}
+		el_statusbar 	= elements[0] || document.getElementById('syncStatus');
+		el_statustitle 	= elements[1] || document.getElementById('syncText');
+		el_statustext 	= elements[2] || document.getElementById('syncInnerText');
+
+		// DOM-Werte setzen
+		el_statusbar.style.width = progress.toString()+"%";
+		if (statustitle || statustitle == "") {el_statustitle.innerHTML = statustitle;}
+		if (statustext || statustext == "") {el_statustext.innerHTML = statustext;}
+
+		// Success oder Fehler
+		if (progress >= 100 && !error) {
+			el_statusbar.classList.add('ok');
+			el_statusbar.classList.remove('error');
+		}else if (error) {
+			el_statusbar.classList.remove('ok');
+			el_statusbar.classList.add('error');
+		}
+	}
+	return;
+}
+
 // =================================================== //
 // ================     Standards     ================ //
 // =================================================== //
@@ -330,20 +397,21 @@ function compareKlassen(a,b) {
 }
 
 
-function removeDups(arr) {
-//-> Filterfunktion für Array - keine Doppelten
-//-> https://stackoverflow.com/a/15868720
-	var uniq = arr.slice() // slice makes copy of array before sorting it
-	.sort(function(a,b){
-		return a > b;
-	})
-	.reduce(function(a,b){
-		if (a.slice(-1)[0] !== b) a.push(b); // slice(-1)[0] means last item in array without removing it (like .pop())
-		return a;
-	},[]); // this empty array becomes the starting value for a
-
-	// one liner
-	return arr.slice().sort(function(a,b){return a > b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[])
+function removeDups(a) {
+//-> Doppelte Einträge aus Array filtern
+//-> https://stackoverflow.com/a/9229821/2978727
+	var seen = {};
+	var out = [];
+	var len = a.length;
+	var j = 0;
+	for(var i = 0; i < len; i++) {
+		var item = a[i];
+		if(seen[item] !== 1) {
+			seen[item] = 1;
+			out[j++] = item;
+		}
+	}
+	return out;
 }
 
 function datum(){
@@ -361,8 +429,11 @@ function timestamp() {
 }
 
 function uniqueID() {
-	//var part_ts = timestamp().toString().substring(2,9);
+	// Add Time
 	var part_ts = new Date().getTime().toString().substring(2);
+	// -- plus extra-Counter für Batch
+	part_ts += dbToGo;
+	// Add Device Details
     var nav = window.navigator;
     var screen = window.screen;
     var part_guid = nav.mimeTypes.length;
@@ -372,20 +443,6 @@ function uniqueID() {
 	part_guid += screen.pixelDepth || '';
 	var id = parseInt(part_guid+part_ts) || parseInt(part_ts);
 	return id;
-}
-
-function goBack(){
-	readDB_tables(listIdx_Select,"");
-	slide('uebersicht0_In', 'item0');
-	noTouchSlider();
-}
-
-function quit(){
-	if(window.confirm('Änderungen synchronisieren ?')){
-		initSyncSQL();
-	}else{
-		window.location = "index.htm";
-	}
 }
 
 
@@ -545,10 +602,11 @@ function slide2(slideName){
 }
 
 function popUp(popWindow){
-	setTimeout(function() {
-	document.getElementById(popWindow).classList.add('showPop');
-	}, 100);
 	document.getElementById('fadeBlack').classList.remove('hide');
+	setTimeout(function() {
+		document.getElementById(popWindow).classList.add('showPop');
+		document.getElementById('fadeBlack').classList.add('show');
+	}, 50);
 	window.addEventListener('keydown', keyFunctions);
 }
 
@@ -595,6 +653,8 @@ function popUpClose(thisElement, bol_refresh){
 		db_readMultiData(listLeistung, "leistung");
 	}
 	thisElement.parentNode.parentNode.classList.remove('showPop');
+	document.getElementById('fadeBlack').classList.remove('show');
+
 	setTimeout(function() {
 		thisElement.parentNode.parentNode.parentNode.classList.add('hide');
 	}, 500);
@@ -640,8 +700,6 @@ function formSettings(id, bezeichnung) {
 
 // Schüler mit ersten Daten
 function formStudent(vName, nName, sex){
-// DEV: ID darf nicht autoIncrement sondern muss zufällig einmalig sein !
-// DEV: Andernfalls könnte es Überschneidungen beim Synchronisieren eigentlich verschiednener Datensätze geben
 	sex = (typeof sex == "undefined") ? sex : "-";
 	var id = uniqueID();
 	return {
@@ -703,6 +761,18 @@ function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
 }
 
 
+// Wait for DB (wenn Callback nicht geht)
+function waitForDB(callback){
+	if(dbToGo >= dbFinished){
+		callback();
+	}else{
+		console.log("IDB: next Actions waits...");
+		setTimeout(function(){
+			waitForDB(callback)
+		}, 250);
+	}
+}
+
 // Helper zum Löschen von Leistunge
 function handleDeleteLeistung(callback, lART, lID) {
 	db_dynamicUpdate(
@@ -726,7 +796,7 @@ function handleSchnitt(callback, sID) {
 				return schnitt_gesamt(Student, Leistungen);
 			}, "student", sID);
 	}, "leistung", function(){
-			console.log("noch keine Leistungen da, kein Scnitt");
+			console.log("noch keine Leistungen da, kein Schnitt");
 			callback();
 		}
 	);
@@ -737,16 +807,13 @@ function handleSchnitt(callback, sID) {
 // ================== Smartphone Anpassungen ====================
 // ==============================================================
 
-function change_buttons(buttons) {
+function change_buttons() {
+	buttons = {
+		"btn_Add" : "&#65291;",
+		"btn_Delete" : "&#10006;",
+		"export" : "&#9650;",
+	}
 	for (key in buttons) {
 		document.getElementById(key).innerHTML = buttons[key]
 	}
-	/*
-	var btn_add = document.getElementById('btn_Add')
-		btn_add.innerHTML = "&#65291;";
-	var btn_delete = document.getElementById('btn_Delete')
-		btn_delete.innerHTML = "&#10006;";
-	var btn_export = document.getElementById('export')
-		btn_export.innerHTML = "&#9650;";
-	*/
 }

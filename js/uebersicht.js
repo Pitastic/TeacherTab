@@ -23,12 +23,7 @@ $(document).ready(function() {
 		noTouchThisSlider(target_el);
 	},100);
 	// Extras für Smartphone-Nutzer
-	buttons = {
-		"btn_Add" : "&#65291;",
-		"btn_Settings" : "&#9881;",
-		"btn_Back" : "<",
-	}
-	if (isPhone){change_buttons(buttons)}
+	if (isPhone){change_buttons()}
 });
 
 
@@ -213,25 +208,27 @@ function addStudent(el){
 function massenAdd(el){
 	var textblock = document.getElementById('item1Add').getElementsByTagName('textarea')[0];
 	var trennZeile = (document.getElementById('trennZ').value == "1") ? "\n" : "\n\n";
-	var trennNamen = document.getElementById('trennN').value;
-	if (!trennNamen) {
+	var trennNamen = document.getElementById('trennN');
+	if (!trennNamen.value) {
 		alert("Du hast vergessen ein Trennzeichen (ggf. mit Leerzeichen) anzugeben !");
 		return false;
 	}
+
 	var i, zeilen = []; var namen = []; var vnn;
 	zeilen = textblock.value.split(trennZeile);
+	dbToGo = 0;
 	for (zeile in zeilen){
-		vnn = zeilen[zeile].split(trennNamen);
+		vnn = zeilen[zeile].split(trennNamen.value);
 		// Schüler-Objekt in Liste
+		dbToGo += 1;
 		namen.push(formStudent(vnn[0].trim(),vnn[1].trim()));
 	}
 
 	db_addDocument(function(){
-		setTimeout(function() {
-			popUpClose(el);
-			db_readMultiData(listStudents, "student");
-		}, 500);
+		db_readMultiData(listStudents, "student");
 		textblock.value = "";
+		trennNamen.value = "";
+		popUpClose(el);
 	}, namen);
 
 	return true;

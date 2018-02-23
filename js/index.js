@@ -7,14 +7,11 @@ $(document).ready(function() {
 
 	// -- Buttons
 	document.getElementById('syncOpen').addEventListener('click', function(){
+		perfStart = performance.now(); // DEV
 		// Öffnen mit Sync der geählten Klasse
 		klassenAuswahl(document.getElementById('klasseSelect'));
 		if (klasse && klasse != "-") {
-			db_readKlasse(function(klassenObject){
-				sync_getKlasse(function(mergedKlasse) {
-					console.log("Finished :", mergedKlasse);
-				}, klassenObject);
-			});
+			klassenSyncHandler();
 		}else{
 			alert("Es wurde keine Klasse ausgewählt !");
 		}
@@ -22,6 +19,7 @@ $(document).ready(function() {
 		// ohne Sync:
 		initSyncSQL();
 		*/
+
 	});
 
 	document.getElementById('btn_Delete').addEventListener('click', function(){
@@ -51,11 +49,11 @@ $(document).ready(function() {
 		/* DEV: Kein Sync, kein Export !
 		export_to_csv(klasse);
 		document.getElementById("export_to_pdf").href = "http://www.teachertab.de/WebApp/export-PDF.htm?klasse="+klasse+"&SyncServer="+SyncServer+"&userID="+userID;
-		*/
 		document.getElementById("export_to_html").addEventListener('click', function(e){
 			testSync();
 		})
 		popUp('item0Export');
+		*/
 	});
 
 	document.getElementById('closeSync').addEventListener('click', function(){
@@ -63,9 +61,9 @@ $(document).ready(function() {
 		var syncStatus = document.getElementById('syncStatus');
 		syncStatus.classList.remove('ok');
 		syncStatus.classList.remove('error');
-		syncStatus.innerHTML = "";
 		syncStatus.style.width = "0";
 		document.getElementById('syncText').innerHTML = "Synchronisiere";
+		document.getElementById('syncInnerText').innerHTML = "";
 		var buttons = document.getElementById('item0Sync').getElementsByClassName('button');
 		for (var i=0; i<buttons.length; i++){
 			buttons[i].classList.add('hide');
@@ -73,23 +71,20 @@ $(document).ready(function() {
 	});
 
 	// -- Extras für Smartphone-Nutzer
-	if (isPhone){
-		buttons = {
-			"btn_Add" : "&#65291;",
-			"btn_Delete" : "&#10006;",
-			"export" : "&#9650;",
-		}
-		change_buttons(buttons);
-	}
+	if (isPhone){change_buttons();}
 
 
 	// Setting up...
 	// -- format neue Klasse Eingabe
 	Schuljahre();
+	/*
+	// DEPRECATED: Alle Namen in indexedDB möglich
 	var nameKlasse = document.getElementById('nameKlasse');
 	nameKlasse.addEventListener('keyup', function(){
 		nameKlasse.value = nameKlasse.value.replace(/\s+/g, '');
 	});
+	*/
+
 	// -- reset Vars
 	sessionStorage.removeItem('leistung');
 	sessionStorage.removeItem('klasse');
@@ -110,9 +105,9 @@ $(document).ready(function() {
 			
 		});
 
-
 		// -- Set Allgemeine Einstellungen PopUp
 		document.getElementById('userID').value = userID;
+
 	}else{
 		userID = 'Nobody';
 		passW = '-';
@@ -153,17 +148,20 @@ function setAuth(status) {
 
 		// - DOM Manipulation: Meldung !
 		// -- unterscheiden ob Daten oder Verbinungsproblem
-		var msg = "unbekannter Fehler beim Anmelden";
-		if (status == "401") {
-			msg += ": Die Zugangsdaten sind entweder falsch oder nicht (mehr) für diese Funktion berechtigt !";
+		var msg = "Fehler beim Anmelden";
+		if (status == "401" || status == "403") {
+			msg += ":<br>Die Zugangsdaten sind entweder falsch oder nicht (mehr) für diese Funktion berechtigt !";
 		}else if (status == "400" || status == "0") {
-			msg = ": Der Server ist nicht erreichbar. Bist du online ?";
+			msg = ":<br>Der Server ist nicht erreichbar. Bist du online ?";
 		}
 		var errorMsg = document.querySelector("#item0First .msg.error");
 		errorMsg.innerHTML = msg;
 		errorMsg.classList.remove("hide");
 
 	}else{
+		// ggf. vorherige Meldungen löschen
+		var errorMsg = document.querySelector("#item0First .msg.error");
+		errorMsg.innerHTML = "";
 		// OK: Speichern und neu laden
 		localStorage.setItem('passW', passW);
 		localStorage.setItem('auth', true);
@@ -254,6 +252,7 @@ function addKlasse(thisElement) {
 	}
 }
 
+// DEPRECATED (noch SQL)
 function copyKlasse(thisElement, toCopy) {
 	var nameKlasse = document.getElementById('nameCopyKlasse');
 	var jahrKlasse = document.getElementById('jahrCopyKlasse');
@@ -316,16 +315,10 @@ function copyKlasse(thisElement, toCopy) {
 	}
 }
 
+// DEPRECATED
 function copyKlasse_pop (thisElement) {
 	setTimeout(function(){
 		popUp('item0Copy');
 	},1000);
 	popUpClose(thisElement);
-}
-
-function testSync() {
-	sync_getKlassen(function(r){
-		console.log("Sync durchgeführt...");
-		console.log(r);
-	})
 }

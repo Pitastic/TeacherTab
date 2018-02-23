@@ -9,9 +9,9 @@
     -webkit-transform: translateY(-110%);
     -moz-transform: translateY(-110%);
     transform: translateY(-110%);
-    -webkit-transition: -webkit-transform .3s linear;
-    -moz-transition: -webkit-transform .3s linear;
-    transition: -webkit-transform .3s linear;
+    -webkit-transition: -webkit-transform .2s linear;
+    -moz-transition: -webkit-transform .2s linear;
+    transition: -webkit-transform .2s linear;
     }
     .popUp h3 {
         font-size: 1.5em;
