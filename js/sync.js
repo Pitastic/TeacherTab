@@ -7,10 +7,10 @@
 function testCreds(callback) {
 // eingetragene Credentials testen
 	$.ajax({
-		url: SyncServer + '/' + btoa(userID) + '/check/',
+		url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/check/',
 		type: 'GET',
 		headers: {
-			"Authorization": "Basic " + btoa(userID + ":" + passW)
+			"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
 		},
 		timeout: 2500,
 		success: function(data, status, jqXHR){
@@ -25,13 +25,13 @@ function testCreds(callback) {
 
 function sync_getAccount(callback, localAccount) {
 // Klassenliste und Metainfos für den Benutzer abfragen, mergen und weitergeben
-	if (AUTH) {
+	if (GLOBALS.AUTH) {
 		console.log("ACCOUNT: sync/merge");
 		$.ajax({
-			url: SyncServer + '/' + btoa(userID) + '/account',
+			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/account',
 			type: 'GET',
 			headers: {
-				"Authorization": "Basic " + btoa(userID + ":" + passW)
+				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
 			},
 			timeout: 4000,
 			success: function(data, status, jqXHR){
@@ -63,13 +63,13 @@ function sync_getKlasse(callback, classObjectArray) {
 	// Klasse vorhanden oder nur Hash übereben ?
 	klassenObject = (classObjectArray.length === 1) ? {} : classObjectArray[1];
 
-	if (AUTH) {
+	if (GLOBALS.AUTH) {
 		console.log("SYNC:", klassenHash);
 		$.ajax({
-			url: SyncServer + '/' + btoa(userID) + '/class/' + klassenHash,
+			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/class/' + klassenHash,
 			type: 'GET',
 			headers: {
-				"Authorization": "Basic " + btoa(userID + ":" + passW)
+				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
 			},
 			timeout: 4000,
 			success: function(data, status, jqXHR){
@@ -107,15 +107,15 @@ function sync_getKlasse(callback, classObjectArray) {
 
 function sync_getMultiKlasses(callback, klassenListe) {
 // Mehrere Klasse des Benutzers abfragen, mergen und weitergeben
-	if (AUTH) {
+	if (GLOBALS.AUTH) {
 		var hashList = ""; // Join Klassenhashes aus den Objekten zu kommagetrennter Liste
 		$.ajax({
-			url: SyncServer + '/' + btoa(userID) + '/classes',
+			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/classes',
 			type: 'GET',
 			dataType: 'json',
 			data: { 'ids' : hashList },
 			headers: {
-				"Authorization": "Basic " + btoa(userID + ":" + passW)
+				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
 			},
 			timeout: 4000,
 			success: function(data, status, jqXHR){
@@ -136,7 +136,7 @@ function sync_getMultiKlasses(callback, klassenListe) {
 
 function sync_pushBack(callback, Data, uri) {
 // Daten an den Server schicken (generic Function)
-	if (AUTH) {
+	if (GLOBALS.AUTH) {
 		// keine lokalen Daten pushen
 		var pushData = Object.assign({}, Data);
 		if (pushData.hasOwnProperty('local')) {pushData.local = null;}
@@ -144,12 +144,12 @@ function sync_pushBack(callback, Data, uri) {
 		var url = (Array.isArray(uri)) ? uri.filter(function (val) {return val;}).join("/") : uri;
 		url = "/" + url + "/";
 		$.ajax({
-			url: SyncServer + '/' + btoa(userID) + url,
+			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + url,
 			type: 'PUT',
 			dataType: 'json',
 			data: { 'payload' : encrypted },
 			headers: {
-				"Authorization": "Basic " + btoa(userID + ":" + passW)
+				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
 			},
 			timeout: 4000,
 			success: function(data, status, jqXHR){
@@ -192,16 +192,15 @@ function mergeAccount(newData, localData) {
 		// Lokale Klassenliste mit (ggf. neuer) Blacklist bereinigen (Verzeichnis)
 		var localHashes = Object.keys(account.klassenliste);
 		var localStores = Object.keys(account.local);
-		dbToGo = 0;
-		dbFinished = 0;
+		GLOBALS.dbToGo = 0;
+		GLOBALS.dbFinished = 0;
 		for (var i = account.blacklist.length - 1; i >= 0; i--) {
 			if (localHashes.indexOf(account.blacklist[i]) > -1){
 				// Immer Eintrag aus Verzeichnis löschen und wenn vorhanden auch oStore aus DB
-				dbToGo += 1;
-				console.log("toDelete", toDelete);
+				GLOBALS.dbToGo += 1;
 				db_dropKlasse(account.blacklist[i], function(){
-					dbFinished += 1;
-					console.log("finishedDeletes", finishedDeletes);
+					GLOBALS.dbFinished += 1;
+					console.log("IDB: Deleted", GLOBALS.dbFinished, "( von", GLOBALS.dbToGo, ")");
 				})
 			}
 		}
@@ -351,7 +350,7 @@ function mergeKlasse(newData, localData) {
 
 function sync_deleteKlasse(selKlasse){
 //>> Fake Delete-Sync bis zur Umstellung
-	if (AUTH) {
+	if (GLOBALS.AUTH) {
 		console.log("SYNC-ERROR: Löschen von Klassen auf dem Server noch nicht möglich (NOT IMPLEMENTED)");
 	}else{
 		console.log("SYNC: Kein Account mit entsprechenden Berechtigungen eingerichtet");
@@ -363,14 +362,14 @@ function sync_deleteKlasse(selKlasse){
 function showArchiv(old_arr,sel){
 	var i;
 	var temp_arr = [];
-	if (SyncServer){
+	if (GLOBALS.SyncServer){
 		$.ajax({
-			url:SyncServer+'/ShowAll.py',
+			url:GLOBALS.SyncServer+'/ShowAll.py',
 			type:'post',
 			crossDomain:true,
 			data:{
 				klasse:klasse,
-				user:userID,
+				user:GLOBALS.userID,
 			},
 			dataType:'json',
 			timeout:4000,
@@ -415,13 +414,13 @@ function old_initSyncSQL(){
 		_element.style.width = "100%";
 	},500);
 	var syncResult;
-	if (navigator.onLine && SyncServer) {
+	if (navigator.onLine && GLOBALS.SyncServer) {
 		// Sync oder neu anlegen ?
-		if (klasse.substring(1,4)=="new") {
-			sessionStorage.setItem('klasse',"["+klasse.substring(4,klasse.length));
-			createTables("["+klasse.substring(4,klasse.length));
-			klasse = "["+klasse.substring(4,klasse.length);
-			var str_klasse = klasse.substring(1,klasse.length-1);
+		if (GLOBALS.klasse.substring(1,4)=="new") {
+			sessionStorage.setItem('klasse',"["+ GLOBALS.klasse.substring(4, GLOBALS.klasse.length));
+			createTables("["+ GLOBALS.klasse.substring(4, GLOBALS.klasse.length));
+			GLOBALS.klasse = "["+ GLOBALS.klasse.substring(4, GLOBALS.klasse.length);
+			var str_klasse = GLOBALS.klasse.substring(1, GLOBALS.klasse.length-1);
 			_elementTxt.innerHTML = 'Klasse wird vom Server heruntergeladen!';
 		}
 		
@@ -429,19 +428,19 @@ function old_initSyncSQL(){
 		sessionStorage.setItem('changed', 0);
 		db.transaction(
 			function(transaction){transaction.executeSql(
-				"SELECT changed FROM " + klasse+" ORDER BY changed DESC LIMIT 1;", [],
+				"SELECT changed FROM " + GLOBALS.klasse +" ORDER BY changed DESC LIMIT 1;", [],
 				function(transaction, results) {
 					var changed = results.rows.item(0).changed;
-					console.log("Synchronisiere: "+klasse+" (v"+changed+")");
+					console.log("Synchronisiere: "+GLOBALS.klasse+" (v"+changed+")");
 					// Serverfragen, welche Version neuer ist:
 					$.ajax({
-						url:SyncServer+'/HowAreYou.py',
+						url:GLOBALS.SyncServer+'/HowAreYou.py',
 						type:'post',
 						crossDomain:true,
 						data:{
 							klasse:klasse,
 							changed:changed,
-							user:userID,
+							user:GLOBALS.userID,
 						},
 						dataType:'json',
 						timeout:4000,
@@ -485,7 +484,7 @@ console.log("pushing...");
 	// dump Client DB as [{key:value}]
 	db.transaction(
 		function(transaction){transaction.executeSql(
-			"SELECT * FROM " + klasse + " WHERE changed > "+server_stamp+";", [], 
+			"SELECT * FROM " + GLOBALS.klasse + " WHERE changed > "+server_stamp+";", [], 
 			function(transaction, results) {
 				var i, row, _fields, _values, col, val, data="";
 				for (i = 0; i < results.rows.length; i++) {
@@ -494,7 +493,7 @@ console.log("pushing...");
 					_values = [];
 					for (col in row) {
 						// Spalten ausschließen:
-						if (noSyncCols.indexOf(col) > -1){
+						if (GLOBALS.noSyncCols.indexOf(col) > -1){
 							continue;
 						}else{
 							_fields.push(col);
@@ -502,15 +501,15 @@ console.log("pushing...");
 							_values.push(val);
 						}
 					}
-					data += "INSERT OR REPLACE INTO "+klasse+" ("+_fields.join(',')+") VALUES ("+ _values.join(',') + ");";
+					data += "INSERT OR REPLACE INTO "+GLOBALS.klasse+" ("+_fields.join(',')+") VALUES ("+ _values.join(',') + ");";
 				}
 			$.ajax({
-				url:SyncServer+'/pushToServer.py',
+				url:GLOBALS.SyncServer+'/pushToServer.py',
 				type:'post',
 				crossDomain:true,
 				data:{
 					klasse:klasse,
-					user:userID,
+					user:GLOBALS.userID,
 					sql:data,
 				},
 				dataType:'json',
@@ -533,12 +532,12 @@ console.log("pushing...");
 function pullToClient(client_stamp, _element) {
 console.log("pulling...");
 	$.ajax({
-		url:SyncServer+'/pullFromServer.py',
+		url:GLOBALS.SyncServer+'/pullFromServer.py',
 		type:'post',
 		crossDomain:true,
 		data:{
 			klasse:klasse,
-			user:userID,
+			user:GLOBALS.userID,
 			changed:client_stamp,
 		},
 		dataType:'json',
@@ -582,12 +581,12 @@ function sync_deleteDoc(ID) {
 	alert("Syncing: Delete... [disabled]");
 	/*
 	$.ajax({
-		url:SyncServer+'/deleteDoc.py',
+		url:GLOBALS.SyncServer+'/deleteDoc.py',
 		type:'post',
 		crossDomain:true,
 		data:{
 			klasse:klasse,
-			user:userID,
+			user:GLOBALS.userID,
 			entry:ID,
 		},
 		dataType:'json',
@@ -615,12 +614,12 @@ function old_deleteKlasse(selKlasse){
 		if (window.confirm('Du bist online.\nSoll die Klasse auch auf dem SyncServer gelöscht werden ?')){
 			_elementTxt.innerHTML = "Lösche Klasse von diesem Gerät und vom SyncServer !";
 			$.ajax({
-				url:SyncServer+'/deleteKlasse.py',
+				url:GLOBALS.SyncServer+'/deleteKlasse.py',
 				type:'post',
 				crossDomain:true,
 				data:{
 					klasse:selKlasse,
-					user:userID,
+					user:GLOBALS.userID,
 				},
 				dataType:'json',
 				timeout:4000,
@@ -661,7 +660,7 @@ console.log(klasse, " wird exportiert");
 	db.transaction(
 		function(transaction){
 			transaction.executeSql(
-			"SELECT * FROM " + klasse + " ORDER BY nName;", [], 
+			"SELECT * FROM " + GLOBALS.klasse + " ORDER BY nName;", [], 
 			function(transaction, results) {
 					var columns=['mndl','fspz','schr'];
 					var nameDict={};
@@ -827,7 +826,7 @@ function encryptData(readAble){
 //-> Daten verschlüsseln
 	if (readAble != "" && readAble) {
 		readAble = JSON.stringify(readAble);
-		return CryptoJS.AES.encrypt(readAble, passW).toString();
+		return CryptoJS.AES.encrypt(readAble, GLOBALS.passW).toString();
 	}else{
 		return "";
 	}
@@ -835,7 +834,7 @@ function encryptData(readAble){
 
 function decryptData(unKnown){
 //-> JSON Daten entschlüsseln
-	var readAble = CryptoJS.AES.decrypt(unKnown, passW).toString(CryptoJS.enc.Utf8);
+	var readAble = CryptoJS.AES.decrypt(unKnown, GLOBALS.passW).toString(CryptoJS.enc.Utf8);
 	return JSON.parse(readAble);
 }
 

@@ -23,7 +23,7 @@ $(document).ready(function() {
 		noTouchThisSlider(target_el);
 	},100);
 	// Extras für Smartphone-Nutzer
-	if (isPhone){change_buttons()}
+	if (GLOBALS.isPhone){change_buttons()}
 });
 
 
@@ -216,11 +216,11 @@ function massenAdd(el){
 
 	var i, zeilen = []; var namen = []; var vnn;
 	zeilen = textblock.value.split(trennZeile);
-	dbToGo = 0;
+	GLOBALS.dbToGo = 0;
 	for (zeile in zeilen){
 		vnn = zeilen[zeile].split(trennNamen.value);
 		// Schüler-Objekt in Liste
-		dbToGo += 1;
+		GLOBALS.dbToGo += 1;
 		namen.push(formStudent(vnn[0].trim(),vnn[1].trim()));
 	}
 

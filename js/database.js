@@ -9,20 +9,20 @@ function initDB(callback) {
 	}else{
 		console.log("IDB: supported !");
 		// >> first visit ?
-		var vCheck = indexedDB.open(dbname);
+		var vCheck = indexedDB.open(GLOBALS.dbname);
 		vCheck.onerror = errorHandler;
 		vCheck.onsuccess = function(event){
 			var connection = event.target.result;
-			dbversion = parseInt(localStorage.getItem("dbversion_"+userID));
-			if (!dbversion){
+			GLOBALS.dbversion = parseInt(localStorage.getItem("dbversion_"+GLOBALS.userID));
+			if (!GLOBALS.dbversion){
 				// -- vielleicht
-				dbversion = parseInt(connection.version);
-				if (dbversion <= 1){
+				GLOBALS.dbversion = parseInt(connection.version);
+				if (GLOBALS.dbversion <= 1){
 					// -- definitiv
 					var called = false;
 					var needUpgrade = false;
 					connection.close();
-					var request = indexedDB.open(dbname, dbversion+1);
+					var request = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion+1);
 					request.onerror = errorHandler;
 					request.onupgradeneeded = function(event){
 						console.log("IDB: start upgrade");
@@ -30,8 +30,8 @@ function initDB(callback) {
 						if (!nextDB.objectStoreNames.contains('account')) {
 							nextDB.createObjectStore('account', {keyPath: "id", autoIncrement: true});
 						}
-						dbversion += 1;
-						localStorage.setItem("dbversion_"+userID, dbversion);
+						GLOBALS.dbversion += 1;
+						localStorage.setItem("dbversion_"+GLOBALS.userID, GLOBALS.dbversion);
 						needUpgrade = true;
 						console.log("IDB: upgrade finished");
 					}
@@ -40,7 +40,7 @@ function initDB(callback) {
 							// Accountinformationen anlegen
 							var connection2 = event.target.result;
 							var objectStore = connection2.transaction(['account'], "readwrite").objectStore("account");
-							row = createAccount(dbname);
+							row = createAccount(GLOBALS.dbname);
 							var adding = objectStore.add(row);
 							adding.onsuccess = function(){
 								window.location.reload();
@@ -62,13 +62,13 @@ function initDB(callback) {
 					}
 				}else{
 					// -- nein
-					localStorage.setItem("dbversion_"+userID, dbversion);
+					localStorage.setItem("dbversion_"+GLOBALS.userID, GLOBALS.dbversion);
 					vCheck.oncomplete = console.log("IDB: dbversion unknown (not in localStorage)");
 					callback();
 				}
 			}else{
 				// -- nein
-				console.log("IDB: version", dbversion);
+				console.log("IDB: version", GLOBALS.dbversion);
 				console.log("IDB: init");
 				callback();
 			}
@@ -89,7 +89,7 @@ function initDB(callback) {
 
 // Neue Klasse anlegen
 function db_neueKlasse(callback, id, bezeichnung) {
-	var db = indexedDB.open(dbname, dbversion);
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -100,11 +100,11 @@ function db_neueKlasse(callback, id, bezeichnung) {
 			connection.close();
 			
 			// 2. Open new
-			dbversion = localStorage.getItem("dbversion_"+userID);
-			dbversion = parseInt(dbversion) + 1
-			localStorage.setItem("dbversion_"+userID, dbversion);
+			GLOBALS.dbversion = localStorage.getItem("dbversion_"+GLOBALS.userID);
+			GLOBALS.dbversion = parseInt(GLOBALS.dbversion) + 1
+			localStorage.setItem("dbversion_"+GLOBALS.userID, GLOBALS.dbversion);
 
-			var newdb = indexedDB.open(dbname, dbversion);
+			var newdb = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 			newdb.onerror = errorHandler;
 			newdb.onupgradeneeded = function(event){
 				var connection = event.target.result;
@@ -114,7 +114,7 @@ function db_neueKlasse(callback, id, bezeichnung) {
 				// Erstelle Indexes
 				oStore.createIndex("typ", "typ", { unique: false });				
 				// Globale Variable speichern
-				klasse = id;
+				GLOBALS.klasse = id;
 				console.log("IDB:", bezeichnung, " (", id, ") created");
 			}
 			newdb.onsuccess = function(event){SettingsRequest(event, id, bezeichnung, callback)};
@@ -139,7 +139,7 @@ function db_neueKlasse(callback, id, bezeichnung) {
 function db_dropKlasse(oStore, callback) {
 	if (oStore == "" || !oStore) {return;}
 	// First: Clear the store
-	var db = indexedDB.open(dbname, dbversion);
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onsuccess = function(event){
 		var connection = event.target.result;
 
@@ -153,9 +153,9 @@ function db_dropKlasse(oStore, callback) {
 			result_clear.onsuccess = function(event){
 				console.log("IDB: clearing Store...");
 				// Second: Delete the store
-				dbversion += 1;
-				localStorage.setItem("dbversion_"+userID, dbversion);
-				var db2 = indexedDB.open(dbname, dbversion);
+				GLOBALS.dbversion += 1;
+				localStorage.setItem("dbversion_"+GLOBALS.userID, GLOBALS.dbversion);
+				var db2 = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 				db2.onsuccess = function(event){
 					var connection2 = event.target.result;
 
@@ -198,8 +198,8 @@ function db_dropKlasse(oStore, callback) {
 
 // Neues Document in DB anlegen (typen-unabhängig)
 function db_addDocument(callback, newObject, oStore) {
-	if (typeof oStore == "undefined") {oStore = klasse;}
-	var db = indexedDB.open(dbname, dbversion);
+	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse}
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event, rowlist){
 		var connection = event.target.result;
@@ -234,11 +234,11 @@ function db_addDocument(callback, newObject, oStore) {
 
 // Document nach ID löschen
 function db_deleteDoc(callback, id){
-	var db = indexedDB.open(dbname, dbversion);
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
-		var objectStore = connection.transaction([klasse], "readwrite").objectStore(klasse);
+		var objectStore = connection.transaction([GLOBALS.klasse], "readwrite").objectStore(GLOBALS.klasse);
 		var result = objectStore.delete(id);
 		result.onerror = errorHandler;
 		result.onsuccess = function(event){
@@ -265,8 +265,8 @@ function db_deleteDoc(callback, id){
 
 // Gesamte Klasse selektieren
 function db_readKlasse(callback, targetClass) {
-	if (typeof targetClass == "undefined") {targetClass = klasse;}
-	var db = indexedDB.open(dbname, dbversion);
+	if (typeof targetClass == "undefined") {targetClass = GLOBALS.klasse;}
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -304,8 +304,8 @@ function db_readKlasse(callback, targetClass) {
 
 // Document nach ID ohne anderen Einschränkungen lesen
 function db_readGeneric(callback, id, oStore) {
-	if (typeof oStore == "undefined") {oStore = klasse;}
-	var db = indexedDB.open(dbname, dbversion);
+	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse;}
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -332,12 +332,12 @@ function db_readGeneric(callback, id, oStore) {
 
 // Document anhand Typ und ID selektieren
 function db_readSingleData(callback, typ, id, emptyCall) {
-	var db = indexedDB.open(dbname, dbversion);
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var result = false;
 		var connection = event.target.result;
-		var objectStore = connection.transaction([klasse]).objectStore(klasse);
+		var objectStore = connection.transaction([GLOBALS.klasse]).objectStore(GLOBALS.klasse);
 		
 		// Typ einschränken
 		var idxTyp = objectStore.index("typ");
@@ -373,12 +373,12 @@ function db_readSingleData(callback, typ, id, emptyCall) {
 
 // Alle Documente eines Typs selektieren
 function db_readMultiData(callback, typ, emptyCall) {
-	var db = indexedDB.open(dbname, dbversion);
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var result = [];
 		var connection = event.target.result;
-		var objectStore = connection.transaction([klasse]).objectStore(klasse);
+		var objectStore = connection.transaction([GLOBALS.klasse]).objectStore(GLOBALS.klasse);
 		
 		// Typ einschränken
 		var idxTyp = objectStore.index("typ");
@@ -408,7 +408,7 @@ function db_readMultiData(callback, typ, emptyCall) {
 
 // Update eines Eintrags mit Value nach ID, Property und Modus
 function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
-	var db = indexedDB.open(dbname, dbversion);
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -489,10 +489,10 @@ function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 
 // Update eines Documents durch Ersetzen
 function db_replaceData(callback, newObject, oStore, multi) {
-	if (typeof oStore == "undefined") {oStore = klasse;}
+	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse;}
 	if (typeof multi == "undefined") {multi = false;}
 
-	var db = indexedDB.open(dbname, dbversion);
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -536,9 +536,9 @@ function db_replaceData(callback, newObject, oStore, multi) {
 // Update eines Documents durch Zusammenführung (optional überscheiben)
 function db_updateData(callback, newObjects, oStore, overwrite) {
 	if (typeof overwrite == "undefined") {overwrite = false;}
-	if (typeof oStore == "undefined") {oStore = klasse;}
+	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse;}
 
-	var db = indexedDB.open(dbname, dbversion);
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -574,11 +574,11 @@ function db_updateData(callback, newObjects, oStore, overwrite) {
 
 // Wendet eine Funktion auf einen Eintrag (Typ/ID) an und updatet mit dem Ergebnis
 function db_dynamicUpdate(callback, toApply, typ, eID) {
-	var db = indexedDB.open(dbname, dbversion);
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
-		var objectStore = connection.transaction([klasse], 'readwrite').objectStore(klasse);
+		var objectStore = connection.transaction([GLOBALS.klasse], 'readwrite').objectStore(GLOBALS.klasse);
 		
 		// Typ einschränken
 		var idxTyp = objectStore.index("typ");

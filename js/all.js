@@ -2,50 +2,50 @@
 // ================ Globale Variablen ================ //
 // =================================================== //
 
-var SyncServer = "c/api";
-var userID;
-var passW
-var knownDevice;
-var isPhone;
+var GLOBALS = {
+	'AUTH'				: null,
+	'userID'			: null,
+	'passW'				: null,
+	'SyncServer'		: null,
 
-var dbversion;
-var dbname;
-var noSyncCols;
+	'dbname'			: null,
+	'dbversion'			: null,
+	'dbToGo'			: null,
+	'dbFinished'		: null,
+	'noSyncCols'		: null,
+	
+	'klasse'			: null,
+	'klassenbezeichnung': null,
+	
+	'knownDevice'		: null,
+	'isPhone'			: null,
+	'perfStart'			: null,
+	'perfEnd'			: null,
+};
 
-var klasse;
-var klassenbezeichnung;
 var SETTINGS;
-var AUTH;
-
-var dbToGo;
-var dbFinished;
-var perfStart;
-var perfEnd;
-
-// --> GLOBALS als Dictionary mit allen globalen Variablen einführen
-// (muss bei jedem Vorkommen renamed werden...)
 
 
 $(document).ready(function() {
 	// Init Vars
-	noSyncCols = ["vorjahr"];
-	isPhone = (screen.width > 767) ? false : true;
+	GLOBALS.noSyncCols = ["vorjahr"];
+	GLOBALS.isPhone = (screen.width > 767) ? false : true;
 	
 	// Device ist KEIN Phone
-	if (!isPhone) {
+	if (!GLOBALS.isPhone) {
 		window.addEventListener('orientationchange', changeOrientation);
 	}
 	// Not the First Time ?
 	if (localStorage.getItem('TeacherTab')){
 		// DB Support und Init
-		userID = localStorage.getItem('userID');
-		passW = localStorage.getItem('passW');
-		klasse = sessionStorage.getItem('klasse');
-		dbname = userID;
-		knownDevice = true;
+		GLOBALS.userID = localStorage.getItem('userID');
+		GLOBALS.passW = localStorage.getItem('passW');
+		GLOBALS.klasse = sessionStorage.getItem('klasse');
+		GLOBALS.dbname = GLOBALS.userID;
+		GLOBALS.knownDevice = true;
 	}else{
 		// kein DB Init
-		knownDevice = false;
+		GLOBALS.knownDevice = false;
 	}
 
 	// Links bleiben in WebApp
@@ -122,6 +122,7 @@ function loadVerteilung(Pkt_Verteilung) {
 	return;
 }
 
+// DEPRECATED (noch SQL)
 function updateVerteilungSession() {
 //--> Update des SessionStorage aus WebSQL Daten
 	db.transaction(
@@ -129,7 +130,7 @@ function updateVerteilungSession() {
 		var column = sessionStorage.getItem('leistung_column');
 		var l_id = sessionStorage.getItem('leistung_id');
 		transaction.executeSql(
-		"SELECT "+column+" FROM "+klasse+" WHERE id='0';", [], function(t, r){
+		"SELECT "+column+" FROM "+GLOBALS.klasse+" WHERE id='0';", [], function(t, r){
 			var i, i2, katWert, gesamtWert;
 			var verteilungsObj = {};
 			var Leistung = JSON.parse(decodeURIComponent(r.rows.item(0)[column]))[l_id];
@@ -282,8 +283,8 @@ function klassenSyncHandler(){
 		
 		sync_getKlasse(function(mergedKlasse) {
 
-			perfEnd = performance.now(); // DEV
-			console.log("INFO: Finished opening Class in " + Math.round((perfEnd - perfStart), 1) + " milliseconds."); // DEV
+			GLOBALS.perfEnd = performance.now(); // DEV
+			console.log("INFO: Finished opening Class in " + Math.round((GLOBALS.perfEnd - GLOBALS.perfStart), 1) + " milliseconds."); // DEV
 			
 			progress += 40; // Statusbar
 			updateStatus(progress, progress+" %", "Synchronisiere: Daten entschlüsseln und zusammenführen...");
@@ -375,7 +376,7 @@ function mergeDeep(target, ...sources) {
 }
 
 function checkAuth() {
-	AUTH = (localStorage.getItem("auth") == "true") ? true : false;
+	GLOBALS.AUTH = (localStorage.getItem("auth") == "true") ? true : false;
 	return;
 }
 
@@ -432,7 +433,7 @@ function uniqueID() {
 	// Add Time
 	var part_ts = new Date().getTime().toString().substring(2);
 	// -- plus extra-Counter für Batch
-	part_ts += dbToGo;
+	part_ts += GLOBALS.dbToGo;
 	// Add Device Details
     var nav = window.navigator;
     var screen = window.screen;
@@ -667,10 +668,10 @@ function popUpClose(thisElement, bol_refresh){
 // =================================================== //
 
 // Account anlegen
-function createAccount(dbname, lokaleKlassen) {
+function createAccount(accountname, lokaleKlassen) {
 	return {
 		'id' : 1, 
-		'username' : dbname,
+		'username' : accountname,
 		'klassenliste' : {},	// # Alle Klassen auf Gerät und Archiv
 		'local' : [],			// # Alle Klassen auf Gerät
 		'blacklist' : [],		// # Gelöschte Klassen, die nicht wieder ins Archiv dürfen
@@ -763,7 +764,7 @@ function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
 
 // Wait for DB (wenn Callback nicht geht)
 function waitForDB(callback){
-	if(dbToGo >= dbFinished){
+	if(GLOBALS.dbToGo >= GLOBALS.dbFinished){
 		callback();
 	}else{
 		console.log("IDB: next Actions waits...");

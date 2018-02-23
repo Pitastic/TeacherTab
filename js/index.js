@@ -23,7 +23,7 @@ $(document).ready(function() {
 	});
 
 	document.getElementById('btn_Delete').addEventListener('click', function(){
-		if (window.confirm('Bist du sicher, dass du die gesamte Klasse:\n"'+klassenbezeichnung+'" ('+klasse+')\nlöschen möchtest ?')){
+		if (window.confirm('Bist du sicher, dass du die gesamte Klasse:\n"'+GLOBALS.klassenbezeichnung+'" ('+klasse+')\nlöschen möchtest ?')){
 			var _element = document.getElementById('syncStatus');
 			var _elementTxt = document.getElementById('syncText');
 			_elementTxt.innerHTML = "Lösche Klasse";
@@ -31,9 +31,9 @@ $(document).ready(function() {
 			setTimeout(function() {
 				_elementTxt.innerHTML = "Lösche Klasse von diesem Gerät !";
 				_element.style.width = "100%";
-				db_dropKlasse(klasse, function(){
+				db_dropKlasse(GLOBALS.klasse, function(){
 					setTimeout(function(){
-							sync_deleteKlasse(klasse);
+							sync_deleteKlasse(GLOBALS.klasse);
 							_element.classList.add('ok');
 							_element.innerHTML = "Fertig !";
 							document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
@@ -48,7 +48,7 @@ $(document).ready(function() {
 		klassenAuswahl(document.getElementById('klasseSelect'));
 		/* DEV: Kein Sync, kein Export !
 		export_to_csv(klasse);
-		document.getElementById("export_to_pdf").href = "http://www.teachertab.de/WebApp/export-PDF.htm?klasse="+klasse+"&SyncServer="+SyncServer+"&userID="+userID;
+		document.getElementById("export_to_pdf").href = "http://www.teachertab.de/WebApp/export-PDF.htm?klasse="+GLOBALS.klasse+"&SyncServer="+GLOBALS.SyncServer+"&userID="+GLOBALS.userID;
 		document.getElementById("export_to_html").addEventListener('click', function(e){
 			testSync();
 		})
@@ -71,7 +71,7 @@ $(document).ready(function() {
 	});
 
 	// -- Extras für Smartphone-Nutzer
-	if (isPhone){change_buttons();}
+	if (GLOBALS.isPhone){change_buttons();}
 
 
 	// Setting up...
@@ -92,7 +92,7 @@ $(document).ready(function() {
 	sessionStorage.setItem('lastview', 'item1');
 
 	// Action bei knownDevice
-	if (knownDevice) {
+	if (GLOBALS.knownDevice) {
 
 		// -- Init DB
 		initDB(function(){
@@ -106,11 +106,11 @@ $(document).ready(function() {
 		});
 
 		// -- Set Allgemeine Einstellungen PopUp
-		document.getElementById('userID').value = userID;
+		document.getElementById('userID').value = GLOBALS.userID;
 
 	}else{
-		userID = 'Nobody';
-		passW = '-';
+		GLOBALS.userID = 'Nobody';
+		GLOBALS.passW = '-';
 		popUp('item0First');
 	}
 });
@@ -122,12 +122,12 @@ $(document).ready(function() {
 
 function settingsAllgemein(){
 	localStorage.setItem('TeacherTab', true);
-	userID = document.getElementById('userID').value || "AppArchiv";
-	localStorage.setItem('userID', userID);
-	passW = document.getElementById('passW').value || false;
+	GLOBALS.userID = document.getElementById('userID').value || "AppArchiv";
+	localStorage.setItem('userID', GLOBALS.userID);
+	GLOBALS.passW = document.getElementById('passW').value || false;
 	// Check Credentials wenn Password gegeben
-	if (passW) {
-		testCreds(setAuth, passW);
+	if (GLOBALS.passW) {
+		testCreds(setAuth, GLOBALS.passW);
 	}else{
 		localStorage.setItem('auth', false);
 		localStorage.setItem('passW', false);
@@ -163,7 +163,7 @@ function setAuth(status) {
 		var errorMsg = document.querySelector("#item0First .msg.error");
 		errorMsg.innerHTML = "";
 		// OK: Speichern und neu laden
-		localStorage.setItem('passW', passW);
+		localStorage.setItem('passW', GLOBALS.passW);
 		localStorage.setItem('auth', true);
 		var thisElement = document.querySelector("#item0First .OK");
 		popUpClose(thisElement);
@@ -220,8 +220,8 @@ function klassenAuswahl(selectbox){
 	var klasseSelect = selectbox;
 	if (klasseSelect.value !== "null" && klasseSelect.value !== "") {
 		sessionStorage.setItem('klasse', klasseSelect.value);
-		klasse = klasseSelect.value;
-		klassenbezeichnung = klasseSelect.selectedOptions[0].innerHTML;
+		GLOBALS.klasse = klasseSelect.value;
+		GLOBALS.klassenbezeichnung = klasseSelect.selectedOptions[0].innerHTML;
 	}else{
 		alert('Es wurde keine Klasse ausgewählt !');
 	}

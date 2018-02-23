@@ -988,7 +988,7 @@ function dropLeistung(){
 	db.transaction(
 			function(transaction){
 			transaction.executeSql(
-			'SELECT mndl, fspz, schr FROM '+klasse+' WHERE id="0";', [], function(t, results){
+			'SELECT mndl, fspz, schr FROM '+GLOBALS.klasse+' WHERE id="0";', [], function(t, results){
 				var id_Leistung = sessionStorage.getItem('leistung_id');
 				var column = sessionStorage.getItem('leistung_column');
 				var Leistung = JSON.parse(decodeURIComponent(results.rows.item(0)[column]));
@@ -1003,7 +1003,7 @@ function dropLeistung(){
 				updateDB(column, JSON.stringify(Leistung), 0);
 			});
 			transaction.executeSql(
-			'SELECT id, mndl, fspz, schr FROM '+klasse+' WHERE id!="0";', [], function(t, results){
+			'SELECT id, mndl, fspz, schr FROM '+GLOBALS.klasse+' WHERE id!="0";', [], function(t, results){
 				var i, _id;
 				var Leistung;
 				var id_Leistung = sessionStorage.getItem('leistung_id');

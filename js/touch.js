@@ -3,7 +3,7 @@ var slideBeginX;
 var slideBeginY;
 
 function touchListener(){
-	if (!isPhone){
+	if (!GLOBALS.isPhone){
 	    var i;
 	    var temp;
 		temp=document.getElementsByClassName('content');

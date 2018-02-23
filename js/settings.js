@@ -107,7 +107,7 @@ function SettingsSave(bol_save){
 				}, 750)
 				document.getElementById('item1setting').classList.remove('show');
 			});
-		}, settings, klasse);
+		}, settings, GLOBALS.klasse);
 	}
 }
 
@@ -149,7 +149,7 @@ function gruppierenListe(results){
 
 function vorjahresPop(el) {
 	if (el.checked) {
-		var filter = klasse.substring(1,klasse.length-1);
+		var filter = GLOBALS.klasse.substring(1, GLOBALS.klasse.length-1);
 		readDB_tables(listIdx_Select,[true, filter]);
 		popUp("item1setting_vorjahr");
 	}
