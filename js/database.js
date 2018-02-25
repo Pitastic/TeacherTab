@@ -83,7 +83,7 @@ function initDB(callback) {
 }
 
 // ===================================================== //
-// == grundlegende Datenbankinteraktionen=============== //
+// == grundlegende Datenbankinteraktionen ============== //
 // ===================================================== //
 
 
@@ -135,30 +135,40 @@ function db_neueKlasse(callback, id, bezeichnung) {
 }
 
 
-/*
-// Klasse löschen (lokal)
-function db_dropKlasse(oStore, callback) {
-	if (oStore == "" || !oStore) {return;}
-	// First: Clear the store
+// Neues Document in DB anlegen (typen-unabhängig)
+function db_addDocument(callback, newObject, oStore) {
+	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse}
 	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
-	db.onsuccess = function(event){
+	db.onsuccess = function(event, rowlist){
 		var connection = event.target.result;
+		var objectStore = connection.transaction(oStore, "readwrite").objectStore(oStore);
 
-		if (connection.objectStoreNames.contains(id)) {
-			// oStore vorhanden - Upgrade needed
-			// oStore existiert lokal - Clear und anschließendes Upgrade
-			var objectStore = connection.transaction(oStore, "readwrite").objectStore(oStore);
-			var result_clear = objectStore.clear();
+		// multiples Einfügen oder einzelner Datensatz
+		var rowlist = (Array.isArray(newObject)) ? newObject : [newObject];
+
+		// Speicher-Iteration
+		putNext(0);
+		function putNext(iterator) {
+			if (iterator<rowlist.length) {
+				objectStore.put(rowlist[iterator]).onsuccess = function(){putNext(iterator+1)};
+			} else {   // complete
+				console.log("IDB: Datensatz eingefügt (", iterator, "mal)");
+				if (callback) {callback(connection);}
+			}
 		}
-	}
+		//connection.close();
 
-	// ---> Garbage Collection
-	db.onversionchange = function(event) {
-		event.target.transaction.db.close();
-	};
+		// ---> Garbage Collection
+		connection.onversionchange = function(event) {
+			connection.close();
+		};
+	}
+	db.oncomplete = function(){
+		if (callback) {callback(event.target.result)}
+	}
+	return;
 }
-*/
 
 
 // Klasse löschen
@@ -170,8 +180,6 @@ function db_dropKlasse(oStore, callback) {
 		var connection = event.target.result;
 
 		if (connection.objectStoreNames.contains(oStore)) {
-		// DEV: Wegen DB-Block
-		//if (true) {
 			// oStore existiert lokal - Clear
 			var objectStore = connection.transaction(oStore, "readwrite").objectStore(oStore);
 			var result_clear = objectStore.clear();
@@ -222,42 +230,6 @@ function db_dropKlasse(oStore, callback) {
 }
 
 
-// Neues Document in DB anlegen (typen-unabhängig)
-function db_addDocument(callback, newObject, oStore) {
-	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse}
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
-	db.onerror = errorHandler;
-	db.onsuccess = function(event, rowlist){
-		var connection = event.target.result;
-		var objectStore = connection.transaction(oStore, "readwrite").objectStore(oStore);
-
-		// multiples Einfügen oder einzelner Datensatz
-		var rowlist = (Array.isArray(newObject)) ? newObject : [newObject];
-
-		// Speicher-Iteration
-		putNext(0);
-		function putNext(iterator) {
-			if (iterator<rowlist.length) {
-				objectStore.put(rowlist[iterator]).onsuccess = function(){putNext(iterator+1)};
-			} else {   // complete
-				console.log("IDB: Datensatz eingefügt (", iterator, "mal)");
-				if (callback) {callback(connection);}
-			}
-		}
-		//connection.close();
-
-		// ---> Garbage Collection
-		connection.onversionchange = function(event) {
-			connection.close();
-		};
-	}
-	db.oncomplete = function(){
-		if (callback) {callback(event.target.result)}
-	}
-	return;
-}
-
-
 // Document nach ID löschen
 function db_deleteDoc(callback, id){
 	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
@@ -269,12 +241,6 @@ function db_deleteDoc(callback, id){
 		result.onerror = errorHandler;
 		result.onsuccess = function(event){
 			console.log("IDB: Eintrag ID", id, "gelöscht");
-			// Eintrag auch vom Account löschen, wenn online
-			if (navigator.onLine){
-				sync_deleteDoc(id);
-			}else{
-				alert("Kein Kontakt zum SyncServer.\nDer Eintrag wurde nur von diesem Gerät entfernt.");
-			}
 			if (callback) {callback(connection);}
 		}
 		connection.close();
@@ -286,45 +252,6 @@ function db_deleteDoc(callback, id){
 
 		return;
 	}
-}
-
-
-// Gesamte Klasse selektieren
-function db_readKlasse(callback, targetClass) {
-	if (typeof targetClass == "undefined") {targetClass = GLOBALS.klasse;}
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
-	db.onerror = errorHandler;
-	db.onsuccess = function(event){
-		var connection = event.target.result;
-		if (connection.objectStoreNames.contains(targetClass)) {
-			var oStore = connection.transaction(targetClass).objectStore(targetClass);
-			var request = oStore.getAll();
-			request.onerror = errorHandler;
-			request.onsuccess = function(event){
-				var resultList = event.target.result;
-
-				// Liste in Object nach IDs umwandeln
-				var result = {};
-				for (var i = resultList.length - 1; i >= 0; i--) {
-					result[resultList[i].id] = resultList[i];
-				}
-				
-				// Close and Callback
-				event.target.transaction.db.close();
-				callback([targetClass, result]);
-			}
-
-		}else{
-			// Close and Callback
-			connection.close();
-			callback([targetClass]);
-		}
-	}
-
-	// ---> Garbage Collection
-	db.onversionchange = function(event) {
-		event.target.transaction.db.close();
-	};
 }
 
 
@@ -356,84 +283,9 @@ function db_readGeneric(callback, id, oStore) {
 }
 
 
-// Document anhand Typ und ID selektieren
-function db_readSingleData(callback, typ, id, emptyCall) {
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
-	db.onerror = errorHandler;
-	db.onsuccess = function(event){
-		var result = false;
-		var connection = event.target.result;
-		var objectStore = connection.transaction([GLOBALS.klasse]).objectStore(GLOBALS.klasse);
-		
-		// Typ einschränken
-		var idxTyp = objectStore.index("typ");
-		var keyRange = IDBKeyRange.only(typ);
-		var transaction = idxTyp.openCursor(keyRange);
-		
-		transaction.onerror = errorHandler;
-		transaction.onsuccess = function(event){
-			var cursor = event.target.result;
-			if (cursor) {
-				if (!result && id != null && cursor.value.id == id) {
-					// Nur den ersten Treffer speichern
-					result = cursor.value;
-				}
-				// in jedem Fall zu ende Itterieren (muss halt so)
-				cursor.continue();
-			}else{
-
-				// Close and Callback
-				connection.close();
-				
-				if (result) {
-					callback(result);
-				}else{
-					console.log("Hierzu gibt es noch keine Daten:", typ, id);
-					if (emptyCall) {emptyCall();}
-				}
-			}
-		}
-	}
-}
-
-
-// Alle Documente eines Typs selektieren
-function db_readMultiData(callback, typ, emptyCall) {
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
-	db.onerror = errorHandler;
-	db.onsuccess = function(event){
-		var result = [];
-		var connection = event.target.result;
-		var objectStore = connection.transaction([GLOBALS.klasse]).objectStore(GLOBALS.klasse);
-		
-		// Typ einschränken
-		var idxTyp = objectStore.index("typ");
-		var transaction = idxTyp.getAll(typ);
-		
-		transaction.onerror = errorHandler;
-		transaction.onsuccess = function(event){
-			result = event.target.result;
-
-			// Close and Callback
-			connection.close();
-
-			if (result.length > 0) {
-				callback(result);
-			}else{
-				console.log("IDB: Leeres Ergebnis der Abfrage nach Typ", typ);
-				if (emptyCall) {
-					emptyCall();
-				}else{
-					callback();
-				}
-			}
-		}
-	}
-}
-
-
 // Update eines Eintrags mit Value nach ID, Property und Modus
 function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
+	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse;}
 	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
@@ -450,14 +302,18 @@ function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 					// zu Array hinzufügen
 					if (mode == "push") {
 						if (Array.isArray(toUpdate[prop])) {
-							toUpdate[prop].push(val);
+							if (toUpdate[prop].indexOf(val) === -1){
+								// - Item existiert noch nicht
+								toUpdate[prop].push(val);
+							}
 						}else{
+							// - neues Array anlegen mit ersten Wer
 							toUpdate[prop] = [val];
 						}
 
 					// zu Object hinzufügen
 					}else if (mode == "insert") {
-						if (typeof(toUpdate[prop]) == "object") {
+						if (isObject(toUpdate[prop])) {
 							toUpdate[prop][val[0]] = val[1];
 						}else{
 							toUpdate[prop] = {};
@@ -559,6 +415,126 @@ function db_replaceData(callback, newObject, oStore, multi) {
 }
 
 
+// ===================================================== //
+// == speziellere Datenbankinteraktionen =============== //
+// ===================================================== //
+
+
+// Gesamte Klasse selektieren
+function db_readKlasse(callback, targetClass) {
+	if (typeof targetClass == "undefined") {targetClass = GLOBALS.klasse;}
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	db.onerror = errorHandler;
+	db.onsuccess = function(event){
+		var connection = event.target.result;
+		if (connection.objectStoreNames.contains(targetClass)) {
+			var oStore = connection.transaction(targetClass).objectStore(targetClass);
+			var request = oStore.getAll();
+			request.onerror = errorHandler;
+			request.onsuccess = function(event){
+				var resultList = event.target.result;
+
+				// Liste in Object nach IDs umwandeln
+				var result = {};
+				for (var i = resultList.length - 1; i >= 0; i--) {
+					result[resultList[i].id] = resultList[i];
+				}
+				
+				// Close and Callback
+				event.target.transaction.db.close();
+				callback([targetClass, result]);
+			}
+
+		}else{
+			// Close and Callback
+			connection.close();
+			callback([targetClass]);
+		}
+	}
+
+	// ---> Garbage Collection
+	db.onversionchange = function(event) {
+		event.target.transaction.db.close();
+	};
+}
+
+
+// Document anhand Typ und ID selektieren
+function db_readSingleData(callback, typ, id, emptyCall) {
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	db.onerror = errorHandler;
+	db.onsuccess = function(event){
+		var result = false;
+		var connection = event.target.result;
+		var objectStore = connection.transaction([GLOBALS.klasse]).objectStore(GLOBALS.klasse);
+		
+		// Typ einschränken
+		var idxTyp = objectStore.index("typ");
+		var keyRange = IDBKeyRange.only(typ);
+		var transaction = idxTyp.openCursor(keyRange);
+		
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			var cursor = event.target.result;
+			if (cursor) {
+				if (!result && id != null && cursor.value.id == id) {
+					// Nur den ersten Treffer speichern
+					result = cursor.value;
+				}
+				// in jedem Fall zu ende Itterieren (muss halt so)
+				cursor.continue();
+			}else{
+
+				// Close and Callback
+				connection.close();
+				
+				if (result) {
+					callback(result);
+				}else{
+					console.log("Hierzu gibt es noch keine Daten:", typ, id);
+					if (emptyCall) {emptyCall();}
+				}
+			}
+		}
+	}
+}
+
+
+// Alle Documente eines Typs selektieren
+function db_readMultiData(callback, typ, emptyCall) {
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	db.onerror = errorHandler;
+	db.onsuccess = function(event){
+		var result = [];
+		var connection = event.target.result;
+		var objectStore = connection.transaction([GLOBALS.klasse]).objectStore(GLOBALS.klasse);
+		
+		// Typ einschränken
+		var idxTyp = objectStore.index("typ");
+		var transaction = idxTyp.getAll(typ);
+		
+		transaction.onerror = errorHandler;
+		transaction.onsuccess = function(event){
+			result = event.target.result;
+
+			// Close and Callback
+			connection.close();
+
+			if (result.length > 0) {
+				callback(result);
+			}else{
+				console.log("IDB: Leeres Ergebnis der Abfrage nach Typ", typ);
+				if (emptyCall) {
+					emptyCall();
+				}else{
+					callback();
+				}
+			}
+		}
+	}
+}
+
+
 // Update eines Documents durch Zusammenführung (optional überscheiben)
 function db_updateData(callback, newObjects, oStore, overwrite) {
 	if (typeof overwrite == "undefined") {overwrite = false;}
@@ -621,7 +597,7 @@ function db_dynamicUpdate(callback, toApply, typ, eID) {
 					toUpdate = toApply(toUpdate);
 					var requestUpdate = cursor.update(toUpdate);
 					requestUpdate.onsuccess = function() {
-						console.log("indexDB: ID", id, "applied");
+						console.log("IDB: Funktion anewendet auf ", id, "applied");
 					};
 				}
 				cursor.continue();

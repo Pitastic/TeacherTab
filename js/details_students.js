@@ -25,7 +25,21 @@ $(document).ready(function() {
 	// -- Editieren
 	pop.getElementsByClassName('button OK')[0].addEventListener('click', function(){
 		document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = document.getElementById('vName').value+" "+document.getElementById('nName').value;
-		popUpClose(this);
+		var newStudent = {};
+		newStudent[id] = {
+			'name' : {
+				'nname': document.getElementById('nName').value,
+				'vname': document.getElementById('vName').value,
+				'sex': document.getElementById('s_flag').value,
+				'changed' : timestamp(),
+			}
+		};
+		db_updateData(function(){
+			popUpClose(this);
+			setTimeout(function() {
+				window.location = 'uebersicht.htm';
+			}, 500);
+		}, newStudent);
 		// DEV : deaktiviert ????
 		/*
 		var newStudent = {};
@@ -50,7 +64,14 @@ $(document).ready(function() {
 	// DEV : Änderung syncen !?!
 	pop.getElementsByClassName('button ABORT')[0].addEventListener('click', function(){
 		if (window.confirm('Bist du sicher, dass du diesen Schüler inklusive allen Eintragungen unwiderruflich löschen möchtest ?')){
-			db_deleteDoc(function(r){window.location = 'uebersicht.htm';}, id);
+			// Schüler löschen
+			db_deleteDoc(
+				// anschließend seine id auf Blacklist setzen
+				function(){
+					db_simpleUpdate(function(){
+						window.location = 'uebersicht.htm';
+					}, 1, "blacklist", "push", id)
+				}, id);
 		}
 	});
 
@@ -319,11 +340,7 @@ function studentDetails(row){
 	document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = row.name.vname+" "+row.name.nname;
 	document.getElementById('vName').value = row.name.vname;
 	document.getElementById('nName').value =row.name.nname;
-	if (row.name.sex !== "-"){
-		document.getElementById('s_flag').value = row.name.sex;
-	}else{
-		document.getElementById('s_flag').value = "-";
-	}
+	document.getElementById('s_flag').value = row.name.sex || "-";
 
 	// Einzelne Leistungen
 	// -- mündlich

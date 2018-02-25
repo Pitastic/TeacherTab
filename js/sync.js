@@ -111,6 +111,7 @@ function sync_getKlasse(callback, classObjectArray) {
 }
 
 
+/* Erst interessant für Offline-Verfügbar oder Bereinigung
 function sync_getMultiKlasses(callback, klassenListe) {
 // Mehrere Klasse des Benutzers abfragen, mergen und weitergeben
 	if (GLOBALS.AUTH) {
@@ -125,9 +126,9 @@ function sync_getMultiKlasses(callback, klassenListe) {
 			},
 			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
-				/*
-				Klassen abrufen und mergen (eigene Funtkion)
-				*/
+				//
+				// Klassen abrufen und mergen (eigene Funtkion)
+				//
 			},
 			error: function(data, status, jqXHR){
 				console.log("SYNC-ERROR: Kein Sync der Klassenliste", hashList, "durchgeführt !");
@@ -139,6 +140,7 @@ function sync_getMultiKlasses(callback, klassenListe) {
 		callback(klassenObject);
 	}
 }
+*/
 
 
 function sync_pushBack(callback, Data, uri) {
@@ -272,6 +274,7 @@ function mergeAccount(newData, localData) {
 
 function mergeKlasse(newData, localData) {
 //-> Klasse mergen: Liste mit Objekten rekursiv zusammenführen
+
 	if(Object.keys(newData).length === 0 && Object.keys(localData).length === 0) {
 		// Weder Daten auf Server noch lokal - Something went wrong...
 		console.log("MERGE-ERROR: Object-Key ist weder in neuen noch in lokalen Daten vorhanden ?!");
@@ -295,9 +298,13 @@ function mergeKlasse(newData, localData) {
 		console.log("MERGE: localData and newData - return TRICKY");
 		var Klasse = {};
 
-		// -- Liste mit allen Keys beider Objecte (unique)
+		// -- Key-Blacklist mergen (alle Keys dieser Liste werden im Folgenden ausgeschlossen)
+		var Blacklist = localData[1].blacklist.concat(newData[1].blacklist);
+		Blacklist = removeDups(Blacklist);
+
+		// -- Liste mit allen Keys beider Objecte (unique und gefiltert)
 		var keyList = Object.keys(localData).concat(Object.keys(newData));
-		keyList = removeDups(keyList);
+		keyList = removeDups(keyList, Blacklist);
 
 		// -- Loop mittels Key-Liste
 		for (var row, i = keyList.length - 1; i >= 0; i--) {
@@ -377,7 +384,8 @@ function mergeKlasse(newData, localData) {
 			}
 		}
 
-		// merged zurückgeben
+		// Merged die Blacklist hinzufügen und zurückgeben
+		Klasse[1].blacklist = Blacklist;
 		return Klasse;
 
 	}

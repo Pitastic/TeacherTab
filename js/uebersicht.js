@@ -189,7 +189,7 @@ function listLeistung(results){
 				}
 				// -- PopUp
 				document.getElementById("notenArt").value = choose;
-				if (choose == "fspz") {fspz_Bezeichnung();}
+				if (SETTINGS.fspzDiff) {fspz_Bezeichnung();}
 				var add = document.getElementById('btn_Add');
 				popUp(add.getAttribute('data-name'));
 			}

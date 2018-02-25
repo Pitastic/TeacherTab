@@ -365,9 +365,10 @@ function compareKlassen(a,b) {
 }
 
 
-function removeDups(a) {
+function removeDups(a, filter) {
 //-> Doppelte Einträge aus Array filtern
 //-> https://stackoverflow.com/a/9229821/2978727
+	if (typeof filter == "undefined") {filter = [];}
 	var seen = {};
 	var out = [];
 	var len = a.length;
@@ -376,7 +377,9 @@ function removeDups(a) {
 		var item = a[i];
 		if(seen[item] !== 1) {
 			seen[item] = 1;
-			out[j++] = item;
+			if (filter.indexOf(item) === -1) {
+				out[j++] = item;
+			}
 		}
 	}
 	return out;
@@ -663,11 +666,12 @@ function formSettings(id, bezeichnung) {
 		'notenverteilung' : {1:95,2:80,3:75,4:50,5:25,6:0},
 		'showVorjahr' : false,
 		'studSort' : false,
+		'blacklist' : [],
 	};
 }
 
 // Schüler mit ersten Daten
-function formStudent(vName, nName, sex){
+function formStudent(vName, nName, sex, bestehendesO){
 	sex = (typeof sex == "undefined") ? sex : "-";
 	var id = uniqueID();
 	return {
@@ -803,8 +807,10 @@ function klassenDeleteHandler(id) {
 // Helper zum Löschen von Leistunge
 function handleDeleteLeistung(callback, lART, lID) {
 	db_dynamicUpdate(
-		function(r){
-			db_deleteDoc(callback, lID);
+		function(r){ // neue Callback Function
+			db_deleteDoc(function(){
+				db_simpleUpdate(callback, 1, "blacklist", "push", lID)
+			}, lID);
 		},
 		function(Student){ // Apply Function
 			delete Student[lART][lID];
