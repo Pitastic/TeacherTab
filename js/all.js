@@ -823,7 +823,7 @@ function handleSchnitt(callback, sID) {
 				return schnitt_gesamt(Student, Leistungen);
 			}, "student", sID);
 	}, "leistung", function(){
-			console.log("noch keine Leistungen da, kein Schnitt");
+			console.log("INFO: keine Schnittberechnung wegen leerer DB-Abfrage");
 			callback();
 		}
 	);

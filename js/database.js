@@ -420,7 +420,7 @@ function db_readMultiData(callback, typ, emptyCall) {
 			if (result.length > 0) {
 				callback(result);
 			}else{
-				console.log("In deiner Klasse ist noch zu wenig los dafür:", typ);
+				console.log("IDB: Leeres Ergebnis der Abfrage nach Typ", typ);
 				if (emptyCall) {
 					emptyCall();
 				}else{

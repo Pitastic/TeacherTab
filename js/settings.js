@@ -59,7 +59,8 @@ function settingDetails(results){
 
 		})
 	//-- Vorjahresnoten
-	document.form_vorjahr.setVorjahr.checked = SETTINGS.showVorjahr;
+	// DEV: Disabled
+	//document.form_vorjahr.setVorjahr.checked = SETTINGS.showVorjahr;
 	// Füllen
 	document.getElementById('item1setting').classList.add('show');
 }
@@ -96,7 +97,8 @@ function SettingsSave(bol_save){
 		// -- -- Sortierung nach Gruppen
 		settings.studSort = document.form_sex.stud_Sort.checked;
 		// -- -- Vorjahresnoten
-		settings.showVorjahr = document.form_vorjahr.setVorjahr.checked;
+		// DEV: Disabled
+		settings.showVorjahr = false; //document.form_vorjahr.setVorjahr.checked;
 
 		// DB save und refresh
 		db_replaceData(function(){

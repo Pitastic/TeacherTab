@@ -173,12 +173,25 @@ function listLeistung(results){
 		tr[i].addEventListener('click', function(){
 			var id_Leistung = this.getAttribute('data-l_id');
 			if (id_Leistung) {
+				// Leistung hinterlegen
 				sessionStorage.setItem('leistung_id', this.getAttribute('data-l_id'));
-				//sessionStorage.setItem('leistung_art', this.getAttribute('data-l_column')); // mit neuem Schema nicht mehr benötigt ?!
 				sessionStorage.setItem('leistung_art', this.getAttribute('data-l_subtyp'));
 				itemAbort(['item2'],'details_leistungen.htm');
 			}else{
-				alert("Klick auf den Button 'Hinzufügen' um eine Leistung hinzuzufügen");
+				// Leeres Feld ausgewählt - "Hinzufügen"-Dialog
+				var ulList = this.parentNode.parentNode.getElementsByTagName('ul');
+				var ul = this.parentNode;
+				var choose;
+				for (var idx = ulList.length - 1; idx >= 0; idx--) {
+					if (ulList.item(idx) == ul){
+						choose = Array("mndl", "fspz", "schr")[idx];
+					}
+				}
+				// -- PopUp
+				document.getElementById("notenArt").value = choose;
+				if (choose == "fspz") {fspz_Bezeichnung();}
+				var add = document.getElementById('btn_Add');
+				popUp(add.getAttribute('data-name'));
 			}
 		});
 	}
