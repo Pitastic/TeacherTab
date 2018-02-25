@@ -1,7 +1,13 @@
 /*
-- Funktionen von Sync-Funktion trennen
-- DEV-Note: Clean Blacklist Funktion zum Zurücksetzen der Syncsperre in "Grundeinstellungen" o.ä.
-- DEV-Note: Background Sync bei etwas Inaktivität alle X Minuten
+- DEV-Note: Background Sync
+	...bei etwas Inaktivität alle X Minuten
+	...beim Aufruf der uebersicht.htm (Gefahr: ständiger Sync vor regulärem Sync)
+- DEV-Note: ausgewählte Klassen offline verfügbar machen (Liste mit Checkboxen, diese Klassen werden gesynced)
+- DEV-Note: Bereinigungsfunktion mit Hinweis beim Start (wenn viele alte vorhanden)
+	...anhand der Liste 'local' den letzten Timestamp ermitteln
+	...PopUp Liste mit Checkboxen, welche Klassen (nu vom Gerät!) entfernt werden sollen
+	...Hinweis: "Beachte, dass du danach auf Wunsch bestimmte Klassen wieder Offline verfügbar machen musst."
+	...ODER: Löschen der lokalen Klassen bei jedem Schließen (nur wenn AUTH und nicht wenn offline-Flag in der Klasse)
 */
 
 function testCreds(callback) {
@@ -12,7 +18,7 @@ function testCreds(callback) {
 		headers: {
 			"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
 		},
-		timeout: 2500,
+		timeout: GLOBALS.timeout,
 		success: function(data, status, jqXHR){
 			console.log(data, status, jqXHR);
 			callback(jqXHR.status);
@@ -33,7 +39,7 @@ function sync_getAccount(callback, localAccount) {
 			headers: {
 				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
 			},
-			timeout: 4000,
+			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
 				// GET
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
@@ -71,7 +77,7 @@ function sync_getKlasse(callback, classObjectArray) {
 			headers: {
 				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
 			},
-			timeout: 4000,
+			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
 				// GET Klasse
 				console.log("SYNC local:", klassenObject);//DEV 
@@ -117,7 +123,7 @@ function sync_getMultiKlasses(callback, klassenListe) {
 			headers: {
 				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
 			},
-			timeout: 4000,
+			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
 				/*
 				Klassen abrufen und mergen (eigene Funtkion)
@@ -133,6 +139,7 @@ function sync_getMultiKlasses(callback, klassenListe) {
 		callback(klassenObject);
 	}
 }
+
 
 function sync_pushBack(callback, Data, uri) {
 // Daten an den Server schicken (generic Function)
@@ -151,7 +158,7 @@ function sync_pushBack(callback, Data, uri) {
 			headers: {
 				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
 			},
-			timeout: 4000,
+			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
 				//DEV console.log("Push:", pushData);
 				//DEV console.log("Response:", jqXHR);
@@ -167,6 +174,34 @@ function sync_pushBack(callback, Data, uri) {
 		callback(Data); // Callback bekommt gepushten Daten im Klartext
 	}
 }
+
+
+function sync_deleteKlasse(id, callback){
+//>> Fake Delete-Sync bis zur Umstellung
+	if (GLOBALS.AUTH) {
+		console.log("SYNC: lösche", id, "vom Server");
+		$.ajax({
+			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/class/' + id,
+			type: 'DELETE',
+			headers: {
+				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
+			},
+			timeout: GLOBALS.timeout,
+			success: function(data, status, jqXHR){
+				console.log("SYNC: erfolgreich !");
+				callback("Lösche Klassendaten: erfolgreich !")
+			},
+			error: function(data, status, jqXHR){
+				console.log("SYNC-ERROR: Löschen auf dem Server nicht möglich");
+				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
+			},
+		});
+	}else{
+		console.log("SYNC: Kein Account mit entsprechenden Berechtigungen eingerichtet");
+		callback("Lösche Klassendaten: Nur lokal (kein Account vorhanden) !")
+	}
+}
+
 
 function mergeAccount(newData, localData) {
 //-> Metadaten mergen: Grundvorraussetzungen für Folgeoperationen
@@ -348,309 +383,11 @@ function mergeKlasse(newData, localData) {
 	}
 }
 
-function sync_deleteKlasse(selKlasse){
-//>> Fake Delete-Sync bis zur Umstellung
-	if (GLOBALS.AUTH) {
-		console.log("SYNC-ERROR: Löschen von Klassen auf dem Server noch nicht möglich (NOT IMPLEMENTED)");
-	}else{
-		console.log("SYNC: Kein Account mit entsprechenden Berechtigungen eingerichtet");
-	}
-}
 
 
-// DEPRECATED
-function showArchiv(old_arr,sel){
-	var i;
-	var temp_arr = [];
-	if (GLOBALS.SyncServer){
-		$.ajax({
-			url:GLOBALS.SyncServer+'/ShowAll.py',
-			type:'post',
-			crossDomain:true,
-			data:{
-				klasse:klasse,
-				user:GLOBALS.userID,
-			},
-			dataType:'json',
-			timeout:4000,
-			success:function(response,status,jqXHR){
-				console.log("Request:", status);
-				stbls = response.all_tables;
-				for (i=0;i<stbls.length;i++){
-					if (old_arr.indexOf(stbls[i])<0){
-						temp_arr.push(stbls[i]+"#");
-						var opt = new Option("# "+stbls[i]);
-						opt.value = "new"+stbls[i];
-						sel.appendChild(opt);
-					}
-				}
-			},
-			error:function(jqXHR, status, data){console.log("ERROR (status, jqXHR, data):", status, jqXHR, data);},
-			}
-		);
-	}
-}
-
-// DEPRECATED
-function initSyncSQL(){
-//>> Fake Sync bis zur Umstellung der Methode
-	popUp("item0Sync");
-	var _element = document.getElementById('syncStatus');
-	var _elementTxt = document.getElementById('syncText');
-	// Fake StatusBar
-	setTimeout(function(){
-		_element.style.width = "100%";
-	},500);
-	_element.innerHTML = "Funktion noch nicht verfügbar !";
-	document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
-}
-
-function old_initSyncSQL(){
-	popUp("item0Sync");
-	var _element = document.getElementById('syncStatus');
-	var _elementTxt = document.getElementById('syncText');
-	// Fake StatusBar
-	setTimeout(function(){
-		_element.style.width = "100%";
-	},500);
-	var syncResult;
-	if (navigator.onLine && GLOBALS.SyncServer) {
-		// Sync oder neu anlegen ?
-		if (GLOBALS.klasse.substring(1,4)=="new") {
-			sessionStorage.setItem('klasse',"["+ GLOBALS.klasse.substring(4, GLOBALS.klasse.length));
-			createTables("["+ GLOBALS.klasse.substring(4, GLOBALS.klasse.length));
-			GLOBALS.klasse = "["+ GLOBALS.klasse.substring(4, GLOBALS.klasse.length);
-			var str_klasse = GLOBALS.klasse.substring(1, GLOBALS.klasse.length-1);
-			_elementTxt.innerHTML = 'Klasse wird vom Server heruntergeladen!';
-		}
-		
-		// Versionsabgleich Client <-> Server
-		sessionStorage.setItem('changed', 0);
-		db.transaction(
-			function(transaction){transaction.executeSql(
-				"SELECT changed FROM " + GLOBALS.klasse +" ORDER BY changed DESC LIMIT 1;", [],
-				function(transaction, results) {
-					var changed = results.rows.item(0).changed;
-					console.log("Synchronisiere: "+GLOBALS.klasse+" (v"+changed+")");
-					// Serverfragen, welche Version neuer ist:
-					$.ajax({
-						url:GLOBALS.SyncServer+'/HowAreYou.py',
-						type:'post',
-						crossDomain:true,
-						data:{
-							klasse:klasse,
-							changed:changed,
-							user:GLOBALS.userID,
-						},
-						dataType:'json',
-						timeout:4000,
-						success:function(jqXHR, status, data){
-							// Switch anhand Result: pushToServer <-> pullFromServer
-							data = data.responseJSON;
-							console.log("Request:", status, data.result);
-							switch (data.result){
-								case "newerOnClient":
-									console.log("Push Data - Client >>> Server");
-									var server_stamp = data.server_version || 0;
-									pushToServer(server_stamp, _element);
-									break;
-								case "newerOnServer":
-									console.log("Pull Data - Client <<< Server");
-									var client_stamp = data.client_version || 0;
-									pullToClient(client_stamp, _element);
-									break;
-							}
-							},
-						error:function(jqXHR, status, data){
-							console.log("ERROR (status, jqXHR, data):", status, jqXHR, data);
-							_element.classList.add('error');
-							_element.classList.remove('ok');
-							_element.innerHTML = "Kein Sync durchgeführt !";
-							document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
-							},
-						}
-						)
-						.done();
-				})});
-	}else{
-		_element.classList.add('error');
-		_element.innerHTML = "Kein Sync durchgeführt !";
-		document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
-	}
-}
-
-function pushToServer(server_stamp, _element) {
-console.log("pushing...");
-	// dump Client DB as [{key:value}]
-	db.transaction(
-		function(transaction){transaction.executeSql(
-			"SELECT * FROM " + GLOBALS.klasse + " WHERE changed > "+server_stamp+";", [], 
-			function(transaction, results) {
-				var i, row, _fields, _values, col, val, data="";
-				for (i = 0; i < results.rows.length; i++) {
-					row = results.rows.item(i);
-					_fields = [];
-					_values = [];
-					for (col in row) {
-						// Spalten ausschließen:
-						if (GLOBALS.noSyncCols.indexOf(col) > -1){
-							continue;
-						}else{
-							_fields.push(col);
-							val = "'"+row[col]+"'" || "''";
-							_values.push(val);
-						}
-					}
-					data += "INSERT OR REPLACE INTO "+GLOBALS.klasse+" ("+_fields.join(',')+") VALUES ("+ _values.join(',') + ");";
-				}
-			$.ajax({
-				url:GLOBALS.SyncServer+'/pushToServer.py',
-				type:'post',
-				crossDomain:true,
-				data:{
-					klasse:klasse,
-					user:GLOBALS.userID,
-					sql:data,
-				},
-				dataType:'json',
-				timeout:4000,
-				success:function(data, status, jqXHR){
-					console.log("Sync is complete!");
-					_element.classList.remove('error');
-					_element.classList.add('ok');
-					_element.innerHTML = "Fertig !";
-				},
-				error:function(jqXHR, status, data){console.log("ERROR (status, jqXHR, data):", status, jqXHR, data);},
-				}
-				)
-			.done(function(jqXHR, status, data){
-				document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
-			})
-			})});
-}
-
-function pullToClient(client_stamp, _element) {
-console.log("pulling...");
-	$.ajax({
-		url:GLOBALS.SyncServer+'/pullFromServer.py',
-		type:'post',
-		crossDomain:true,
-		data:{
-			klasse:klasse,
-			user:GLOBALS.userID,
-			changed:client_stamp,
-		},
-		dataType:'json',
-		timeout:4000,
-		success:function(data, status, jqXHR){
-			console.log("Request:", status);
-				var data = jqXHR.responseJSON.data.split(";");
-				var values = jqXHR.responseJSON.values;
-				var sql_array = [];
-				var i=0;
-				for (i=0;i<data.length-1;i++){
-					var vlen = values[i].length;
-					values[i][0] = parseInt(values[i][0].substring(1,values[i][0].length-1)) || 0;
-					values[i][vlen-1] = parseInt(values[i][vlen-1].substring(1,values[i][vlen-1].length)) || 0;
-					sql_array.push(data[i]+" ("+values[i].join(',')+")");
-				}
-				db.transaction(
-				function(transaction){
-					var i2 = 0;
-					for (i2=0;i2<sql_array.length;i2++){
-						transaction.executeSql(sql_array[i2]+";",[],function(transaction, results){
-							console.log("Eintrag gespeichert");
-						}, errorHandler);
-					}
-				});
-				console.log("Sync is complete!");
-				_element.classList.remove('error');
-				_element.classList.add('ok');
-				_element.innerHTML = "Fertig !";
-			},
-		error:function(jqXHR, status, data){console.log("ERROR (status, jqXHR, data):", status, jqXHR, data);},
-		}
-		).done(function(jqXHR, status, data){
-			document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
-		}
-		);
-}
-
-
-function sync_deleteDoc(ID) {
-	alert("Syncing: Delete... [disabled]");
-	/*
-	$.ajax({
-		url:GLOBALS.SyncServer+'/deleteDoc.py',
-		type:'post',
-		crossDomain:true,
-		data:{
-			klasse:klasse,
-			user:GLOBALS.userID,
-			entry:ID,
-		},
-		dataType:'json',
-		error:function(jqXHR, status, data){console.log("ERROR (status, jqXHR, data):", status, jqXHR, data);},
-		}
-		).done(function(data, status, jqXHR){
-			alert("Eintrag vom Gerät und auf dem SyncServer gelöscht !\nTrotzdem musst du diesen Eintrag von jedem Gerät selbst löschen, damit er beim nächsten Sync nicht wieder hinzugefügt wird.");
-	});
-	*/
-}
-
-
-function old_deleteKlasse(selKlasse){
-	// DEV:
-	// Beim Löschen auf den Callback von indexedDB & den Sync warten... !
-	// ==================================================================
-	var syncResult;
-	var _element = document.getElementById('syncStatus');
-	var _elementTxt = document.getElementById('syncText');
-	_elementTxt.innerHTML = "Lösche Klasse";
-	popUp("item0Sync");
-	setTimeout(function() {
-	if (navigator.onLine){
-		dropKlasse(selKlasse);
-		if (window.confirm('Du bist online.\nSoll die Klasse auch auf dem SyncServer gelöscht werden ?')){
-			_elementTxt.innerHTML = "Lösche Klasse von diesem Gerät und vom SyncServer !";
-			$.ajax({
-				url:GLOBALS.SyncServer+'/deleteKlasse.py',
-				type:'post',
-				crossDomain:true,
-				data:{
-					klasse:selKlasse,
-					user:GLOBALS.userID,
-				},
-				dataType:'json',
-				timeout:4000,
-				success:function(jqXHR, status, data){syncResult = true;},
-				error:function(jqXHR, status, data){
-					syncResult = false;
-					_elementTxt.innerHTML = "Lösche Klasse nur von diesem Gerät ! (SyncServer nicht erreichbar)";
-					},
-				}).done(function(){console.log("Response:", status, "Deleted:", syncResult);});
-			}else{
-				_elementTxt.innerHTML = "Lösche Klasse nur von diesem Gerät !";
-				syncResult = false;
-			}
-	}else{
-		_elementTxt.innerHTML = "Lösche Klasse nur von diesem Gerät ! (du bist offline)";
-		dropKlasse(selKlasse);
-		syncResult = false;
-	}
-	_element.style.width = "100%";
-	setTimeout(function(){
-		if (syncResult){
-			_element.classList.add('ok');
-			_element.innerHTML = "Fertig !";
-			document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
-		}else{
-			_element.classList.add('error');
-			_element.innerHTML = "Keine Änderungen auf SyncServer !";
-			document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
-		}},1000);
-	}, 600);
-}
+// =================================================== //
+// =========== Import- / Export- Functions =========== //
+// =================================================== //
 
 
 // -- Gesamtübersicht (X)

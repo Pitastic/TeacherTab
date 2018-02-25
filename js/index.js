@@ -7,40 +7,20 @@ $(document).ready(function() {
 
 	// -- Buttons
 	document.getElementById('syncOpen').addEventListener('click', function(){
+		klassenAuswahl(document.getElementById('klasseSelect'));
 		perfStart = performance.now(); // DEV
 		// Öffnen mit Sync der geählten Klasse
-		klassenAuswahl(document.getElementById('klasseSelect'));
-		if (klasse && klasse != "-") {
+		if (GLOBALS.klasse && GLOBALS.klasse != "-") {
 			klassenSyncHandler();
 		}else{
 			alert("Es wurde keine Klasse ausgewählt !");
 		}
-		/*
-		// ohne Sync:
-		initSyncSQL();
-		*/
-
 	});
 
 	document.getElementById('btn_Delete').addEventListener('click', function(){
-		if (window.confirm('Bist du sicher, dass du die gesamte Klasse:\n"'+GLOBALS.klassenbezeichnung+'" ('+klasse+')\nlöschen möchtest ?')){
-			var _element = document.getElementById('syncStatus');
-			var _elementTxt = document.getElementById('syncText');
-			_elementTxt.innerHTML = "Lösche Klasse";
-			popUp("item0Sync");
-			setTimeout(function() {
-				_elementTxt.innerHTML = "Lösche Klasse von diesem Gerät !";
-				_element.style.width = "100%";
-				db_dropKlasse(GLOBALS.klasse, function(){
-					setTimeout(function(){
-							sync_deleteKlasse(GLOBALS.klasse);
-							_element.classList.add('ok');
-							_element.innerHTML = "Fertig !";
-							document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
-						},1000);
-					}, 600);
-				}
-			);
+		klassenAuswahl(document.getElementById('klasseSelect'));
+		if (window.confirm('Bist du sicher, dass du die gesamte Klasse:\n\n'+GLOBALS.klassenbezeichnung+' (id: ' + GLOBALS.klasse.substring(0,6) + ')\n\nlöschen möchtest ?')){
+			klassenDeleteHandler(GLOBALS.klasse);
 		}
 	});
 
@@ -54,6 +34,7 @@ $(document).ready(function() {
 		})
 		popUp('item0Export');
 		*/
+		alert("Die Exportfunktion ist noch nicht implementiert !");
 	});
 
 	document.getElementById('closeSync').addEventListener('click', function(){
@@ -204,7 +185,8 @@ function listIdx_Select(account) {
 		// Schleife durch Optionen
 		for (var i = 0; i < keylist.length; i++) {
 			var hash = keylist[i][0];
-			var bezeichnung = (account.local.indexOf(hash) === -1) ? "# "+result[hash].bezeichnung : result[hash].bezeichnung;
+			var bezeichnung = result[hash].bezeichnung;
+			//var bezeichnung = (account.local.indexOf(hash) === -1) ? "# "+result[hash].bezeichnung : result[hash].bezeichnung;
 			opt = new Option(bezeichnung);
 			opt.value = hash;
 			clone.appendChild(opt);
@@ -213,6 +195,7 @@ function listIdx_Select(account) {
 	}
 
 	sel.parentNode.replaceChild(clone,sel);
+	document.getElementById("indexKlassen").getElementsByTagName("span")[0].innerHTML = "Insgesamt " + optCount + " Klassen in deinem Account";
 }
 
 

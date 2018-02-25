@@ -135,6 +135,32 @@ function db_neueKlasse(callback, id, bezeichnung) {
 }
 
 
+/*
+// Klasse löschen (lokal)
+function db_dropKlasse(oStore, callback) {
+	if (oStore == "" || !oStore) {return;}
+	// First: Clear the store
+	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	db.onerror = errorHandler;
+	db.onsuccess = function(event){
+		var connection = event.target.result;
+
+		if (connection.objectStoreNames.contains(id)) {
+			// oStore vorhanden - Upgrade needed
+			// oStore existiert lokal - Clear und anschließendes Upgrade
+			var objectStore = connection.transaction(oStore, "readwrite").objectStore(oStore);
+			var result_clear = objectStore.clear();
+		}
+	}
+
+	// ---> Garbage Collection
+	db.onversionchange = function(event) {
+		event.target.transaction.db.close();
+	};
+}
+*/
+
+
 // Klasse löschen
 function db_dropKlasse(oStore, callback) {
 	if (oStore == "" || !oStore) {return;}

@@ -6,7 +6,8 @@ var GLOBALS = {
 	'AUTH'				: null,
 	'userID'			: null,
 	'passW'				: null,
-	'SyncServer'		: null,
+	'SyncServer'		: "/c/api",
+	'timeout'			: 4000,
 
 	'dbname'			: null,
 	'dbversion'			: null,
@@ -265,40 +266,6 @@ function RohpunkteAlsNote(val, bol_15pkt){
 			}
 		}
 	}else{return "-"}
-}
-
-function klassenSyncHandler(){
-//-> Synchronisierung, Animation und Weiterleitung
-	popUp("item0Sync");
-
-	// Animation, Sync und DB
-	var progress = 0;
-	progress += 10;
-	updateStatus(progress, progress+" %", "Synchronisiere: Lokale Daten lesen");
-	
-	db_readKlasse(function(klassenObject){
-		
-		progress += 40; // Statusbar
-		updateStatus(progress, progress+" %", "Synchronisiere: Serverdaten anfordern");
-		
-		sync_getKlasse(function(mergedKlasse) {
-
-			GLOBALS.perfEnd = performance.now(); // DEV
-			console.log("INFO: Finished opening Class in " + Math.round((GLOBALS.perfEnd - GLOBALS.perfStart), 1) + " milliseconds."); // DEV
-			
-			progress += 40; // Statusbar
-			updateStatus(progress, progress+" %", "Synchronisiere: Daten entschlüsseln und zusammenführen...");
-			
-			setTimeout(function(){
-				progress += 10; // Statusbar
-				updateStatus(progress, progress+" %", "Synchronisation erfolgreich !");
-				// --- Klasse aufrufen ---
-				document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
-			},500);
-
-		}, klassenObject);
-
-	});
 }
 
 function updateStatus(progress, statustext, statustitle, elements, error){
@@ -773,6 +740,65 @@ function waitForDB(callback){
 		}, 250);
 	}
 }
+
+
+function klassenSyncHandler(){
+//-> Synchronisierung, Animation und Weiterleitung
+	popUp("item0Sync");
+
+	// Animation, Sync und DB
+	var progress = 0;
+	progress += 10;
+	updateStatus(progress, progress+" %", "Synchronisiere: Lokale Daten lesen");
+	
+	db_readKlasse(function(klassenObject){
+		
+		progress += 40; // Statusbar
+		updateStatus(progress, progress+" %", "Synchronisiere: Serverdaten anfordern");
+		
+		sync_getKlasse(function(mergedKlasse) {
+
+			GLOBALS.perfEnd = performance.now(); // DEV
+			console.log("INFO: Finished opening Class in " + Math.round((GLOBALS.perfEnd - GLOBALS.perfStart), 1) + " milliseconds."); // DEV
+			
+			progress += 40; // Statusbar
+			updateStatus(progress, progress+" %", "Synchronisiere: Daten entschlüsseln und zusammenführen...");
+			
+			setTimeout(function(){
+				progress += 10; // Statusbar
+				updateStatus(progress, progress+" %", "Synchronisation erfolgreich !");
+				// --- Klasse aufrufen ---
+				document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
+			},500);
+
+		}, klassenObject);
+
+	});
+}
+
+
+function klassenDeleteHandler(id) {
+//-> Löschen, Synchronisierung, Animation
+	popUp("item0Sync");
+
+	// Animation, Sync und DB
+	var progress = 0;
+	progress += 30;
+	updateStatus(progress, progress+" %", "Lösche Klassendaten: Aus dem Speicher und Verzeichnis dieses Geräts");
+
+	db_dropKlasse(GLOBALS.klasse, function(){
+		progress += 40;
+		updateStatus(progress, progress+" %", "Lösche Klassendaten: Aus dem Speicher und Verzeichnis des Servers");
+		sync_deleteKlasse(GLOBALS.klasse, function(msg){
+			progress = 100;
+			updateStatus(progress, progress+" %", msg);
+			document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
+		});
+	});
+
+	return;
+}
+
 
 // Helper zum Löschen von Leistunge
 function handleDeleteLeistung(callback, lART, lID) {
