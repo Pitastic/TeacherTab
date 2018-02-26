@@ -20,7 +20,6 @@ function testCreds(callback) {
 		},
 		timeout: GLOBALS.timeout,
 		success: function(data, status, jqXHR){
-			console.log(data, status, jqXHR);
 			callback(jqXHR.status);
 		},
 		error: function(jqXHR, status, msg){
@@ -305,6 +304,7 @@ function mergeKlasse(newData, localData) {
 		// -- Liste mit allen Keys beider Objecte (unique und gefiltert)
 		var keyList = Object.keys(localData).concat(Object.keys(newData));
 		keyList = removeDups(keyList, Blacklist);
+
 
 		// -- Loop mittels Key-Liste
 		for (var row, i = keyList.length - 1; i >= 0; i--) {

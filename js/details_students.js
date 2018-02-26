@@ -70,7 +70,7 @@ $(document).ready(function() {
 				function(){
 					db_simpleUpdate(function(){
 						window.location = 'uebersicht.htm';
-					}, 1, "blacklist", "push", id)
+					}, 1, "blacklist", "push", id.toString())
 				}, id);
 		}
 	});

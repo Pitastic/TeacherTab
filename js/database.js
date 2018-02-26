@@ -13,7 +13,6 @@ function initDB(callback) {
 		vCheck.onerror = errorHandler;
 		vCheck.onsuccess = function(event){
 			var connection = event.target.result;
-			GLOBALS.dbversion = parseInt(localStorage.getItem("dbversion_"+GLOBALS.userID));
 			if (!GLOBALS.dbversion){
 				// -- vielleicht
 				GLOBALS.dbversion = parseInt(connection.version);

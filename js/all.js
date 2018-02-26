@@ -10,7 +10,7 @@ var GLOBALS = {
 	'timeout'			: 4000,
 
 	'dbname'			: null,
-	'dbversion'			: null,
+	'dbversion'			: null,	
 	'dbToGo'			: null,
 	'dbFinished'		: null,
 	'noSyncCols'		: null,
@@ -43,6 +43,7 @@ $(document).ready(function() {
 		GLOBALS.passW = localStorage.getItem('passW');
 		GLOBALS.klasse = sessionStorage.getItem('klasse');
 		GLOBALS.dbname = GLOBALS.userID;
+		GLOBALS.dbversion = parseInt(localStorage.getItem("dbversion_"+GLOBALS.userID));
 		GLOBALS.knownDevice = true;
 	}else{
 		// kein DB Init
@@ -377,7 +378,11 @@ function removeDups(a, filter) {
 		var item = a[i];
 		if(seen[item] !== 1) {
 			seen[item] = 1;
-			if (filter.indexOf(item) === -1) {
+			if (filter) {
+				if (filter.indexOf(item) === -1 && filter.indexOf(item.toString()) === -1 && filter.indexOf(parseInt(item)) === -1) {
+					out[j++] = item;
+				}
+			}else{
 				out[j++] = item;
 			}
 		}
@@ -748,25 +753,26 @@ function waitForDB(callback){
 
 function klassenSyncHandler(){
 //-> Synchronisierung, Animation und Weiterleitung
+	GLOBALS.perfStart = performance.now(); // DEV
 	popUp("item0Sync");
 
 	// Animation, Sync und DB
 	var progress = 0;
 	progress += 10;
-	updateStatus(progress, progress+" %", "Synchronisiere: Lokale Daten lesen");
+	updateStatus(progress, "Lokale Daten lesen", "Synchronisiere...");
 	
 	db_readKlasse(function(klassenObject){
 		
-		progress += 40; // Statusbar
-		updateStatus(progress, progress+" %", "Synchronisiere: Serverdaten anfordern");
+		progress += 50; // Statusbar
+		updateStatus(progress, "Serverdaten anfordern", "Synchronisiere...");
 		
 		sync_getKlasse(function(mergedKlasse) {
 
 			GLOBALS.perfEnd = performance.now(); // DEV
 			console.log("INFO: Finished opening Class in " + Math.round((GLOBALS.perfEnd - GLOBALS.perfStart), 1) + " milliseconds."); // DEV
 			
-			progress += 40; // Statusbar
-			updateStatus(progress, progress+" %", "Synchronisiere: Daten entschlüsseln und zusammenführen...");
+			progress += 30; // Statusbar
+			updateStatus(progress, "Daten entschlüsseln und zusammenführen", "Synchronisiere...");
 			
 			setTimeout(function(){
 				progress += 10; // Statusbar
@@ -809,7 +815,7 @@ function handleDeleteLeistung(callback, lART, lID) {
 	db_dynamicUpdate(
 		function(r){ // neue Callback Function
 			db_deleteDoc(function(){
-				db_simpleUpdate(callback, 1, "blacklist", "push", lID)
+				db_simpleUpdate(callback, 1, "blacklist", "push", lID.toString())
 			}, lID);
 		},
 		function(Student){ // Apply Function

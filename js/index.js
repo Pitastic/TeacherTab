@@ -8,7 +8,7 @@ $(document).ready(function() {
 	// -- Buttons
 	document.getElementById('syncOpen').addEventListener('click', function(){
 		klassenAuswahl(document.getElementById('klasseSelect'));
-		perfStart = performance.now(); // DEV
+		GLOBALS.perfStart = performance.now(); // DEV
 		// Öffnen mit Sync der geählten Klasse
 		if (GLOBALS.klasse && GLOBALS.klasse != "-") {
 			klassenSyncHandler();
