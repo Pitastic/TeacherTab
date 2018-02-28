@@ -22,9 +22,7 @@ $(document).ready(function() {
 		// Datensatz ersetzen
 		db_replaceData(function(){
 			pop.classList.remove('showPop');
-			setTimeout(function() {
-				window.location.reload();
-			}, 500);
+			slide1('item2details', "details_leistungen.htm");
 		}, neueLeistung);
 	});
 
@@ -33,7 +31,9 @@ $(document).ready(function() {
 		var id_Leistung = parseInt(sessionStorage.getItem('leistung_id'));
 		var art_Leistung = sessionStorage.getItem('leistung_art');
 		if (window.confirm('Bist du sicher, dass du diese Leistung und alle eingetragenen Daten dazu unwiderruflich löschen möchtest ?')){
-			handleDeleteLeistung(function(r){window.location = 'uebersicht.htm';}, art_Leistung, id_Leistung);
+			handleDeleteLeistung(function(r){
+				slide1('item2details', "details_leistungen.htm");
+			}, art_Leistung, id_Leistung);
 		}
 	});
 
@@ -188,15 +188,13 @@ function leistungsDetails_noten(Leistung, Students){
 	old.parentNode.replaceChild(new_el, old);
 
 	// Anzeigen wenn ready
+	slide1('item2details');
 	var DOMcheck = setInterval( function () {
 		if (document.readyState !== 'complete' ) return;
 		clearInterval( DOMcheck );
 		// DOM Ready !
-		infoEl.classList.add('show');
-		target_el.classList.add('show');
-		setTimeout(function(){
-			calc_Stats(true);
-		},1000);
+		slide1('arbeit_info');
+		calc_Stats(true);
 	}, 100 );
 
 }
@@ -812,34 +810,24 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 			document.getElementById('item2details').classList.remove('show');
 			document.getElementById('arbeit_info').classList.add('hide');
 			if (bol_refresh){
-				setTimeout(function() {
-					window.location.reload();
-				}, 500);
+				slide1('item2details', "details_students.htm");
+			}else if (sessionStorage.getItem('jump_id')) {
+				sessionStorage.removeItem('jump_id');
+				slide1('item2details', "details_students.htm");
 			}else{
-				setTimeout(function() {
-					if (sessionStorage.getItem('jump_id')) {
-						sessionStorage.removeItem('jump_id');
-						window.location = "details_students.htm";
-					}else{
-						window.location = "uebersicht.htm";
-					}
-				}, 500);
+				slide1('item2details', "uebersicht.htm");
 			}
 
 	}, newObs);
 }
 
 function item2Abort() {
-	document.getElementById('item2details').classList.remove('show');
-	document.getElementById('arbeit_info').classList.add('hide');
-	setTimeout(function(){
-		if (sessionStorage.getItem('jump_id')) {
-			sessionStorage.removeItem('jump_id');
-			window.location = "details_students.htm";
-		}else{
-			window.location = "uebersicht.htm";
-		}    
-	},600);
+	if (sessionStorage.getItem('jump_id')) {
+		sessionStorage.removeItem('jump_id');
+		slide1('item2details', "details_students.htm");
+	}else{
+		slide1('item2details', "uebersicht.htm");
+	}    
 }
 
 function calc_Stats(bol_Mitschreiber){
@@ -984,6 +972,8 @@ function calc_Stats(bol_Mitschreiber){
 }
 
 
+// Ohnehin nicht genutzt ?
+/*
 function dropLeistung(){
 	alert("Diese Funktion ist noch nicht auf die neue Datenbankengine umgestellt worden !");
 	db.transaction(
@@ -1035,3 +1025,4 @@ function dropLeistung(){
 		window.location = "uebersicht.htm";
 	}, 600);
 }
+*/

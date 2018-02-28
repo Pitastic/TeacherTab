@@ -34,6 +34,17 @@ $(document).ready(function() {
 // Tabellenübersicht aus Array aller Schüler erstellen
 function listStudents(results) {
 	if (typeof results === 'undefined') {results = [];}
+
+	// Sortieren des Results
+	if (SETTINGS.studSort) {
+		console.log("INFO: Sortiere nach Gruppen und Namen"); // DEV
+		results.sort(compareGruppenNamen);
+	}else{
+		console.log("INFO: Sortiere nach Namen"); // DEV
+		results.sort(compareNamen);
+	}
+
+	// Listing
 	var c, r, ul, old, row, omndl, ofspz, oschr, gesamt, len;
 	old = document.getElementById("listStudents").getElementsByTagName('ul')[0];
 	ul = document.createElement('ul');
@@ -231,10 +242,13 @@ function massenAdd(el){
 	zeilen = textblock.value.split(trennZeile);
 	GLOBALS.dbToGo = 0;
 	for (zeile in zeilen){
-		vnn = zeilen[zeile].split(trennNamen.value);
-		// Schüler-Objekt in Liste
-		GLOBALS.dbToGo += 1;
-		namen.push(formStudent(vnn[0].trim(),vnn[1].trim()));
+		console.log(zeilen[zeile]);
+		if (zeilen[zeile]) {
+			vnn = zeilen[zeile].split(trennNamen.value);
+			// Schüler-Objekt in Liste
+			GLOBALS.dbToGo += 1;
+			namen.push(formStudent(vnn[1].trim(),vnn[0].trim()));
+		}
 	}
 
 	db_addDocument(function(){

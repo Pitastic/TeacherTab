@@ -356,16 +356,6 @@ function sum(n){
 	return r;
 }
 
-function compareKlassen(a,b) {
-//-> Vergleichsfunktion für die Liste aller Klassen
-	if (a[1].bezeichnung < b[1].bezeichnung)
-		return -1;
-	if (a[1].bezeichnung > b[1].bezeichnung)
-		return 1;
-	return 0;
-}
-
-
 function removeDups(a, filter) {
 //-> Doppelte Einträge aus Array filtern
 //-> https://stackoverflow.com/a/9229821/2978727
@@ -388,6 +378,26 @@ function removeDups(a, filter) {
 		}
 	}
 	return out;
+}
+
+
+function compareKlassen(a,b) {
+//-> Vergleichsfunktion für die Liste aller Klassen
+	if (a[1].bezeichnung < b[1].bezeichnung)
+		return -1;
+	if (a[1].bezeichnung > b[1].bezeichnung)
+		return 1;
+	return 0;
+}
+
+function compareNamen(a, b) {
+//-> Vergleichsfunktion nach Schülername
+	return (a.name.nname+">"+a.name.vname).localeCompare(b.name.nname+">"+b.name.vname);
+}
+
+function compareGruppenNamen(a, b) {
+//-> Vergleichsfunktion nach Gruppe und dann nach Schülername
+	return (a.name.sex+">"+a.name.nname+">"+a.name.vname).localeCompare(b.name.sex+">"+b.name.nname+">"+b.name.vname);
 }
 
 function datum(){
@@ -543,7 +553,9 @@ function itemAbort(names, target_site) {
 	},400);
 }
 
+
 function slide(event) {
+//-> Onclick dreht die Ansicht
 	scroll(0,0);
 	var addBtn = document.getElementById('btn_Add');
 	var i, slideElements = document.getElementsByClassName('uebersicht');
@@ -559,6 +571,23 @@ function slide(event) {
 	document.getElementsByClassName('marker')[1].className = "marker "+slideIndex;
 	// Store
 	sessionStorage.setItem('lastview', slideIndex);
+}
+
+function slide1(id, location) {
+//-> nur für die Panels (Settings, Schüler, Leistung)
+	if (typeof location == "undefined") {
+		var slide = document.getElementById(id);
+		slide.classList.remove('hide');
+		setTimeout(function(){
+			slide.classList.add('show');
+		},250);
+		return;
+	}else{
+		setTimeout(function(){
+			window.location = location;
+		},500);
+		document.getElementById(id).classList.remove('show');
+	}
 }
 
 function slide2(slideName){
@@ -633,7 +662,7 @@ function popUpClose(thisElement, bol_refresh){
 
 	setTimeout(function() {
 		thisElement.parentNode.parentNode.parentNode.classList.add('hide');
-	}, 500);
+	}, 250);
 	window.removeEventListener('keydown', keyFunctions);
 }
 
@@ -855,4 +884,23 @@ function change_buttons() {
 	for (key in buttons) {
 		document.getElementById(key).innerHTML = buttons[key]
 	}
+}
+
+
+// ==============================================================
+// ======================= Experimentell ========================
+// ==============================================================
+
+function cmp(a, b) {
+//-> Generic compare
+	return a > b ? 1 : a < b ? -1 : 0;
+}
+
+function cmpMulti(a, b) {
+//-> Vergleichsfunktion nach mehreren Spalen ohne Verkettung (ungenutzt)
+// Link: https://stackoverflow.com/a/3230748/2978727
+	return cmp(
+		[cmp(a.name.nname, b.name.nname), cmp(a.name.sex, b.name.sex)],
+		[cmp(b.name.nname, a.name.nname), cmp(b.name.sex, a.name.sex)]
+		);
 }

@@ -8,7 +8,6 @@ $(document).ready(function() {
 	// -- Buttons
 	document.getElementById('syncOpen').addEventListener('click', function(){
 		klassenAuswahl(document.getElementById('klasseSelect'));
-		GLOBALS.perfStart = performance.now(); // DEV
 		// Öffnen mit Sync der geählten Klasse
 		if (GLOBALS.klasse && GLOBALS.klasse != "-") {
 			klassenSyncHandler();
@@ -58,18 +57,10 @@ $(document).ready(function() {
 	// Setting up...
 	// -- format neue Klasse Eingabe
 	Schuljahre();
-	/*
-	// DEPRECATED: Alle Namen in indexedDB möglich
-	var nameKlasse = document.getElementById('nameKlasse');
-	nameKlasse.addEventListener('keyup', function(){
-		nameKlasse.value = nameKlasse.value.replace(/\s+/g, '');
-	});
-	*/
 
-	// -- reset Vars
+	// -- reset Vars und erste View festlegen
 	sessionStorage.removeItem('leistung');
 	sessionStorage.removeItem('klasse');
-	// -- ersten View festlegen
 	sessionStorage.setItem('lastview', 'item1');
 
 	// Action bei knownDevice

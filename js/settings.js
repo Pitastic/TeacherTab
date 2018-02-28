@@ -61,8 +61,8 @@ function settingDetails(results){
 	//-- Vorjahresnoten
 	// DEV: Disabled
 	//document.form_vorjahr.setVorjahr.checked = SETTINGS.showVorjahr;
-	// Füllen
-	document.getElementById('item1setting').classList.add('show');
+	// Anzeigen
+	slide1('item1setting')
 }
 
 
@@ -104,10 +104,7 @@ function SettingsSave(bol_save){
 		db_replaceData(function(){
 			SETTINGS = settings;
 			handleSchnitt(function(){
-				setTimeout(function(){
-					window.location = 'uebersicht.htm';
-				}, 750)
-				document.getElementById('item1setting').classList.remove('show');
+				slide1('item1setting', "uebersicht.htm")
 			});
 		}, settings, GLOBALS.klasse);
 	}
@@ -145,7 +142,7 @@ function gruppierenListe(results){
 		});
 		}
 	liste.appendChild(ul);
-	document.getElementById('item1setting_gruppen').classList.add('show');
+	slide1('item1setting_gruppen');
 	return true
 }
 
@@ -186,10 +183,7 @@ function saveGruppen(){
 		newObjects[student] = {'sort': gruppe};
 	}
 	updateData(function(){ // db_
-		setTimeout(function(){
-			window.location = "uebersicht.htm";
-		},750);
-		document.getElementById('item1setting_gruppen').classList.remove('show');
+		slide1('item1setting_gruppen', "uebersicht.htm")
 	}, newObjects);
 	return true
 }

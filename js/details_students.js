@@ -24,6 +24,7 @@ $(document).ready(function() {
 
 	// -- Editieren
 	pop.getElementsByClassName('button OK')[0].addEventListener('click', function(){
+		var that = this;
 		document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = document.getElementById('vName').value+" "+document.getElementById('nName').value;
 		var newStudent = {};
 		newStudent[id] = {
@@ -35,29 +36,9 @@ $(document).ready(function() {
 			}
 		};
 		db_updateData(function(){
-			popUpClose(this);
-			setTimeout(function() {
-				window.location = 'uebersicht.htm';
-			}, 500);
+			popUpClose(that);
+			slide1('item1details', "uebersicht.htm");
 		}, newStudent);
-		// DEV : deaktiviert ????
-		/*
-		var newStudent = {};
-		newStudent[id] = {
-			'name' : {
-				'nname' : document.getElementById('nName').value,
-				'vname' : document.getElementById('vName').value,
-				'sex' : document.getElementById('s_flag').value,
-			}
-		};
-		updateData(
-			function(r){
-				pop.classList.remove('showPop');
-				setTimeout(function() {
-					window.location = 'uebersicht.htm';
-				}, 500);
-			}, newStudent);
-		*/
 	});	
 
 	// -- Löschen
@@ -69,7 +50,7 @@ $(document).ready(function() {
 				// anschließend seine id auf Blacklist setzen
 				function(){
 					db_simpleUpdate(function(){
-						window.location = 'uebersicht.htm';
+						slide1('item1details', "uebersicht.htm");
 					}, 1, "blacklist", "push", id.toString())
 				}, id);
 		}
@@ -83,10 +64,7 @@ $(document).ready(function() {
 				sessionStorage.setItem('leistung_id', this.id);
 				sessionStorage.setItem('leistung_art', this.getAttribute('data-column'));
 				sessionStorage.setItem('jump_id', true);
-				setTimeout(function(){
-					window.location = 'details_leistungen.htm';
-				}, 400);
-				
+				slide1('item1details', "details_leistungen.htm");				
 			});
 		}
 	}, 200);
@@ -412,9 +390,7 @@ function studentDetails(row){
 	};
 
 	// Animation
-	setTimeout(function() {
-		document.getElementById("item1details").classList.add('show');
-	}, 250);
+	slide1('item1details');
 	return;
 }
 
@@ -440,9 +416,6 @@ function item1Save(id){
 	db_updateData(
 		function(r){
 			// Animation
-			document.getElementById('item1details').classList.remove('show');
-			setTimeout(function() {
-				window.location = 'uebersicht.htm';
-			}, 500);
+			slide1('item1details', "uebersicht.htm")
 		}, newStudent);
 }
