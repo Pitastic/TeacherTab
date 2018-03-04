@@ -596,7 +596,7 @@ function db_dynamicUpdate(callback, toApply, typ, eID) {
 					toUpdate = toApply(toUpdate);
 					var requestUpdate = cursor.update(toUpdate);
 					requestUpdate.onsuccess = function() {
-						console.log("IDB: Funktion anewendet auf ", id, "applied");
+						console.log("IDB: Funktion angewendet auf ", id, "applied");
 					};
 				}
 				cursor.continue();

@@ -45,7 +45,6 @@ $(document).ready(function() {
 	db_readMultiData(function(r){
 		// Settings laden
 		SETTINGS = r[0];
-		//leistungsDetails(art, id_Leistung); // alter Aufruf
 		db_readSingleData(leistungsDetails, "leistung", id_Leistung);
 	}, "settings");
 });
@@ -484,7 +483,7 @@ function leistungsDetails_rohpunkte(Leistung, Students){
 	for (var r in Students){
 		row = Students[r];
 		eigeneLeistung = row[Leistung.subtyp][Leistung.id];
-		if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || eigeneLeistung.Mitschreiber == "undefined"){
+		if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || eigeneLeistung.Mitschreiber == "undefined" || !eigeneLeistung.Mitschreiber){
 			eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', 'Kat1':'-' , 'Kat2':'-' , 'Kat3':'-' , 'Kat4':'-' , 'Gesamt':'-', 'Verteilung':"Standard"};
 		}
 		li = document.createElement('li');
@@ -770,11 +769,11 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 
 		note = row.getElementsByClassName('Note')[0].getElementsByTagName('span');
 
-		newObs[liID][art][id_Leistung].Mitschreiber = row.getAttribute('data-mitschreiber');
+		newObs[liID][art][id_Leistung].Mitschreiber = JSON.parse(row.getAttribute('data-mitschreiber').toLowerCase());
 		newObs[liID][art][id_Leistung].Gewichtung = parseFloat(sessionStorage.getItem('leistung_gewicht'));
 		newObs[liID][art][id_Leistung].changed = timestamp();
 		
-		if (newObs[liID][art][id_Leistung].Mitschreiber == "true"){
+		if (newObs[liID][art][id_Leistung].Mitschreiber){
 			newObs[liID][art][id_Leistung].Note = note[0].innerHTML;
 			newObs[liID][art][id_Leistung].Bezeichnung = Bezeichnung;
 		
@@ -805,7 +804,7 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 			document.getElementById('item2details').classList.remove('show');
 			document.getElementById('arbeit_info').classList.add('hide');
 			if (bol_refresh){
-				slide1('item2details', "details_students.htm");
+				slide1('item2details', "details_leistungen.htm");
 			}else if (sessionStorage.getItem('jump_id')) {
 				sessionStorage.removeItem('jump_id');
 				slide1('item2details', "details_students.htm");

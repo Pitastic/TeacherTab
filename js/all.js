@@ -157,8 +157,9 @@ function updateNoten(liste, bol_singel, newObs_init) {
 //-> Errechnen und Anzeigen von eingetragenen Leistungen
 	// -- Abwärtskompatibilität
 	if (newObs_init == null) {
-		alert("es wird eine veraltete Methode verwendet !");
-		updateNoten_old(liste, bol_singel);
+		// keine Schülerdaten aus DB, bereits angezeigte Daten optisch updaten
+		// In DB wird später gespeichert (Speichern Button)
+		updateNotenHTML(liste, bol_singel);
 		return;
 	}else if (Array.isArray(newObs_init)) {
 		var newObs = {};
@@ -176,6 +177,7 @@ function updateNoten(liste, bol_singel, newObs_init) {
 	var lID = parseInt(sessionStorage.getItem('leistung_id'));
 	for (i=0; i<liste.length; i++){
 		var sID = parseInt(liste[i].getAttribute("data-rowid").substring(4));
+
 		
 		// Fehlende Daten für das Objekt errechnen und anzeigen
 		if (liste[i].querySelector("[data-name=Gesamt]")) { // Kompetenzen
@@ -221,6 +223,31 @@ function updateNoten(liste, bol_singel, newObs_init) {
 	return newObs;
 }
 
+function updateNotenHTML(liste, bol_singel) {
+//--> Punkte in Prozentwerte umrechnen und als Note eintragen
+	var i, gesamtWert, erreicht, note, span;
+	liste = (bol_singel) ? [liste] : liste.getElementsByTagName('li');
+	setTimeout(function(){ // - sonst innerHTMl mit alten Werten
+		for (i=0; i<liste.length; i++){
+			if (liste[i].querySelector("[data-name=Gesamt]")) {
+				gesamtWert = sessionStorage.getItem(liste[i].getAttribute('data-verteilung')+'_Gesamt');
+				erreicht = parseFloat(liste[i].querySelector("[data-name=Gesamt]").innerHTML);
+				erreicht = Math.round((erreicht/gesamtWert)/0.005)*0.5;
+				note = RohpunkteAlsNote(erreicht, false);
+				span = liste[i].getElementsByClassName('Note')[0].getElementsByTagName('span');
+				span[0].innerHTML = (liste[i].getAttribute('data-mitschreiber') == "true") ? note : "-";
+				span[1].innerHTML =  erreicht + " %";
+			}else{
+				gesamtWert = sessionStorage.getItem('Standard_Gesamt');
+				erreicht = parseFloat(liste[i].getElementsByClassName('Gesamtpunkte')[0].getElementsByTagName('span')[0].innerHTML);
+				erreicht = Math.round((erreicht/gesamtWert)/0.005)*0.5;
+				note = RohpunkteAlsNote(erreicht, false);
+				span = liste[i].getElementsByClassName('Note standalone')[0].getElementsByTagName('span')[0];
+				span.innerHTML = (liste[i].getAttribute('data-mitschreiber') == "true") ? note : "-";
+			}
+		}
+	}, 10)
+}
 
 function RohpunkteAlsNote(val, bol_15pkt){
 //--> Rechnet Prozentwerte in Noten um, universell für 15pkt und 6 Zensuren.
@@ -445,14 +472,16 @@ function schnitt_gesamt(Student, Leistungen) {
 	var kompetenzen = [0,0,0,0,0];
 	var Infos, temp_leistung;
 	// -- Itteriere durch Leistungsart
-	for (var i = 0; i < art.length; i++) {
+	for (var i = 0; i < Leistungen.length; i++) {
 		// Itteriere durch Leistung und Auswahl von mitgeschriebenen Objekten erstellen
-		Infos = Leistungen[art[i]];
-		for (l in Infos) {
-			temp_leistung = Student[art[i]][l];
+		Infos = Leistungen[i];
+console.log("DEV: Infos", Infos);
+			temp_leistung = Student[Infos.subtyp][Infos.id];
+console.log("DEV: temp_leistung", temp_leistung);
 			// mitgeschrieben und mit Kategrorien ?
-			if (temp_leistung && temp_leistung.Mitschreiber == "true" && temp_leistung.Verteilung) {
-				var hundertProzent = Infos[l].Verteilungen[temp_leistung.Verteilung];
+			if (temp_leistung && temp_leistung.Mitschreiber && temp_leistung.Verteilung) {
+				var hundertProzent = Infos.Verteilungen[temp_leistung.Verteilung];
+console.log("DEV: hundertProzent", hundertProzent);
 				// Prozentsummen
 				kompetenzen[0] += temp_leistung.Kat1 / hundertProzent.Kat1;
 				kompetenzen[1] += temp_leistung.Kat2 / hundertProzent.Kat2;
@@ -462,7 +491,6 @@ function schnitt_gesamt(Student, Leistungen) {
 				kompetenzen[4] += 1;
 			}
 		}
-	}
 	Student.kompetenzen = Array(
 		Math.round((kompetenzen[0]/kompetenzen[4])*100)/100 || 0,
 		Math.round((kompetenzen[1]/kompetenzen[4])*100)/100 || 0,
