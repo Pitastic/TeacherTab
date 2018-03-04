@@ -35,14 +35,8 @@ $(document).ready(function() {
 function listStudents(results) {
 	if (typeof results === 'undefined') {results = [];}
 
-	// Sortieren des Results
-	if (SETTINGS.studSort) {
-		console.log("INFO: Sortiere nach Gruppen und Namen"); // DEV
-		results.sort(compareGruppenNamen);
-	}else{
-		console.log("INFO: Sortiere nach Namen"); // DEV
-		results.sort(compareNamen);
-	}
+	// Sortieren der Schüler
+	results.sort(compareStudents);
 
 	// Listing
 	var c, r, ul, old, row, omndl, ofspz, oschr, gesamt, len;
@@ -55,10 +49,10 @@ function listStudents(results) {
 		oschr = row.gesamt.oschr;
 		r = document.createElement('li');
 		r.setAttribute('data-rowid', row.id);
-			if (row.name.sex && row.name.sex !== "-" && row.name.sex !== "null"){
+			if (row.name.sort && row.name.sort !== "-" && row.name.sort !== "null"){
 				c = document.createElement('div');
 					c.className = "s_flag";
-					c.innerHTML = row.name.sex;
+					c.innerHTML = row.name.sort;
 					r.appendChild(c);
 			}
 			c = document.createElement('div');

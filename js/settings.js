@@ -180,10 +180,17 @@ function saveGruppen(){
 	newObjects = {};
 	for (i=0;i<liste.length;i++){
 		student = liste[i].getAttribute("data-rowid");
-		newObjects[student] = {'sort': gruppe};
+		newObjects[student] = {
+			'name' : {
+				'sort': gruppe,
+				'changed' : timestamp(),
+			}
+		};
 	}
-	updateData(function(){ // db_
+
+	db_updateData(function(){ // db_
 		slide1('item1setting_gruppen', "uebersicht.htm")
 	}, newObjects);
+	
 	return true
 }

@@ -31,7 +31,7 @@ $(document).ready(function() {
 			'name' : {
 				'nname': document.getElementById('nName').value,
 				'vname': document.getElementById('vName').value,
-				'sex': document.getElementById('s_flag').value,
+				'sort': document.getElementById('s_flag').value,
 				'changed' : timestamp(),
 			}
 		};
@@ -318,7 +318,7 @@ function studentDetails(row){
 	document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = row.name.vname+" "+row.name.nname;
 	document.getElementById('vName').value = row.name.vname;
 	document.getElementById('nName').value =row.name.nname;
-	document.getElementById('s_flag').value = row.name.sex || "-";
+	document.getElementById('s_flag').value = row.name.sort || "";
 
 	// Einzelne Leistungen
 	// -- mündlich

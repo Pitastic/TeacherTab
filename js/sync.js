@@ -8,6 +8,9 @@
 	...PopUp Liste mit Checkboxen, welche Klassen (nu vom Gerät!) entfernt werden sollen
 	...Hinweis: "Beachte, dass du danach auf Wunsch bestimmte Klassen wieder Offline verfügbar machen musst."
 	...ODER: Löschen der lokalen Klassen bei jedem Schließen (nur wenn AUTH und nicht wenn offline-Flag in der Klasse)
+- DEV-Note: Auf DB und DOM warten (bei uebersicht und details_leistung) bevor eingeblendet wird !
+- DEV-Note: Neues Slider Symbol (drehen und anderes Schülersymbol)
+- DEV-Note: Heraussliden bei Leistungen (linkes Element) schlecht getimed....muss zuerst
 */
 
 function testCreds(callback) {
@@ -44,6 +47,7 @@ function sync_getAccount(callback, localAccount) {
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
 				// Merge
 				var merged = mergeAccount(newData, localAccount);
+				console.log("SYNC: Merged", merged);
 				// Save and Push back
 				db_replaceData(function(){
 					sync_pushBack(callback, merged, "account");
@@ -79,13 +83,13 @@ function sync_getKlasse(callback, classObjectArray) {
 			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
 				// GET Klasse
-				console.log("SYNC local:", klassenObject);//DEV 
+				//DEV console.log("SYNC local:", klassenObject);
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
-				console.log("SYNC recieved:", newData);//DEV 
+				//DEV console.log("SYNC recieved:", newData);
 				// Merge Klasse
 				var merged = mergeKlasse(newData, klassenObject);
 				if (merged) {
-					console.log("SYNC merged to:", merged);//DEV 
+					//DEV console.log("SYNC merged to:", merged);
 					// (Create)
 					db_neueKlasse(function(){
 						// Save lokal
@@ -151,6 +155,8 @@ function sync_pushBack(callback, Data, uri) {
 		var encrypted = encryptData(pushData);
 		var url = (Array.isArray(uri)) ? uri.filter(function (val) {return val;}).join("/") : uri;
 		url = "/" + url + "/";
+		console.log("SYNC: Data", Data);
+		console.log("SYNC: pushData", pushData);
 		$.ajax({
 			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + url,
 			type: 'PUT',
@@ -178,7 +184,7 @@ function sync_pushBack(callback, Data, uri) {
 
 
 function sync_deleteKlasse(id, callback){
-//>> Fake Delete-Sync bis zur Umstellung
+//-> Daten zur Klasse auf Server löschen
 	if (GLOBALS.AUTH) {
 		console.log("SYNC: lösche", id, "vom Server");
 		$.ajax({
@@ -190,11 +196,12 @@ function sync_deleteKlasse(id, callback){
 			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
 				console.log("SYNC: erfolgreich !");
-				callback("Lösche Klassendaten: erfolgreich !")
+				callback();
 			},
 			error: function(data, status, jqXHR){
 				console.log("SYNC-ERROR: Löschen auf dem Server nicht möglich");
 				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
+				callback(true);
 			},
 		});
 	}else{
@@ -228,13 +235,17 @@ function mergeAccount(newData, localData) {
 		// Lokale Klassenliste mit (ggf. neuer) Blacklist bereinigen (Verzeichnis)
 		var localHashes = Object.keys(account.klassenliste);
 		var localStores = Object.keys(account.local);
+		var delHash;
 		GLOBALS.dbToGo = 0;
 		GLOBALS.dbFinished = 0;
 		for (var i = account.blacklist.length - 1; i >= 0; i--) {
 			if (localHashes.indexOf(account.blacklist[i]) > -1){
-				// Immer Eintrag aus Verzeichnis löschen und wenn vorhanden auch oStore aus DB
+				// Immer Eintrag aus Verzeichnis löschen
+				delHash = account.blacklist[i];
+				delete account.klassenliste[delHash]
+				// ...und wenn vorhanden auch oStore aus DB
 				GLOBALS.dbToGo += 1;
-				db_dropKlasse(account.blacklist[i], function(){
+				db_dropKlasse(delHash, function(){
 					GLOBALS.dbFinished += 1;
 					console.log("IDB: Deleted", GLOBALS.dbFinished, "( von", GLOBALS.dbToGo, ")");
 				})
@@ -243,9 +254,9 @@ function mergeAccount(newData, localData) {
 
 		// Auf eventuelle Lösch-Operationen der DB warten
 		waitForDB(function(){
+			//DEV console.log("...merge Klassenliste...");
 			// Klassenliste ergänzen
 			if (Object.keys(newData.klassenliste).length > 0) {
-				console.log("...merge Klassenliste...");//DEV
 				for (var hash in newData.klassenliste){
 					if (account.blacklist.indexOf(hash) === -1) {
 						// Hash nicht lokal vorhanden und nicht auf Blacklist

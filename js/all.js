@@ -9,6 +9,7 @@ var GLOBALS = {
 	'SyncServer'		: "/c/api",
 	'timeout'			: 4000,
 
+	'appversion'		: "0.31a",
 	'dbname'			: null,
 	'dbversion'			: null,	
 	'dbToGo'			: null,
@@ -174,8 +175,6 @@ function updateNoten(liste, bol_singel, newObs_init) {
 	var lART = sessionStorage.getItem('leistung_art');
 	var lID = parseInt(sessionStorage.getItem('leistung_id'));
 	for (i=0; i<liste.length; i++){
-		console.log(liste[i].getAttribute("data-rowid"));
-		console.log(newObs);
 		var sID = parseInt(liste[i].getAttribute("data-rowid").substring(4));
 		
 		// Fehlende Daten für das Objekt errechnen und anzeigen
@@ -390,14 +389,33 @@ function compareKlassen(a,b) {
 	return 0;
 }
 
-function compareNamen(a, b) {
+
+function compareStudents(a, b) {
+	if (SETTINGS.studSort) {
+		// Sortieren nach Gruppe und Namen
+		var a_sort = (a.name.sort) ? a.name.sort+">" : "zzz>";
+		var a_name = a.name.nname+">"+a.name.vname;
+		var b_sort = (b.name.sort) ? b.name.sort+">" : "zzz>";
+		var b_name = b.name.nname+">"+b.name.vname;
+		return (a_sort+a_name).localeCompare(b_sort+b_name);
+	}else{
+		// Sortieren nach Namen
+		return (a.name.nname+">"+a.name.vname).localeCompare(b.name.nname+">"+b.name.vname);
+	}
+}
+
+function compareNamen_old(a, b) {
 //-> Vergleichsfunktion nach Schülername
 	return (a.name.nname+">"+a.name.vname).localeCompare(b.name.nname+">"+b.name.vname);
 }
 
-function compareGruppenNamen(a, b) {
+function compareGruppenNamen_old(a, b) {
 //-> Vergleichsfunktion nach Gruppe und dann nach Schülername
-	return (a.name.sex+">"+a.name.nname+">"+a.name.vname).localeCompare(b.name.sex+">"+b.name.nname+">"+b.name.vname);
+	var a_sort = (a.name.sort) ? a.name.sort+">" : "zzz>";
+	var a_name = a.name.nname+">"+a.name.vname;
+	var b_sort = (b.name.sort) ? b.name.sort+">" : "zzz>";
+	var b_name = b.name.nname+">"+b.name.vname;
+	return (a_sort+a_name).localeCompare(b_sort+b_name);
 }
 
 function datum(){
@@ -427,7 +445,7 @@ function uniqueID() {
 	part_guid += screen.height || '';
 	part_guid += screen.width || '';
 	part_guid += screen.pixelDepth || '';
-	var id = parseInt(part_guid+part_ts) || parseInt(part_ts);
+	var id = parseInt(part_ts+part_guid) || parseInt(part_ts);
 	return id;
 }
 
@@ -591,7 +609,7 @@ function slide1(id, location) {
 }
 
 function slide2(slideName){
-// Nur für die Übersichten
+//-> Nur für die Übersichten
 	scroll(0,0);
 	var addBtn = document.getElementById('btn_Add');
 	document.getElementsByClassName('marker')[0].className = "marker "+slideName;
@@ -623,7 +641,7 @@ function keyFunctions(event){
 }
 
 function fspz_Bezeichnung(){
-// --> Bezeichnungsfeld verinheitlichen
+//-> Bezeichnungsfeld verinheitlichen
 	var nArt = document.getElementById('notenArt');
 	var gewichtung = document.getElementById('rangeSlide');
 	if (SETTINGS.fspzDiff){
@@ -715,6 +733,7 @@ function formStudent(vName, nName, sex, bestehendesO){
 			'nname': nName,
 			'vname': vName,
 			'sex': sex,
+			'sort': null,
 			'changed' :0,
 		},
 		'mndl' : {},
@@ -769,10 +788,11 @@ function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
 
 // Wait for DB (wenn Callback nicht geht)
 function waitForDB(callback){
-	if(GLOBALS.dbToGo >= GLOBALS.dbFinished){
+	if(GLOBALS.dbFinished >= GLOBALS.dbToGo){
+		//DEV console.log("IDB: toGo", GLOBALS.dbToGo, "Finished", GLOBALS.dbFinished);
 		callback();
 	}else{
-		console.log("IDB: next Actions waits...");
+		//DEV console.log("IDB: next Actions waits...");
 		setTimeout(function(){
 			waitForDB(callback)
 		}, 250);
@@ -780,7 +800,7 @@ function waitForDB(callback){
 }
 
 
-function klassenSyncHandler(){
+function klassenSyncHandler(location){
 //-> Synchronisierung, Animation und Weiterleitung
 	GLOBALS.perfStart = performance.now(); // DEV
 	popUp("item0Sync");
@@ -806,8 +826,9 @@ function klassenSyncHandler(){
 			setTimeout(function(){
 				progress += 10; // Statusbar
 				updateStatus(progress, progress+" %", "Synchronisation erfolgreich !");
-				// --- Klasse aufrufen ---
-				document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
+				// --- Klasse aufrufen/schließen ---
+				setTimeout(function(){window.location.href = location}, 1500);
+//				document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
 			},500);
 
 		}, klassenObject);
@@ -828,10 +849,15 @@ function klassenDeleteHandler(id) {
 	db_dropKlasse(GLOBALS.klasse, function(){
 		progress += 40;
 		updateStatus(progress, progress+" %", "Lösche Klassendaten: Aus dem Speicher und Verzeichnis des Servers");
-		sync_deleteKlasse(GLOBALS.klasse, function(msg){
+		sync_deleteKlasse(GLOBALS.klasse, function(error){
 			progress = 100;
-			updateStatus(progress, progress+" %", msg);
-			document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
+			if (!error) {
+				updateStatus(progress, progress+" %", "Lösche Klassendaten: Erfolgreich !");
+				setTimeout(function(){window.location.reload()}, 2000)
+			}else{
+				updateStatus(progress, progress+" %", "Lösche Klassendaten: Ein Fehler ist aufgetreten !", false, true);
+				document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
+			}
 		});
 	});
 

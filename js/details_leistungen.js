@@ -68,33 +68,35 @@ function leistungsDetails(Leistung){
 	editLeistung.rangeWert.value = parseFloat(Leistung.Gewichtung) || 1;
 	fspz_Bezeichnung();
 	// - Laden der eigentlichen Leistung
-	switch (Leistung.Eintragung) {
-		case "Rohpunkte":
-			// -- Verteilungen
-			var wertArray;
-			for (var v in Leistung.Verteilungen) {
-				wertArray = [];
-				wertArray.push(Leistung.Verteilungen[v].Kat1);
-				wertArray.push(Leistung.Verteilungen[v].Kat2);
-				wertArray.push(Leistung.Verteilungen[v].Kat3);
-				wertArray.push(Leistung.Verteilungen[v].Kat4);
-				verteilungToSession(v, wertArray, false)
-			}
-			db_readMultiData(function(results){
+	db_readMultiData(function(results){
+
+		// Sortieren der Schüler
+		results.sort(compareStudents);
+
+		switch (Leistung.Eintragung) {
+			case "Rohpunkte":
+				// -- Verteilungen
+				var wertArray;
+				for (var v in Leistung.Verteilungen) {
+					wertArray = [];
+					wertArray.push(Leistung.Verteilungen[v].Kat1);
+					wertArray.push(Leistung.Verteilungen[v].Kat2);
+					wertArray.push(Leistung.Verteilungen[v].Kat3);
+					wertArray.push(Leistung.Verteilungen[v].Kat4);
+					verteilungToSession(v, wertArray, false)
+				}
 				leistungsDetails_rohpunkte(Leistung,results);
-			}, "student");
-			break;
-		case "Noten":
-			db_readMultiData(function(results){
+				break;
+			case "Noten":
 				leistungsDetails_noten(Leistung, results);
-			}, "student");
-			break;
-		case "Punkte":
-			db_readMultiData(function(results){
+				break;
+			case "Punkte":
 				leistungsDetails_punkte(Leistung, results);
-			}, "student");
-			break;
-	}
+				break;
+		}
+
+	}, "student");
+	
 	return true
 }
 
@@ -195,8 +197,7 @@ function leistungsDetails_noten(Leistung, Students){
 		// DOM Ready !
 		slide1('arbeit_info');
 		calc_Stats(true);
-	}, 100 );
-
+	}, 50 );
 }
 
 
@@ -326,18 +327,15 @@ function leistungsDetails_punkte(Leistung, Students){
 	old.parentNode.replaceChild(new_el, old);
 
 	// Anzeigen wenn ready
+	slide1('item2details');
 	var DOMcheck = setInterval( function () {
 		if (document.readyState !== 'complete' ) return;
 		clearInterval( DOMcheck );
 		// DOM Ready !
-		infoEl.classList.add('show');
-		target_el.classList.add('show');
-		setTimeout(function(){
-			calc_Stats(true);
-			editNotenListe(maxPts);
-		},1000);
-	}, 100 );
-
+		slide1('arbeit_info');
+		calc_Stats(true);
+		editNotenListe(maxPts);
+	}, 50 );
 }
 
 // =============================================================================
@@ -477,102 +475,99 @@ function leistungsDetails_rohpunkte(Leistung, Students){
 	};
    
 	// - - - Schülerdaten - - -
-		var i, i2, row, li, div, span, gruppe, eigeneLeistung, i2Kat;
-		var l_id = sessionStorage.getItem('leistung_id');
-		var old = document.getElementById("arbeit_leistung");
-		var new_el = old.cloneNode(true);
-			new_el.innerHTML = "";
-		var ul = document.createElement('ul');
-		for (var r in Students){
-			row = Students[r];
-			eigeneLeistung = row[Leistung.subtyp][Leistung.id];
-			if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || eigeneLeistung.Mitschreiber == "undefined"){
-				eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', 'Kat1':'-' , 'Kat2':'-' , 'Kat3':'-' , 'Kat4':'-' , 'Gesamt':'-', 'Verteilung':"Standard"};
-			}
-			li = document.createElement('li');
-				li.setAttribute('data-rowid', "line"+row.id);
-				li.setAttribute('data-verteilung', eigeneLeistung.Verteilung);
-				li.setAttribute('data-mitschreiber', eigeneLeistung.Mitschreiber);
-			// Name
-			gruppe = row.name.sex && row.name.sex !== "-" && row.name.sex !== "null" ? " ("+row.name.sex+")" : "";
-			li.setAttribute('data-studentname', row.name.vname+" "+row.name.nname);
-			div = document.createElement('div');
-				div.className = "Name";
-			span = document.createElement('span');
-				span.innerHTML = row.name.vname;
-				div.appendChild(span);
-			span = document.createElement('span');
-				span.innerHTML = row.name.nname+gruppe;
-				div.appendChild(span);
-			li.appendChild(div);
-			// Kategorien
+	var i, i2, row, li, div, span, gruppe, eigeneLeistung, i2Kat;
+	var l_id = sessionStorage.getItem('leistung_id');
+	var old = document.getElementById("arbeit_leistung");
+	var new_el = old.cloneNode(true);
+		new_el.innerHTML = "";
+	var ul = document.createElement('ul');
+	for (var r in Students){
+		row = Students[r];
+		eigeneLeistung = row[Leistung.subtyp][Leistung.id];
+		if (!eigeneLeistung || eigeneLeistung.Mitschreiber == "false" || eigeneLeistung.Mitschreiber == "undefined"){
+			eigeneLeistung = {'Mitschreiber':'false', 'Note':'-', 'Kat1':'-' , 'Kat2':'-' , 'Kat3':'-' , 'Kat4':'-' , 'Gesamt':'-', 'Verteilung':"Standard"};
+		}
+		li = document.createElement('li');
+			li.setAttribute('data-rowid', "line"+row.id);
 			li.setAttribute('data-verteilung', eigeneLeistung.Verteilung);
-			for (i2 of ["Kat1", "Kat2", "Kat3", "Kat4", "Gesamt"]){
-				div = document.createElement('div');
-				div.className = "Kategorien";
-				span = document.createElement('span');
-				span.innerHTML = eigeneLeistung[i2];
-				span.setAttribute('data-name', i2);
-				div.appendChild(span);
-				span = document.createElement('span');
-				span.innerHTML = SETTINGS.kompetenzen[i2];
-				div.appendChild(span);
-				li.appendChild(div);
-			}
-		   // Note ---- Dynamisch errechnen anhand der Leistung, weil 100% variabel sind
+			li.setAttribute('data-mitschreiber', eigeneLeistung.Mitschreiber);
+		// Name
+		gruppe = row.name.sex && row.name.sex !== "-" && row.name.sex !== "null" ? " ("+row.name.sex+")" : "";
+		li.setAttribute('data-studentname', row.name.vname+" "+row.name.nname);
+		div = document.createElement('div');
+			div.className = "Name";
+		span = document.createElement('span');
+			span.innerHTML = row.name.vname;
+			div.appendChild(span);
+		span = document.createElement('span');
+			span.innerHTML = row.name.nname+gruppe;
+			div.appendChild(span);
+		li.appendChild(div);
+		// Kategorien
+		li.setAttribute('data-verteilung', eigeneLeistung.Verteilung);
+		for (i2 of ["Kat1", "Kat2", "Kat3", "Kat4", "Gesamt"]){
 			div = document.createElement('div');
-				div.className = "Note";
+			div.className = "Kategorien";
 			span = document.createElement('span');
-				span.innerHTML = "-";// leistung.Note;
-				div.appendChild(span);
+			span.innerHTML = eigeneLeistung[i2];
+			span.setAttribute('data-name', i2);
+			div.appendChild(span);
 			span = document.createElement('span');
-				span.innerHTML = "%";
-				div.appendChild(span);
+			span.innerHTML = SETTINGS.kompetenzen[i2];
+			div.appendChild(span);
 			li.appendChild(div);
-		ul.appendChild(li);
-		// Eventlistener für dieses li
-		li.addEventListener('click', function() {
-			// Input Felder mit alten Werten füllen
-			for (i2 = 0; i2 < popEdit.length; i2++) {
-				popEdit[i2].value = parseFloat(this.querySelector("[data-name=Kat"+(i2+1)+"]").innerHTML, 0) || "";
-			}
-			// Pop anpassen
-			pop.getElementsByTagName('h3')[0].innerHTML = this.getAttribute('data-studentname');
-			var vert = this.getAttribute('data-verteilung');
-			pop.getElementsByTagName('select')[0].value = vert;
-			// li-ID hinterlegen, die gerade geklickt wurde
-			pop.setAttribute('data-rowid', this.getAttribute('data-rowid'));
-			document.getElementById('mitschreiberTrue').checked = true;
-			popUp(pop.id);
-		});
 		}
-		// > Block einfügen
-		new_el.appendChild(ul);
-		old.parentNode.replaceChild(new_el, old);
-		// - - - - - - - - - - - - - - - -
-		var popEdit = pop.getElementsByTagName('ul')[0].getElementsByTagName('input');
+	   // Note ---- Dynamisch errechnen anhand der Leistung, weil 100% variabel sind
+		div = document.createElement('div');
+			div.className = "Note";
+		span = document.createElement('span');
+			span.innerHTML = "-";// leistung.Note;
+			div.appendChild(span);
+		span = document.createElement('span');
+			span.innerHTML = "%";
+			div.appendChild(span);
+		li.appendChild(div);
+	ul.appendChild(li);
+	// Eventlistener für dieses li
+	li.addEventListener('click', function() {
+		// Input Felder mit alten Werten füllen
 		for (i2 = 0; i2 < popEdit.length; i2++) {
-			var kat_Text = document.createElement('span')
-			kat_Text.innerHTML = SETTINGS.kompetenzen["Kat"+(i2+1)]+" : ";
-			popEdit[i2].parentNode.insertBefore(kat_Text, popEdit[i2]);
+			popEdit[i2].value = parseFloat(this.querySelector("[data-name=Kat"+(i2+1)+"]").innerHTML, 0) || "";
 		}
+		// Pop anpassen
+		pop.getElementsByTagName('h3')[0].innerHTML = this.getAttribute('data-studentname');
+		var vert = this.getAttribute('data-verteilung');
+		pop.getElementsByTagName('select')[0].value = vert;
+		// li-ID hinterlegen, die gerade geklickt wurde
+		pop.setAttribute('data-rowid', this.getAttribute('data-rowid'));
+		document.getElementById('mitschreiberTrue').checked = true;
+		popUp(pop.id);
+	});
+	}
+	// > Block einfügen
+	new_el.appendChild(ul);
+	old.parentNode.replaceChild(new_el, old);
+	// - - - - - - - - - - - - - - - -
+	var popEdit = pop.getElementsByTagName('ul')[0].getElementsByTagName('input');
+	for (i2 = 0; i2 < popEdit.length; i2++) {
+		var kat_Text = document.createElement('span')
+		kat_Text.innerHTML = SETTINGS.kompetenzen["Kat"+(i2+1)]+" : ";
+		popEdit[i2].parentNode.insertBefore(kat_Text, popEdit[i2]);
+	}
 
-		// Anzeigen wenn ready
-		var DOMcheck = setInterval( function () {
-			if (document.readyState !== 'complete' ) return;
-			clearInterval( DOMcheck );
-			// DOM Ready !
-			infoEl.classList.add('show');
-			target_el.classList.add('show');
-			setTimeout(function(){
-				// Schülerleistung berechnen
-				var alleSchuler = document.getElementById('arbeit_leistung');
-				updateNoten(alleSchuler, false, Students);
-				updateVerteilungHTML();
-				calc_Stats(true);
-			},1000);
-		}, 100 );
-
+	// Anzeigen wenn ready
+	slide1('item2details');
+	var DOMcheck = setInterval( function () {
+		if (document.readyState !== 'complete' ) return;
+		clearInterval( DOMcheck );
+		// DOM Ready !
+		slide1('arbeit_info');
+		// Schülerleistung berechnen
+		var alleSchuler = document.getElementById('arbeit_leistung');
+		updateNoten(alleSchuler, false, Students);
+		updateVerteilungHTML();
+		calc_Stats(true);
+	}, 50 );
 }
 
 

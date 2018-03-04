@@ -10,7 +10,7 @@ $(document).ready(function() {
 		klassenAuswahl(document.getElementById('klasseSelect'));
 		// Öffnen mit Sync der geählten Klasse
 		if (GLOBALS.klasse && GLOBALS.klasse != "-") {
-			klassenSyncHandler();
+			klassenSyncHandler("uebersicht.htm");
 		}else{
 			alert("Es wurde keine Klasse ausgewählt !");
 		}
@@ -55,6 +55,7 @@ $(document).ready(function() {
 
 
 	// Setting up...
+	document.getElementById("indexKlassen").getElementsByTagName("span")[1].innerHTML = "Version: "+GLOBALS.appversion;
 	// -- format neue Klasse Eingabe
 	Schuljahre();
 
