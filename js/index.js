@@ -24,8 +24,8 @@ $(document).ready(function() {
 	});
 
 	document.getElementById('export').addEventListener('click', function(){
-		klassenAuswahl(document.getElementById('klasseSelect'));
 		/* DEV: Kein Sync, kein Export !
+		klassenAuswahl(document.getElementById('klasseSelect'));
 		export_to_csv(klasse);
 		document.getElementById("export_to_pdf").href = "http://www.teachertab.de/WebApp/export-PDF.htm?klasse="+GLOBALS.klasse+"&SyncServer="+GLOBALS.SyncServer+"&userID="+GLOBALS.userID;
 		document.getElementById("export_to_html").addEventListener('click', function(e){
@@ -227,7 +227,9 @@ function addKlasse(thisElement) {
 	}
 }
 
-// DEPRECATED (noch SQL)
+
+
+// DEPRECATED (noch SQL - als Anhalt für später behalten)
 function copyKlasse(thisElement, toCopy) {
 	var nameKlasse = document.getElementById('nameCopyKlasse');
 	var jahrKlasse = document.getElementById('jahrCopyKlasse');
@@ -241,7 +243,6 @@ function copyKlasse(thisElement, toCopy) {
 		sessionStorage.setItem('klasse', newKlasse);
 
 		if (newKlasse != toCopy){
-			//createTables() aus all.js teilweise kopiert !
 			db.transaction(
 				function(transaction){
 				transaction.executeSql(
@@ -288,12 +289,4 @@ function copyKlasse(thisElement, toCopy) {
 	}else{
 		alert('Klassenname ungültig.');
 	}
-}
-
-// DEPRECATED
-function copyKlasse_pop (thisElement) {
-	setTimeout(function(){
-		popUp('item0Copy');
-	},1000);
-	popUpClose(thisElement);
 }

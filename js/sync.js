@@ -47,7 +47,7 @@ function sync_getAccount(callback, localAccount) {
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
 				// Merge
 				var merged = mergeAccount(newData, localAccount);
-				console.log("SYNC: Merged", merged);
+				//DEV console.log("SYNC: Merged", merged);
 				// Save and Push back
 				db_replaceData(function(){
 					sync_pushBack(callback, merged, "account");
@@ -155,8 +155,6 @@ function sync_pushBack(callback, Data, uri) {
 		var encrypted = encryptData(pushData);
 		var url = (Array.isArray(uri)) ? uri.filter(function (val) {return val;}).join("/") : uri;
 		url = "/" + url + "/";
-		console.log("SYNC: Data", Data);
-		console.log("SYNC: pushData", pushData);
 		$.ajax({
 			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + url,
 			type: 'PUT',
@@ -234,7 +232,6 @@ function mergeAccount(newData, localData) {
 
 		// Lokale Klassenliste mit (ggf. neuer) Blacklist bereinigen (Verzeichnis)
 		var localHashes = Object.keys(account.klassenliste);
-		var localStores = Object.keys(account.local);
 		var delHash;
 		GLOBALS.dbToGo = 0;
 		GLOBALS.dbFinished = 0;
@@ -405,12 +402,11 @@ function mergeKlasse(newData, localData) {
 
 
 // =================================================== //
-// =========== Import- / Export- Functions =========== //
+// =============== Export- Functions ================= //
 // =================================================== //
 
 
-// -- Gesamtübersicht (X)
-// -- Einzelne Leistungen ( )
+// DEPRECATED - altes DB Format (als Anhalt für später behalten)
 function export_to_csv (expklasse) {
 console.log(klasse, " wird exportiert");
 	db.transaction(
@@ -555,21 +551,6 @@ console.log(klasse, " wird exportiert");
 			);
 		}
 	);
-}
-
-
-function import_sql(sql_string_1, sql_string_2) {
-	//INSERT INTO
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		sql_string_1+';', [], alert("Table erstellt"), errorHandler);
-		});
-	db.transaction(
-		function(transaction){
-		transaction.executeSql(
-		sql_string_2+';', [], alert("Einträge erstellt"), errorHandler);
-		});
 }
 
 

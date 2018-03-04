@@ -9,7 +9,7 @@ var GLOBALS = {
 	'SyncServer'		: "/c/api",
 	'timeout'			: 4000,
 
-	'appversion'		: "0.31a",
+	'appversion'		: "0.32a",
 	'dbname'			: null,
 	'dbversion'			: null,	
 	'dbToGo'			: null,
@@ -221,31 +221,6 @@ function updateNoten(liste, bol_singel, newObs_init) {
 	return newObs;
 }
 
-function updateNoten_old(liste, bol_singel) {
-//--> Punkte in Prozentwerte umrechnen und als Note eintragen
-	var i, gesamtWert, erreicht, note, span;
-	liste = (bol_singel) ? [liste] : liste.getElementsByTagName('li');
-	setTimeout(function(){ // - sonst innerHTMl mit alten Werten
-		for (i=0; i<liste.length; i++){
-			if (liste[i].querySelector("[data-name=Gesamt]")) {
-				gesamtWert = sessionStorage.getItem(liste[i].getAttribute('data-verteilung')+'_Gesamt');
-				erreicht = parseFloat(liste[i].querySelector("[data-name=Gesamt]").innerHTML);
-				erreicht = Math.round((erreicht/gesamtWert)/0.005)*0.5;
-				note = RohpunkteAlsNote(erreicht, false);
-				span = liste[i].getElementsByClassName('Note')[0].getElementsByTagName('span');
-				span[0].innerHTML = (liste[i].getAttribute('data-mitschreiber') == "true") ? note : "-";
-				span[1].innerHTML =  erreicht + " %";
-			}else{
-				gesamtWert = sessionStorage.getItem('Standard_Gesamt');
-				erreicht = parseFloat(liste[i].getElementsByClassName('Gesamtpunkte')[0].getElementsByTagName('span')[0].innerHTML);
-				erreicht = Math.round((erreicht/gesamtWert)/0.005)*0.5;
-				note = RohpunkteAlsNote(erreicht, false);
-				span = liste[i].getElementsByClassName('Note standalone')[0].getElementsByTagName('span')[0];
-				span.innerHTML = (liste[i].getAttribute('data-mitschreiber') == "true") ? note : "-";
-			}
-		}
-	}, 10)
-}
 
 function RohpunkteAlsNote(val, bol_15pkt){
 //--> Rechnet Prozentwerte in Noten um, universell für 15pkt und 6 Zensuren.
@@ -404,19 +379,6 @@ function compareStudents(a, b) {
 	}
 }
 
-function compareNamen_old(a, b) {
-//-> Vergleichsfunktion nach Schülername
-	return (a.name.nname+">"+a.name.vname).localeCompare(b.name.nname+">"+b.name.vname);
-}
-
-function compareGruppenNamen_old(a, b) {
-//-> Vergleichsfunktion nach Gruppe und dann nach Schülername
-	var a_sort = (a.name.sort) ? a.name.sort+">" : "zzz>";
-	var a_name = a.name.nname+">"+a.name.vname;
-	var b_sort = (b.name.sort) ? b.name.sort+">" : "zzz>";
-	var b_name = b.name.nname+">"+b.name.vname;
-	return (a_sort+a_name).localeCompare(b_sort+b_name);
-}
 
 function datum(){
 	var d = new Date();
@@ -789,10 +751,8 @@ function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
 // Wait for DB (wenn Callback nicht geht)
 function waitForDB(callback){
 	if(GLOBALS.dbFinished >= GLOBALS.dbToGo){
-		//DEV console.log("IDB: toGo", GLOBALS.dbToGo, "Finished", GLOBALS.dbFinished);
 		callback();
 	}else{
-		//DEV console.log("IDB: next Actions waits...");
 		setTimeout(function(){
 			waitForDB(callback)
 		}, 250);
@@ -828,7 +788,6 @@ function klassenSyncHandler(location){
 				updateStatus(progress, progress+" %", "Synchronisation erfolgreich !");
 				// --- Klasse aufrufen/schließen ---
 				setTimeout(function(){window.location.href = location}, 1500);
-//				document.getElementById('item0Sync').getElementsByClassName('button')[0].classList.remove('hide');
 			},500);
 
 		}, klassenObject);
@@ -910,23 +869,4 @@ function change_buttons() {
 	for (key in buttons) {
 		document.getElementById(key).innerHTML = buttons[key]
 	}
-}
-
-
-// ==============================================================
-// ======================= Experimentell ========================
-// ==============================================================
-
-function cmp(a, b) {
-//-> Generic compare
-	return a > b ? 1 : a < b ? -1 : 0;
-}
-
-function cmpMulti(a, b) {
-//-> Vergleichsfunktion nach mehreren Spalen ohne Verkettung (ungenutzt)
-// Link: https://stackoverflow.com/a/3230748/2978727
-	return cmp(
-		[cmp(a.name.nname, b.name.nname), cmp(a.name.sex, b.name.sex)],
-		[cmp(b.name.nname, a.name.nname), cmp(b.name.sex, a.name.sex)]
-		);
 }
