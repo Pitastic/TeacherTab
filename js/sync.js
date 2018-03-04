@@ -1,18 +1,3 @@
-/*
-- DEV-Note: Background Sync
-	...bei etwas Inaktivität alle X Minuten
-	...beim Aufruf der uebersicht.htm (Gefahr: ständiger Sync vor regulärem Sync)
-- DEV-Note: ausgewählte Klassen offline verfügbar machen (Liste mit Checkboxen, diese Klassen werden gesynced)
-- DEV-Note: Bereinigungsfunktion mit Hinweis beim Start (wenn viele alte vorhanden)
-	...anhand der Liste 'local' den letzten Timestamp ermitteln
-	...PopUp Liste mit Checkboxen, welche Klassen (nu vom Gerät!) entfernt werden sollen
-	...Hinweis: "Beachte, dass du danach auf Wunsch bestimmte Klassen wieder Offline verfügbar machen musst."
-	...ODER: Löschen der lokalen Klassen bei jedem Schließen (nur wenn AUTH und nicht wenn offline-Flag in der Klasse)
-- DEV-Note: Auf DB und DOM warten (bei uebersicht und details_leistung) bevor eingeblendet wird !
-- DEV-Note: Neues Slider Symbol (drehen und anderes Schülersymbol)
-- DEV-Note: Heraussliden bei Leistungen (linkes Element) schlecht getimed....muss zuerst
-*/
-
 function testCreds(callback) {
 // eingetragene Credentials testen
 	$.ajax({

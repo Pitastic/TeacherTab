@@ -475,13 +475,10 @@ function schnitt_gesamt(Student, Leistungen) {
 	for (var i = 0; i < Leistungen.length; i++) {
 		// Itteriere durch Leistung und Auswahl von mitgeschriebenen Objekten erstellen
 		Infos = Leistungen[i];
-console.log("DEV: Infos", Infos);
 			temp_leistung = Student[Infos.subtyp][Infos.id];
-console.log("DEV: temp_leistung", temp_leistung);
 			// mitgeschrieben und mit Kategrorien ?
 			if (temp_leistung && temp_leistung.Mitschreiber && temp_leistung.Verteilung) {
 				var hundertProzent = Infos.Verteilungen[temp_leistung.Verteilung];
-console.log("DEV: hundertProzent", hundertProzent);
 				// Prozentsummen
 				kompetenzen[0] += temp_leistung.Kat1 / hundertProzent.Kat1;
 				kompetenzen[1] += temp_leistung.Kat2 / hundertProzent.Kat2;
