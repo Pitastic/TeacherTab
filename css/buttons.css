@@ -222,9 +222,9 @@ select {
 		
 			.selector .marker:active, .selector .marker:focus {
 				-webkit-tap-highlight-color: rgba(0,0,0,0);
-				background-image: url(../img/Slider_rotate.gif), -webkit-linear-gradient(top, rgb(255,255,255) 0%,rgb(237,237,237) 50%,rgb(255,255,255) 100%); /* Chrome10+,Safari5.1+ */
-				background-image: url(../img/Slider_rotate.gif), -moz-linear-gradient(top, rgb(255,255,255) 0%,rgb(237,237,237) 50%,rgb(255,255,255) 100%); /* FF3.6+ */
-				background-image: url(../img/Slider_rotate.gif), linear-gradient(to bottom, rgb(255,255,255) 0%,rgb(237,237,237) 50%,rgb(255,255,255) 100%); /* W3C */
+				background-image: url(../img/slider.png), -moz-linear-gradient(left, rgba(237,237,237,1) 49%, rgba(237,237,237,1) 100%);
+				background-image: url(../img/slider.png), -webkit-linear-gradient(left, rgba(237,237,237,1) 49%, rgba(237,237,237,1) 100%);
+				background-image: url(../img/slider.png), linear-gradient(to right, rgba(237,237,237,1) 49%, rgba(237,237,237,1) 100%);
 			}
 			.marker.item1 {
 				-moz-transform: rotateY(-180deg);
@@ -234,9 +234,9 @@ select {
 				border-right-color: grey !important;
 				border-top-color: gray !important;
 				border-left-color: darkslategray !important;
-				background-image: url(../img/Slider_rotate.gif), -moz-linear-gradient(left, rgba(64,157,229,1) 0%, rgba(32,135,214,1) 20%, rgba(11,113,196,1) 49%, rgba(237,237,237,1) 50%); /* FF3.6+ */
-				background-image: url(../img/Slider_rotate.gif), -webkit-linear-gradient(left, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 49%,rgba(237,237,237,1) 50%); /* Chrome10+,Safari5.1+ */
-				background-image: url(../img/Slider_rotate.gif), linear-gradient(to right, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 49%,rgba(237,237,237,1) 50%); /* W3C */
+				background-image: url(../img/slider.png), -moz-linear-gradient(left, rgba(237,237,237,1) 49%, rgba(70,70,70,1) 50%, rgba(100,100,100,1) 100%);
+				background-image: url(../img/slider.png), -webkit-linear-gradient(left, rgba(237,237,237,1) 49%,rgba(70,70,70,1) 50%,rgba(100,100,100,1) 100%);
+				background-image: url(../img/slider.png), linear-gradient(to right, rgba(237,237,237,1) 49%,rgba(70,70,70,1) 50%,rgba(100,100,100,1) 100%);
 			}
 			.marker.item2 {
 			    -moz-transform: rotateY(0deg);
@@ -246,9 +246,9 @@ select {
 				border-right-color: darkslategray !important;
 				border-top-color: grey !important;
 				border-left-color: grey !important;
-				background-image: url(../img/Slider_rotate.gif), -moz-linear-gradient(right, rgba(64,157,229,1) 0%, rgba(32,135,214,1) 20%, rgba(11,113,196,1) 50%, rgba(237,237,237,1) 51%); /* FF3.6+ */
-				background-image: url(../img/Slider_rotate.gif), -webkit-linear-gradient(right, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 50%,rgba(237,237,237,1) 51%); /* Chrome10+,Safari5.1+ */
-				background-image: url(../img/Slider_rotate.gif), linear-gradient(to left, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 50%,rgba(237,237,237,1) 51%); /* W3C */
+				background-image: url(../img/slider.png), -moz-linear-gradient(left, rgba(100,100,100,1) 0%, rgba(70,70,70,1) 50%, rgba(237,237,237,1) 51%);
+				background-image: url(../img/slider.png), -webkit-linear-gradient(left, rgba(100,100,100,1) 0%,rgba(70,70,70,1) 50%,rgba(237,237,237,1) 51%);
+				background-image: url(../img/slider.png), linear-gradient(to right, rgba(100,100,100,1) 0%,rgba(70,70,70,1) 50%,rgba(237,237,237,1) 51%);
 			}
         	
 .close a {
@@ -296,17 +296,17 @@ select {
 				-moz-transform: rotateZ(-180deg);
 				-webkit-transform: rotateZ(-180deg);
 				transform: rotateZ(-180deg);
-				background-image: url(../img/Slider_rotate.gif), -moz-linear-gradient(bottom, rgba(64,157,229,1) 0%, rgba(32,135,214,1) 20%, rgba(11,113,196,1) 49%, rgba(237,237,237,1) 50%); /* FF3.6+ */
-				background-image: url(../img/Slider_rotate.gif), -webkit-linear-gradient(bottom, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 49%,rgba(237,237,237,1) 50%); /* Chrome10+,Safari5.1+ */
-				background-image: url(../img/Slider_rotate.gif), linear-gradient(to top, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 49%,rgba(237,237,237,1) 50%); /* W3C */
+				background-image: url(../img/slider.png), -moz-linear-gradient(bottom, rgba(64,157,229,1) 0%, rgba(32,135,214,1) 20%, rgba(11,113,196,1) 49%, rgba(237,237,237,1) 50%); /* FF3.6+ */
+				background-image: url(../img/slider.png), -webkit-linear-gradient(bottom, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 49%,rgba(237,237,237,1) 50%); /* Chrome10+,Safari5.1+ */
+				background-image: url(../img/slider.png), linear-gradient(to top, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 49%,rgba(237,237,237,1) 50%); /* W3C */
 			}
 			.marker.item2 {
 			    -moz-transform: rotateZ(0deg);
 			    -webkit-transform: rotateZ(0deg);
 				transform: rotateZ(0deg);
-				background-image: url(../img/Slider_rotate.gif), -moz-linear-gradient(top, rgba(64,157,229,1) 0%, rgba(32,135,214,1) 20%, rgba(11,113,196,1) 50%, rgba(237,237,237,1) 51%); /* FF3.6+ */
-				background-image: url(../img/Slider_rotate.gif), -webkit-linear-gradient(top, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 50%,rgba(237,237,237,1) 51%); /* Chrome10+,Safari5.1+ */
-				background-image: url(../img/Slider_rotate.gif), linear-gradient(to bottom, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 50%,rgba(237,237,237,1) 51%); /* W3C */
+				background-image: url(../img/slider.png), -moz-linear-gradient(top, rgba(64,157,229,1) 0%, rgba(32,135,214,1) 20%, rgba(11,113,196,1) 50%, rgba(237,237,237,1) 51%); /* FF3.6+ */
+				background-image: url(../img/slider.png), -webkit-linear-gradient(top, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 50%,rgba(237,237,237,1) 51%); /* Chrome10+,Safari5.1+ */
+				background-image: url(../img/slider.png), linear-gradient(to bottom, rgba(64,157,229,1) 0%,rgba(32,135,214,1) 20%,rgba(11,113,196,1) 50%,rgba(237,237,237,1) 51%); /* W3C */
 			}
 }
 

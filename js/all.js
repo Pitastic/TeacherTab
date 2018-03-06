@@ -9,7 +9,7 @@ var GLOBALS = {
 	'SyncServer'		: "/c/api",
 	'timeout'			: 4000,
 
-	'appversion'		: "0.32a",
+	'appversion'		: "0.33b",
 	'dbname'			: null,
 	'dbversion'			: null,	
 	'dbToGo'			: null,

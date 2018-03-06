@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version: 0.30 vom 26.02.2018
+# Version: 0.33
 
 CACHE:
 # HTML
@@ -40,7 +40,8 @@ export-PDF.htm
 ./img/punkte.gif
 ./img/reload_button.gif
 ./img/rohpunkte.gif
-./img/Slider_rotate.gif
+./img/slider.png
+#./img/Slider_rotate.gif
 
 # Jquery
 ./js/jquery-3.2.1.min.js
