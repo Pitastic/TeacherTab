@@ -3,7 +3,7 @@ var slideBeginX;
 var slideBeginY;
 
 function touchListener(){
-	if (!isPhone){
+	if (!GLOBALS.isPhone){
 	    var i;
 	    var temp;
 		temp=document.getElementsByClassName('content');
@@ -63,7 +63,7 @@ function touchEnd(e){
 	var moveY = Math.abs(slideEndY - slideBeginY);
 	// min Distance
 	if ((moveX > 50) && (moveX > 2*moveY)){
-	    slide2();
+	    slide();
 	}
 	return false;
 }

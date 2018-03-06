@@ -5,40 +5,53 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<meta id="dynamicViewport" name="viewport">
-    <script type="text/javascript">
-    if (screen.width > 767) {
-        switch(window.orientation){
-            case 180:
-            case 0:
-                // Portrait = 0 or 180:
-                document.getElementById('dynamicViewport').setAttribute('content', "width=device-width");
-                break;
-            default:
-                // Landscape = 90 or -90:
-                document.getElementById('dynamicViewport').setAttribute('content', "width="+document.documentElement.clientWidth);
-                break;
-        }
-    }
+	<script type="text/javascript">
+	if (screen.width > 767) {
+		switch(window.orientation){
+			case 180:
+			case 0:
+				// Portrait = 0 or 180:
+				document.getElementById('dynamicViewport').setAttribute('content', "width=device-width");
+				break;
+			default:
+				// Landscape = 90 or -90:
+				document.getElementById('dynamicViewport').setAttribute('content', "width="+document.documentElement.clientWidth);
+				break;
+		}
+	}
 	</script>
 
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="translucent">
+	
+	<!-- CSS Media Queries -->
+	<link rel="stylesheet" href="./css/basic.css" />
+	<link rel="stylesheet" href="./css/menu_popups.css">
+	<link rel="stylesheet" href="./css/buttons.css">
+	<link rel="stylesheet" media="only screen and (min-device-width: 768px)" href="./css/ipad.css" />
+	<link rel="stylesheet" media="only screen and (max-device-width: 767px)" href="./css/phone.css" />
 
-		<!-- CSS Media Queries -->
-    <link rel="stylesheet" href="./css/basic.css" />
-    <link rel="stylesheet" href="./css/menu_popups.css">
-    <link rel="stylesheet" href="./css/buttons.css">
-    <link rel="stylesheet" media="only screen and (min-device-width: 768px)" href="./css/ipad.css" />
-    <link rel="stylesheet" media="only screen and (max-device-width: 767px)" href="./css/phone.css" />
-
-	<link rel="apple-touch-icon" href="apple-touch-icon.png">
+	<!-- Favicons -->
+	<link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
 	
 	<title>TeacherTab</title>
 </head>
 
 <body ontouchstart>
 <div id="header">
-    <h1>TeacherTab WebApp</h1>
+	<h1>TeacherTab WebApp</h1>
 </div>
 
 <!-- Menus -->
@@ -46,39 +59,41 @@
 
 <!--Übersicht Schüler -->
 <div id="item1" class="uebersicht flip">
-    <div class="notenHeader">
-    	<h3 class="mndl">(mndl)</h3><h3 class="fspz">(fspz)</h3><h3 class="schr">(schr)</h3>
-    </div>
-<div class="content emptyList">
-    <h2>Schüler</h2>
-<div class="styleWrap scrollable">
+	<div class="notenHeader">
+		<h3 class="mndl">(mndl)</h3><h3 class="fspz">(fspz)</h3><h3 class="schr">(schr)</h3>
+	</div>
+	
+	<div class="content emptyList">
+	
+	<h2>Schüler</h2>
+	<div class="styleWrap scrollable">
 
-    <div id="listStudents">
-    <ul></ul>
-    </div>
+		<div id="listStudents">
+			<ul></ul>
+		</div>
 
-</div>
+	</div>
 
-</div>
+	</div>
 </div>
 <!-- Üersicht -->
  
 <!-- Übersicht Leistungen -->
 <div id="item2" class="uebersicht flip">
 <div class="content">
-        <h2>Leistungen</h2>   
+		<h2>Leistungen</h2>   
 <p>
 <div class="styleWrap scrollable">
-    <div id="listLeistung">
-    
-    <h4>Mündliche Noten</h4>
-    <ul></ul>
-    <h4>fachspezifische Leistungen</h4>
-    <ul></ul>
-    <h4>Klassenarbeiten</h4>
-    <ul></ul>
-    
-    </div>
+	<div id="listLeistung">
+	
+	<h4>Mündliche Noten</h4>
+	<ul></ul>
+	<h4>fachspezifische Leistungen</h4>
+	<ul></ul>
+	<h4>Klassenarbeiten</h4>
+	<ul></ul>
+	
+	</div>
 </div>
 </p>
 </div>
@@ -104,48 +119,48 @@
 	</form>
 	<div class="close"><a class="stay" href="#">x</a></div>
 	<div>
-	    <input id="trennN" class="hide" type="text" placeholder="; - ,"></input>
-	    <select id="trennZ" class="hide">
-	        <option value=1>jede Zeile</option>
-	        <option value=2>jede zweite Zeile</option>
-        </select>
+		<input id="trennN" class="hide" type="text" placeholder="; - ,"></input>
+		<select id="trennZ" class="hide">
+			<option value=1>jede Zeile</option>
+			<option value=2>jede zweite Zeile</option>
+		</select>
 		<a id="switchM" class="button stay" href="#" onclick="switchImport()">Mehrfach</a>
 		<a id="switchE" class="button stay hide" href="#" onclick="switchImport()">Einfach</a>
 		<a id="saveI" class="button OK hide stay" href="#" onclick="massenAdd(this)">Import</a>
-	    <a id="saveM" class="button OK stay" href="#" onclick="addStudent(this)">Speichern</a>
+		<a id="saveM" class="button OK stay" href="#" onclick="addStudent(this)">Speichern</a>
 	</div>
 </div>
 
 <!-- Leistung hinzufügen -->
 <div id="item2Add" class="popUp">
-    <h3>Leistung anlegen</h3>
+	<h3>Leistung anlegen</h3>
 	<ul>
-	    <form>
-		    <li>
+		<form>
+			<li>
 				<label>Art : <select id="notenArt" onchange="fspz_Bezeichnung();">
 					<option value="mndl">mündliche Note</option>
 					<option value="fspz">fachspez. Leistung</option>
 					<option value="schr">schriftlich Note</option>
 					</select>
 				</label>
-		    </li>
-		    <li>
-			    <input type="text" placeholder="Bezeichnung" class="" id="notenBezeichnung">
-			    <select class="hide" id="notenBezeichnung_Select" onchange="fspz_Bezeichnung2()">
+			</li>
+			<li>
+				<input type="text" placeholder="Bezeichnung" class="" id="notenBezeichnung">
+				<select class="hide" id="notenBezeichnung_Select" onchange="fspz_Bezeichnung2()">
 					<option>Grammatik</option>
 					<option>Vokabeln</option>
 				</select>
-		    </li>
-		    <li><input type="text" placeholder="Datum" class="" id="notenDatum"></li>
-		    <li>
+			</li>
+			<li><input type="text" placeholder="Datum" class="" id="notenDatum"></li>
+			<li>
 				<label>Eingabe : <select id="notenEintragung">
 					<option value="Noten">Noten</option>
 					<option value="Punkte">Punkte</option>
 					<option value="Rohpunkte">Kompetenzen</option>
 					</select>
 				</label>
-		    </li>
-		    <li>
+			</li>
+			<li>
 				<label>Gewichtung :
 					<input id="rangeSlide" type="range" min="0" max="2" value="1" onchange="rangeWert.value = (value > 0) ? value : 0.5;">
 					<output id="rangeWert">1</output>
@@ -155,17 +170,24 @@
 	</ul>
 	<div class="close"><a class="stay" href="#">x</a></div>
 	<div>
-	    <a class="button OK stay" href="#" onclick="neueLeistung(this);">Erstellen</a>
+		<a class="button OK stay" href="#" onclick="addLeistung(this);">Erstellen</a>
 	</div>
 </div>
 
 <div id="item0Sync" class="popUp">
-    <ul>
-        <li><div id="syncText">Synchronisiere</div><div class="schiene sync"><div class="balken" id="syncStatus"></div></div></li>
-    </ul>
+	<ul>
+		<li>
+			<div id="syncText">Synchronisiere</div>
+				<div class="schiene sync">
+				<div id="syncInnerText">0 %</div>
+				<div class="balken" id="syncStatus"></div>
+			</div>
+		</li>
+	</ul>
 	<div class="close"><a class="stay" id="closeSync" href="#">x</a></div>
 	<div>
-    	<a class="button ABORT hide stay" href="index.htm">Beenden</a>
+		<a class="button OK hide stay" href="index.htm">Beenden</a>
+		<a class="button hide stay" href="#" onclick="location.reload()">Zurück</a>
 	</div>
 </div>
 
@@ -173,35 +195,37 @@
 <!-- /popUp-PopUp -->
 
 <nav>
-    <div class="centerWrap-child">
-    <div id="seitenleiste" class="">
-        <a id="btn_Back" class="button ABORT stay" href="#" onclick="initSyncSQL()">Beenden</a>
-        <a id="btn_Settings" class="button stay" href="#" onclick="itemAbort(['item1', 'item2'],'settings.htm');">Settings</a>
-        <div onclick="slide2(event)" class="selector stay">
-            <span class="marker"></span>
-        </div>
+	<div class="centerWrap-child">
+	<div id="seitenleiste" class="">
+		<a id="btn_Add" class="button OK stay" data-name="item1Add" href="#">Hinzufügen</a>
+		<a id="btn_Settings" class="button stay" href="#" onclick="itemAbort(['item1', 'item2'],'settings.htm');">Settings</a>
+		<div onclick="slide(event)" class="selector stay">
+			<span class="marker"></span>
+		</div>
 
-        <a id="btn_Add" class="button OK stay" data-name="item1Add" href="#">Hinzufügen</a>
-        <div class="clearer"></div>
-    </div>
-    </div>
-    <div id="btn_refresh" class="button"><a href="#" class="stay" onclick="window.location.reload();"><img src="./img/reload_button.gif"></a></div>
-	<div id="btn_slider" class="selector stay" onclick="slide2(event)">
+		<a id="btn_Back" class="button ABORT stay" href="#" onclick="klassenSyncHandler('index.htm')">Beenden</a>
+		<div class="clearer"></div>
+	</div>
+	</div>
+	<div id="btn_refresh" class="button"><a href="#" class="stay" onclick="window.location.reload();"><img src="./img/reload_button.gif"></a></div>
+	<div id="btn_slider" class="selector stay" onclick="slide(event)">
 		<span class="marker"></span>
 	</div>
 </nav>
 
-    
+	
 <div id="footer">
-    
+	
 </div>
 </body>
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/crypto-js-v3.1.2/rollups/aes.js"></script>
+	<script src="js/crypto-js-v3.1.2/rollups/sha1.js"></script>
 
-    <script src="js/jquery-2.2.3.min.js"></script>
 	<script type="text/javascript" src="js/all.js"></script>
+	<script type="text/javascript" src="js/database.js"></script>
 	<script type="text/javascript" src="js/touch.js"></script>
 	<script type="text/javascript" src="js/stay.js"></script>
 	<script type="text/javascript" src="js/sync.js"></script>
 	<script type="text/javascript" src="js/uebersicht.js"></script>
-
 </html>

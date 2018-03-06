@@ -40,9 +40,9 @@
 
 
 <!-- Details Leistung -->
-<div id="item2details" class="uebersicht right">
+<div id="item2details" class="uebersicht right hide">
 <div class="content">
-	<h2>Arbeit vom 28.09.2013</h2>
+	<h2>-</h2>
     <div class="styleWrap scrollable">
     <div id="arbeit_leistung" class="">
     		<ul>
@@ -228,9 +228,9 @@
 <nav>
     <div class="centerWrap-child">
     <div class="">
-        <a id="Abbrechen" class="button ABORT stay" onclick="item2Abort()" href="#">Abbrechen</a>
-        <a class="button stay" href="javascript:void(0);" onclick="popUp('item2Set')">Settings</a>
         <a id="Save" class="button OK stay" href="#">Speichern</a>
+        <a class="button stay" href="javascript:void(0);" onclick="popUp('item2Set')">Settings</a>
+        <a id="Abbrechen" class="button ABORT stay" onclick="item2Abort()" href="#">Abbrechen</a>
         <div class="clearer"></div>
     </div>
     </div>
@@ -245,7 +245,7 @@
     </select></label>
 </menu>
 
-<menu id="arbeit_info" class="">
+<menu id="arbeit_info" class="hide">
     <div>
     </div>
 </menu>
@@ -255,8 +255,10 @@
 </div>
 </body>
 
-    <script src="js/jquery-2.2.3.min.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
 	<script type="text/javascript" src="js/all.js"></script>
+    <script type="text/javascript" src="js/database.js"></script>
+    <script type="text/javascript" src="js/sync.js"></script>
     <script type="text/javascript" src="js/details_leistungen.js"></script>
 	<script type="text/javascript" src="js/touch.js"></script>
 	<script type="text/javascript" src="js/stay.js"></script>
