@@ -125,33 +125,6 @@ function loadVerteilung(Pkt_Verteilung) {
 	return;
 }
 
-// DEPRECATED (noch SQL)
-function updateVerteilungSession() {
-//--> Update des SessionStorage aus WebSQL Daten
-	db.transaction(
-		function(transaction){
-		var column = sessionStorage.getItem('leistung_column');
-		var l_id = sessionStorage.getItem('leistung_id');
-		transaction.executeSql(
-		"SELECT "+column+" FROM "+GLOBALS.klasse+" WHERE id='0';", [], function(t, r){
-			var i, i2, katWert, gesamtWert;
-			var verteilungsObj = {};
-			var Leistung = JSON.parse(decodeURIComponent(r.rows.item(0)[column]))[l_id];
-			// Alle Verteilungen hinterlegen
-			for (i=0;i<Leistung.Verteilungen.length;i++){
-				verteilungsObj = Leistung[Leistung.Verteilungen[i]];
-				for (i2=0;i2<4;i2++){
-					katWert = verteilungsObj['Kat'+(i2+1)];
-					sessionStorage.setItem(Leistung.Verteilungen[i]+"_Kat"+(i2+1), katWert);
-				}
-				gesamtWert = verteilungsObj.Gesamt;
-				sessionStorage.setItem(Leistung.Verteilungen[i]+'_Gesamt', gesamtWert);
-			}
-			updateVerteilungHTML("Standard"); // callback
-		}, null);
-	});
-}
-
 
 function updateNoten(liste, bol_singel, newObs_init) {
 //-> Errechnen und Anzeigen von eingetragenen Leistungen
@@ -462,10 +435,10 @@ function schnitt_gesamt(Student, Leistungen) {
 	}
 
 	// Durchschnitt insgesamt
-	if (Student.gesamt['omndl'] && Student.gesamt['schriftlich']){
+	if (Student.gesamt['omndl'] && Student.gesamt['oschr']){
 		Student.gesamt.rechnerisch = Student.gesamt['omndl']*SETTINGS.gewichtung['mündlich'] + Student.gesamt['oschr']*SETTINGS.gewichtung['schriftlich']
 	}else{
-		Student.gesamt.rechnerisch = 0;
+		Student.gesamt.rechnerisch = Student.gesamt['omndl'] || Student.gesamt['oschr'] || 0;
 	}
 
 	// Kompetenzen

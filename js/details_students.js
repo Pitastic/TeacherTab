@@ -394,7 +394,7 @@ function studentDetails(row){
 	return;
 }
 
-// >>>>>>>> Speichern und Verlassen
+// Speichern und Verlassen
 function item1Save(id){
 //--> ggf. neue Schülerdaten aktualisieren und Note eintragen
 	var pop = document.getElementById('item0edit');

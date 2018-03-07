@@ -3,11 +3,8 @@ $(document).ready(function() {
 	db_readMultiData(function(r){
 		SETTINGS = r[0];
 		db_readMultiData(listLeistung, "leistung", function(){listLeistung([])});
-		// Aktuelle Durchschnitte
-		handleSchnitt(function(){
-			// List first View
-			db_readMultiData(listStudents, "student");
-		})
+		// List first View
+		db_readMultiData(listStudents, "student");
 	}, "settings");
 
 	// Event-Listener

@@ -803,25 +803,30 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 			// Animationen
 			document.getElementById('item2details').classList.remove('show');
 			document.getElementById('arbeit_info').classList.add('hide');
-			if (bol_refresh){
-				slide1('item2details', "details_leistungen.htm");
-			}else if (sessionStorage.getItem('jump_id')) {
-				sessionStorage.removeItem('jump_id');
-				slide1('item2details', "details_students.htm");
-			}else{
-				slide1('item2details', "uebersicht.htm");
-			}
+
+			handleSchnitt(function(){
+				if (bol_refresh){
+					slide1('item2details', "details_leistungen.htm");
+				}else if (sessionStorage.getItem('jump_id')) {
+					sessionStorage.removeItem('jump_id');
+					slide1('item2details', "details_students.htm");
+				}else{
+					slide1('item2details', "uebersicht.htm");
+				}
+			});
 
 	}, newObs);
 }
 
 function item2Abort() {
-	if (sessionStorage.getItem('jump_id')) {
-		sessionStorage.removeItem('jump_id');
-		slide1('item2details', "details_students.htm");
-	}else{
-		slide1('item2details', "uebersicht.htm");
-	}    
+	handleSchnitt(function(){
+		if (sessionStorage.getItem('jump_id')) {
+			sessionStorage.removeItem('jump_id');
+			slide1('item2details', "details_students.htm");
+		}else{
+			slide1('item2details', "uebersicht.htm");
+		}
+	});
 }
 
 function calc_Stats(bol_Mitschreiber){
@@ -964,59 +969,3 @@ function calc_Stats(bol_Mitschreiber){
 	}
 	popUp('item2Stats');
 }
-
-
-// Ohnehin nicht genutzt ?
-/*
-function dropLeistung(){
-	alert("Diese Funktion ist noch nicht auf die neue Datenbankengine umgestellt worden !");
-	db.transaction(
-			function(transaction){
-			transaction.executeSql(
-			'SELECT mndl, fspz, schr FROM '+GLOBALS.klasse+' WHERE id="0";', [], function(t, results){
-				var id_Leistung = sessionStorage.getItem('leistung_id');
-				var column = sessionStorage.getItem('leistung_column');
-				var Leistung = JSON.parse(decodeURIComponent(results.rows.item(0)[column]));
-				// Leistung aus Dict entfernen
-				delete Leistung[id_Leistung];
-				// Leistung aus dem Array entfernen
-				for (var i=0;i<Leistung.alle.length;i++){
-					if (Leistung.alle[i] == id_Leistung){
-						Leistung.alle.splice(i,1);
-					}
-				}
-				updateDB(column, JSON.stringify(Leistung), 0);
-			});
-			transaction.executeSql(
-			'SELECT id, mndl, fspz, schr FROM '+GLOBALS.klasse+' WHERE id!="0";', [], function(t, results){
-				var i, _id;
-				var Leistung;
-				var id_Leistung = sessionStorage.getItem('leistung_id');
-				var column = sessionStorage.getItem('leistung_column');
-				for (var i2=0;i2<results.rows.length;i2++){
-					_id = results.rows.item(i2).id;
-					Leistung = JSON.parse(decodeURIComponent(results.rows.item(i2)[column])) ||{'alle':[],};
-					// Leistung aus Dict entfernen
-					delete Leistung[id_Leistung];
-					// Leistung aus dem Array entfernen
-					for (i=0;i<Leistung.alle.length;i++){
-						if (Leistung.alle[i] == id_Leistung){
-							Leistung.alle.splice(i,1);
-						}
-					}
-					updateDB(column, JSON.stringify(Leistung), _id);
-					// Durchschnitt updaten
-					if (column == "fspz") {
-						var Schnitt = JSON.stringify(schnitt(Leistung, true));
-						updateDB("o"+column, Schnitt, _id);
-					}else{
-						updateDB("o"+column, schnitt(Leistung), _id);
-					}
-				}
-			});
-			});
-	setTimeout(function() {
-		window.location = "uebersicht.htm";
-	}, 600);
-}
-*/
