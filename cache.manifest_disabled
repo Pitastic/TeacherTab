@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version: 0.33
+# Version: 0.34
 
 CACHE:
 # HTML
@@ -13,10 +13,12 @@ export-PDF.htm
 
 # CSS Stylesheets
 ./css/basic.css
-./css/ipad.css
+./css/main.css
+./css/button.css
+./css/popup.css
+./css/plot.css
+./css/tablet.css
 ./css/phone.css
-./css/buttons.css
-./css/menu_popups.css
 
 # JavaScript
 ./js/all.js
