@@ -82,12 +82,17 @@ Panels allgemein
 Details Leistungen (item2details)
 ===============================================================================
 */
-
+.styleWrap.arbeit_info {
+	margin-right: 66%;
+	width: auto;
+}
+.styleWrap.arbeit_leistung {
+	margin-left: 33%;
+}
 #arbeit_info {
 	left: 30px
 }
 #diag_Mitschreiber {
-	width: 190px;
 	height: 140px;
 }
 #arbeit_info .bottom {

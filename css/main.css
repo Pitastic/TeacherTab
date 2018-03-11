@@ -375,29 +375,24 @@ transform: translate3d(-0%,0,0);
 Details Leistungen (item2details)
 ===============================================================================
 */
+.styleWrap.arbeit_info {
+	/*
+	- Breite Prozentual aber mit Max-Pixel (wird sonst zu breit)
+	- Bottom Stats zentrieren
+	margin-right: 68%;
+	*/
+	margin-right: 0;
+	right: 0 !important;
+	width: 300px;
+	overflow-y: auto !important;
+}
+.styleWrap.arbeit_leistung {
+	margin-left: 360px;
+}
+
 #arbeit_info {
-	position: fixed;
-	left: 150px;
-	top: 122px; bottom: 50px;
-	margin: 0 15px; padding: 0;
-	width: 200px;
 	border-radius: 4px 0 0 4px;
-	-webkit-backface-visibility: hidden;
-	-webkit-perspective: 1000;
-	-webkit-transform: translate3d(0,0,0) rotateY(-90deg);
-	-webkit-transform-origin: left center;
-	backface-visibility: hidden;
-	perspective: 1000;
-	transform: translate3d(0,0,0) rotateY(-90deg);
-	transform-origin: left center;
-	-webkit-transition: .5s all 1.3s;
-	-moz-transition: .5s all 1.3s;
-	transition: .5s all 1.3s;
 	}
-	#arbeit_info.show {
-		-webkit-transform: translate3d(0,0,0) rotateY(0deg);
-		transform: translate3d(0,0,0) rotateY(0deg);
-		}
 	
 	#arbeit_info .button.OK {
 	display: inline-block;
@@ -426,7 +421,6 @@ Details Leistungen (item2details)
 			margin-top: 10px;
 			}
 	#diag_Mitschreiber {
-		width: 190px;
 		height: 90px;
 		text-align: right;
 	}
@@ -436,7 +430,7 @@ Details Leistungen (item2details)
 	-moz-transform: translateZ(0px);
 	transform: translateZ(0px);
 	position: absolute;
-	left: 230px; right: 15px;
+	left: 15px; right: 15px;
 	}
 	#arbeit_leistung ul li {
 		margin-bottom: 7px;

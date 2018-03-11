@@ -785,7 +785,7 @@ function klassenSyncHandler(location){
 				progress += 10; // Statusbar
 				updateStatus(progress, progress+" %", "Synchronisation erfolgreich !");
 				// --- Klasse aufrufen/schließen ---
-				setTimeout(function(){window.location.href = location}, 1500);
+				setTimeout(function(){window.location.href = location}, 1200);
 			},500);
 
 		}, klassenObject);

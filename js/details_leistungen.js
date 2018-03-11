@@ -189,12 +189,12 @@ function leistungsDetails_noten(Leistung, Students){
 	old.parentNode.replaceChild(new_el, old);
 
 	// Anzeigen wenn ready
-	slide1('item2details');
 	var DOMcheck = setInterval( function () {
 		if (document.readyState !== 'complete' ) return;
 		clearInterval( DOMcheck );
 		// DOM Ready !
-		slide1('arbeit_info');
+		slide1('item2details');
+		//slide1('arbeit_info');
 		calc_Stats(true);
 	}, 50 );
 }
@@ -326,12 +326,12 @@ function leistungsDetails_punkte(Leistung, Students){
 	old.parentNode.replaceChild(new_el, old);
 
 	// Anzeigen wenn ready
-	slide1('item2details');
 	var DOMcheck = setInterval( function () {
 		if (document.readyState !== 'complete' ) return;
 		clearInterval( DOMcheck );
 		// DOM Ready !
-		slide1('arbeit_info');
+		slide1('item2details');
+		//slide1('arbeit_info');
 		calc_Stats(true);
 		editNotenListe(maxPts);
 	}, 50 );
@@ -555,12 +555,12 @@ function leistungsDetails_rohpunkte(Leistung, Students){
 	}
 
 	// Anzeigen wenn ready
-	slide1('item2details');
 	var DOMcheck = setInterval( function () {
 		if (document.readyState !== 'complete' ) return;
 		clearInterval( DOMcheck );
 		// DOM Ready !
-		slide1('arbeit_info');
+		slide1('item2details');
+		//slide1('arbeit_info');
 		// Schülerleistung berechnen
 		var alleSchuler = document.getElementById('arbeit_leistung');
 		updateNoten(alleSchuler, false, Students);
@@ -802,7 +802,7 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 
 			// Animationen
 			document.getElementById('item2details').classList.remove('show');
-			document.getElementById('arbeit_info').classList.add('hide');
+			//document.getElementById('arbeit_info').classList.add('hide');
 
 			handleSchnitt(function(){
 				if (bol_refresh){
