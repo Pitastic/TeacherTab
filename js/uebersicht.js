@@ -126,7 +126,6 @@ function listLeistung(results){
 					Leistung = results[idx];
 
 					r = document.createElement('li');
-					//r.setAttribute('data-l_column', art[idx]); // mit neuem Schema nicht mehr benötigt ?!
 					r.setAttribute('data-l_subtyp', Leistung.subtyp);
 					r.setAttribute('data-l_id', Leistung.id);
 						c = document.createElement('div');

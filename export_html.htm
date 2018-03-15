@@ -1,0 +1,157 @@
+<!doctype html>
+<html manifest="cache.manifest">
+
+<head>
+	<meta charset="utf-8">
+
+	<!-- Apple Statusbar -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	<!-- CSS Media Queries -->
+	<link rel="stylesheet" href="./css/export.css" />
+
+	<title>TeacherTab Export</title>
+</head>
+
+<body>
+
+
+<section class="ersteseite">
+	<h1>Gesamtübersicht <span class="insert_klasse"></span></h1>
+	<table border="0" class="tab_gesamt">
+	</table>
+</section>
+
+<section>
+	<h1>mündlich <span class="insert_klasse"></span></h1>
+	<table border="0" class="tab_mndl">
+	</table>
+</section>
+
+<section>
+	<h1>fachspezifisch <span class="insert_klasse"></span></h1>
+	<table border="0" class="tab_fspz">
+	</table>
+</section>
+
+<section>
+	<h1>schriftlich<span class="insert_klasse"></span></h1>
+	<table border="0" class="tab_schr">
+	</table>
+</section>
+
+
+<!-- Legende für alle Nummern die in mndl, schr und fspz benutzt wurden (Bezeichnungen / Verteilungen / Bewertungssystem etc) -->
+<!-- Allgemeine Informationen zur Gewichtung, Zeitraum und evtl. Statistik -->
+<section>
+	<h1>allgemeine Informationen <span class="insert_klasse"></span></h1>
+
+	<div>
+	Eintragungen als ganze Note, Gesamtpunktzahl oder Rohpunktzahl mit Unterteilung in Kompetenzen (K.). Export-Muster:
+	<table border="0" class="tab_allgemein">
+		<thead>
+			<tr>
+				<td>Note</td><td>Punkte</td><td>Rohpunkte</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Zahl</td><td>(Gesamtpunkte) Note</td><td>(K.1/K.2/K.3/K.4_Gesamtpunkte) Note</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+
+	<div>
+	Im Bewertungszeitraum lag die Gewichtung bei <span id="insert_set_mndl" class="mndl"></span> mündlicher (<span id="insert_set_fspz" class="fspz"></span> hiervon aus fachspezifischen Leistungen) und <span id="insert_set_schr" class="schr"></span> schriftlicher Leistung.
+	</div>
+
+	<div>
+	Die Notengebung erfolgte nach dieser Abstufung (Note ab x %):
+	<table border="0" class="tab_allgemein">
+		<thead>
+			<tr>
+				<td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td id="insert_set_note1"></td>
+				<td id="insert_set_note2"></td>
+				<td id="insert_set_note3"></td>
+				<td id="insert_set_note4"></td>
+				<td id="insert_set_note5"></td>
+				<td>0 %</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+
+
+	<div class="nobreak">
+	<h2 class="mndl">mündliche Leistungen</h2>
+	<table border="0" class="tab_allgemein">
+	<thead>
+		</tr>
+			<td class="nummer">&#35;</td>
+			<td>Datum</td>
+			<td>Bezeichnung</td>
+			<td class="gewichtung">Gewichtung</td>
+			<td>Eintragung</td>
+			<td class="verteilungen">Verteilungen</td>
+		</tr>
+	</thead>
+	<tbody id="tab_allgemein_mndl">
+	</tbody>
+	</table>
+	</div>
+
+
+	<div class="nobreak">
+	<h2 class="fspz">fachspezifische Leistungen</h2>
+	<table border="0" class="tab_allgemein">
+	<thead>
+		</tr>
+			<td class="nummer">&#35;</td>
+			<td>Datum</td>
+			<td>Bezeichnung</td>
+			<td class="gewichtung">Gewichtung</td>
+			<td>Eintragung</td>
+			<td class="verteilungen">Verteilungen</td>
+		</tr>
+	</thead>
+	<tbody id="tab_allgemein_fspz">
+	</tbody>
+	</table>
+	</div>
+
+
+	<div class="nobreak">
+	<h2 class="schr">schriftlich Leistungen</h2>
+	<table border="0" class="tab_allgemein">
+	<thead>
+		</tr>
+			<td class="nummer">&#35;</td>
+			<td>Datum</td>
+			<td>Bezeichnung</td>
+			<td class="gewichtung">Gewichtung</td>
+			<td>Eintragung</td>
+			<td class="verteilungen">Verteilungen</td>
+		</tr>
+	</thead>
+	<tbody id="tab_allgemein_schr">
+	</tbody>
+	</table>
+	</div>
+
+</body>
+
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="js/all.js"></script>
+	<script type="text/javascript" src="js/database.js"></script>
+	<script type="text/javascript" src="js/export.js"></script>
+	<script type="text/javascript" src="js/touch.js"></script>
+	<script type="text/javascript" src="js/stay.js"></script>
+
+</html>

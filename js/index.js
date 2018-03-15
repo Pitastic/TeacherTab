@@ -24,16 +24,12 @@ $(document).ready(function() {
 	});
 
 	document.getElementById('export').addEventListener('click', function(){
-		/* DEV: Kein Sync, kein Export !
 		klassenAuswahl(document.getElementById('klasseSelect'));
-		export_to_csv(klasse);
-		document.getElementById("export_to_pdf").href = "http://www.teachertab.de/WebApp/export-PDF.htm?klasse="+GLOBALS.klasse+"&SyncServer="+GLOBALS.SyncServer+"&userID="+GLOBALS.userID;
-		document.getElementById("export_to_html").addEventListener('click', function(e){
-			testSync();
-		})
-		popUp('item0Export');
-		*/
-		alert("Die Exportfunktion ist noch nicht implementiert !");
+		if (GLOBALS.klasse && GLOBALS.klasse != "-") {
+			klassenSyncHandler("export_html.htm", true);
+		}else{
+			alert("Es wurde keine Klasse ausgewählt !");
+		}
 	});
 
 	document.getElementById('closeSync').addEventListener('click', function(){

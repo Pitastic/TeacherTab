@@ -1,0 +1,102 @@
+* {margin: 0; padding: 0;}
+html, body {
+	}
+section {
+	width: 93%;
+	margin: auto;
+	page-break-after: always;
+	page-breakr-inside: avoid;
+	}
+h1 {
+	margin: 1em 0;
+	border-bottom: 2px solid grey;
+	}
+	.ersteseite h1 {
+		border-color: black;
+		}
+	h1 span {
+		float: right;
+		color: grey;
+		}
+h2 {
+	margin: 0.5em 0;
+	font-family: 'sans-serif';
+	font-size: 20px;
+	}
+table {
+	border-spacing: 25px 5px;
+	table-layout:fixed;
+	width:100%;
+	}
+	thead td {
+		border: none;
+		text-align: center;
+		}
+		thead .namen {width: 210px;}
+		thead .fspz, div .fspz, h2.fspz {color: #38AC92;}
+		thead .mndl, div .mndl, h2.mndl {color: #3898A5;}
+		thead .schr, div .schr, h2.schr {color: #FF9E53;}
+		thead .rechnerisch {color: grey;}
+	tbody td {
+			border: 2px solid black;
+			text-align: center;
+		}
+		tbody .namen {
+			text-align: right;
+			padding-right: 5px;
+			white-space: nowrap;
+			overflow: hidden;
+			}
+		tbody .fspz {border-color: #38AC92;}
+		tbody .mndl {border-color: #3898A5;}
+		tbody .schr {border-color: #FF9E53;}
+		tbody .rechnerisch {border-color: grey;}
+		tbody .eingetragen {border: none;}
+		tbody .komp {border-color: grey;}
+
+	tab_gesamt thead .namen {width: 14em;}
+	tab_gesamt tbody .namen {
+		border:none; border-left: 4px solid silver;
+		}
+
+	/* BOTTLE */
+	%if not settings['sex']['fspzDiff']:
+		table.tab_gesamt {
+			border-spacing: 45px 5px;
+			}
+	%end
+
+
+	table.tab_leistung, table.tab_allgemein {
+		border-spacing: 0;
+		border-collapse: collapse;
+		}
+		.tab_leistung thead td, .tab_allgemein thead td {
+				font-weight: bold;
+			}
+		.tab_leistung tbody {
+				border: 2px solid black;
+			}
+		.tab_leistung tbody td, .tab_allgemein td {
+				padding-top: 4px;
+				padding-bottom: 4px;
+				border-width: 1px;
+			}
+	table.tab_allgemein thead .nummer {
+		width: 5%;
+		}
+	.tab_allgemein thead .verteilungen {
+		width: 33%;
+		}
+	.tab_allgemein thead .gewichtung {
+		width: 5%;
+		}
+	div{
+		margin-bottom: 2em;
+		}
+		div.nobreak {page-breakr-inside: avoid;}
+		div.breaker {
+			page-break-before: always;
+			margin: auto;
+			}
+		.hide {display: none;}
