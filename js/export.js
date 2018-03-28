@@ -107,6 +107,13 @@ function writeAllgemeines(results){
 
 		
 		// Allgemeine Infos (unten)
+		var legende_kompetenzen = 
+			SETTINGS.kompetenzen.Kat1 + " / " +
+			SETTINGS.kompetenzen.Kat2 + " / " +
+			SETTINGS.kompetenzen.Kat3 + " / " +
+			SETTINGS.kompetenzen.Kat4 + " / Gesamtpunkte";
+		document.getElementById('legende_kompetenzen').innerHTML = legende_kompetenzen;
+
 		var id_array = GLOBALS[arten[art]];
 		var tbody2 = document.createElement('tbody');
 
@@ -245,6 +252,7 @@ function zensur(zeilen_objekt, spezKey, digit){
 	return Math.round(result*digit)/digit || "-"
 }
 
+// DEPRECATED: Nur als altem DB Format übernommen
 function createCSV(results) {
 	var columns=['mndl','fspz','schr'];
 	var nameDict={};
