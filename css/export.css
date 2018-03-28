@@ -1,20 +1,27 @@
 * {margin: 0; padding: 0;}
-html, body {
+html.white, body.white {
 	background: none;
 	}
+
+.styleWrap.export {
+	padding: 20px !important;
+	bottom: auto !important;
+	height: auto !important;
+}
+
 section {
 	margin: auto;
 	page-break-after: always;
 	page-break-inside: avoid;
 	}
-h1 {
+h1.sectionHead {
 	margin: 1em 0;
 	border-bottom: 2px solid grey;
 	}
-	.ersteseite h1 {
+	.ersteseite h1.sectionHead {
 		border-color: black;
 		}
-	h1 span {
+	h1.sectionHead span {
 		float: right;
 		color: grey;
 		}
@@ -100,6 +107,10 @@ table {
 			margin: auto;
 			}
 		.hide {display: none;}
+
+#bezeichnung {
+	font-weight: bold;
+}
 
 #fadeBlack, #fadeBlack div {
 	margin: 0;

@@ -1,0 +1,48 @@
+<!doctype html>
+<html manifest="cache.manifest">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	
+	<title>TeacherTab Export</title>
+
+	<!-- CSS Media Queries -->
+	<link rel="stylesheet" href="./css/basic.css" />
+	<link rel="stylesheet" href="./css/main.css" />
+	<link rel="stylesheet" href="./css/export.css" />
+
+</head>
+
+<body ontouchstart>
+
+<div id="header">
+	<h1>TeacherTab Export - JSON</h1>
+</div>
+
+<div id="item0" class="uebersicht show">
+
+	<div class="content">
+		<h2>JSON Format (Backup)</h2>
+
+		<div class="styleWrap export">
+			Deine Daten zur Klasse <span id="bezeichnung">?</span> werden aufbereitet und können gleich gespeichert werden ...
+		</div>
+	</div>
+
+</div>
+
+</body>
+
+
+	<script type="text/javascript">
+		sessionStorage.setItem("export_type", "json");
+	</script>
+
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="js/all.js"></script>
+	<script type="text/javascript" src="js/database.js"></script>
+	<script type="text/javascript" src="js/export.js"></script>
+	<script type="text/javascript" src="js/touch.js"></script>
+	<script type="text/javascript" src="js/stay.js"></script>
+</html>

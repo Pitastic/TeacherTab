@@ -170,14 +170,15 @@
 	<h3>Klasse Exportieren - Format wählen</h3>
 	<ul>
 		<li>HTML : <span>zum Drucken (über den Browser als PDF oder auf Papier)</span></li>
-		<li>CSV : <span>zum Verändern (z.b: in einer Tabellenkalkulation)</span></li>
 		<li>JSON : <span>zur Sicherheit (Datenbankformat als Backup)</span></li>
-		<li>Kopie : <span>Klassen-Kopie auf diesem Gerät erstellen (z.B. bei Klassen im 2. Hj.)</span></li>
+		<li class="soon">CSV : <span>zum Verändern (z.b: in einer Tabellenkalkulation / kommt bald !)</span></li>
+		<li class="soon">Kopie : <span>Klassen-Kopie auf diesem Gerät erstellen (z.B. bei Klassen im 2. Hj. - kommt bald!)</span></li>
 	</ul>
 	
 	<div class="close"><a class="stay" href="#">x</a></div>
 	<div>
 		<a id="export_to_html" class="button" href="#" onclick='popUpSwitch(this);klassenSyncHandler("export_html.htm", true);'>HTML</a>
+		<a id="export_to_json" class="button" href="#" onclick='popUpSwitch(this);klassenSyncHandler("export_json.htm", true);'>JSON</a>
 		<!--
 		<a class="button OK stay" href="#" onclick="setTimeout(function(){popUp('item0Copy');},1000);popUpClose(this);">Kopie</a>
 		<a id="export_to_csv" class="button" href="https://www.teachertab.de/webapp/export.htm" title="CSV Export">CSV</a>

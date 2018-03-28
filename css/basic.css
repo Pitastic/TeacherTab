@@ -50,6 +50,11 @@ html, body {
     line-height: 1.5em;
 }
 
+.soon {
+    font-style: italic !important;
+    color: grey !important;
+}
+
 
 /* ============== Blendelemente =============== */
 .hide {

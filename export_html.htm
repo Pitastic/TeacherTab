@@ -1,5 +1,5 @@
 <!doctype html>
-<html manifest="cache.manifest">
+<html manifest="cache.manifest" class="white">
 
 <head>
 	<meta charset="utf-8">
@@ -16,29 +16,29 @@
 	<title>TeacherTab Export</title>
 </head>
 
-<body>
+<body class="white">
 
 
 <section class="ersteseite">
-	<h1>Gesamtübersicht <span class="insert_klasse"></span></h1>
+	<h1 class="sectionHead">Gesamtübersicht <span class="insert_klasse"></span></h1>
 	<table border="0" class="tab_gesamt">
 	</table>
 </section>
 
 <section>
-	<h1>mündlich <span class="insert_klasse"></span></h1>
+	<h1 class="sectionHead">mündlich <span class="insert_klasse"></span></h1>
 	<table border="0" class="tab_mndl">
 	</table>
 </section>
 
 <section>
-	<h1>fachspezifisch <span class="insert_klasse"></span></h1>
+	<h1 class="sectionHead">fachspezifisch <span class="insert_klasse"></span></h1>
 	<table border="0" class="tab_fspz">
 	</table>
 </section>
 
 <section>
-	<h1>schriftlich<span class="insert_klasse"></span></h1>
+	<h1 class="sectionHead">schriftlich<span class="insert_klasse"></span></h1>
 	<table border="0" class="tab_schr">
 	</table>
 </section>
@@ -47,7 +47,7 @@
 <!-- Legende für alle Nummern die in mndl, schr und fspz benutzt wurden (Bezeichnungen / Verteilungen / Bewertungssystem etc) -->
 <!-- Allgemeine Informationen zur Gewichtung, Zeitraum und evtl. Statistik -->
 <section>
-	<h1>allgemeine Informationen <span class="insert_klasse"></span></h1>
+	<h1 class="sectionHead">allgemeine Informationen <span class="insert_klasse"></span></h1>
 
 	<div>
 	Eintragungen als ganze Note, Gesamtpunktzahl oder Rohpunktzahl mit Unterteilung in Kompetenzen (K.). Export-Muster:
@@ -174,6 +174,10 @@
 </div>
 
 </body>
+
+	<script type="text/javascript">
+		sessionStorage.setItem("export_type", "html");
+	</script>
 
 	<script src="js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="js/all.js"></script>
