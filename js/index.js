@@ -26,7 +26,7 @@ $(document).ready(function() {
 	document.getElementById('export').addEventListener('click', function(){
 		klassenAuswahl(document.getElementById('klasseSelect'));
 		if (GLOBALS.klasse && GLOBALS.klasse != "-") {
-			klassenSyncHandler("export_html.htm", true);
+			popUp("item0Export");
 		}else{
 			alert("Es wurde keine Klasse ausgewählt !");
 		}

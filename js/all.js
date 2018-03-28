@@ -584,15 +584,6 @@ function slide2(slideName){
 	sessionStorage.setItem('lastview', slideName);
 }
 
-function popUp(popWindow){
-	document.getElementById('fadeBlack').classList.remove('hide');
-	setTimeout(function() {
-		document.getElementById(popWindow).classList.add('showPop');
-		document.getElementById('fadeBlack').classList.add('show');
-	}, 50);
-	window.addEventListener('keydown', keyFunctions);
-}
-
 function keyFunctions(event){
 	if (event.keyCode == 27){
 		var popUp = document.querySelector('.showPop .close a');
@@ -630,6 +621,17 @@ function fspz_Bezeichnung2(){
 	document.getElementById('notenBezeichnung').value = document.getElementById('notenBezeichnung_Select').value;
 }
 
+
+function popUp(popWindow){
+	document.getElementById('fadeBlack').classList.remove('hide');
+	setTimeout(function() {
+		document.getElementById(popWindow).classList.add('showPop');
+		document.getElementById('fadeBlack').classList.add('show');
+	}, 50);
+	window.addEventListener('keydown', keyFunctions);
+}
+
+
 function popUpClose(thisElement, bol_refresh){
 	if(bol_refresh){
 		db_readMultiData(listStudents, "student");
@@ -642,6 +644,14 @@ function popUpClose(thisElement, bol_refresh){
 		thisElement.parentNode.parentNode.parentNode.classList.add('hide');
 	}, 250);
 	window.removeEventListener('keydown', keyFunctions);
+}
+
+
+function popUpSwitch(thisElement, target_id) {
+	thisElement.parentNode.parentNode.classList.remove('showPop');
+	if (target_id) {
+		document.getElementById(target_id).classList.add('showPop');
+	}
 }
 
 

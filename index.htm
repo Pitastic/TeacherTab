@@ -167,25 +167,18 @@
 </div>
 
 <div id="item0Export" class="popUp">
-	<h3>Klasse Exportieren</h3>
+	<h3>Klasse Exportieren - Format wählen</h3>
 	<ul>
-		<li>Eintragungen als PDF, CSV-Text oder in Form eines Backups öffnen/herunterladen</li>
-		<!-- DEV: Kein Sync, kein Export ! -->
-		<!--
-			<li>Wähle das Format (nur wenn das Gerät den SyncServer erreichen kann)</li>
-			<li>PDF (empfohlen) : <span>Ausdruck der Datenbank (Druckformat, Daten vom SyncServer)</span></li>
-			<li>HTML : <span>Inhalt wie in der PDF (Inhalt ist aber noch veränderbar)</span></li>
-			<li>CSV : <span>Semikolon getrennte Liste (universell, Daten von diesem Gerät)</span></li>
-			<li>Kopie : <span>Klassen-Kopie auf diesem Gerät erstellen, z.B. bei Klassen im 2. Hj.</span></li>
-		-->
-		<li><span>Die Synchronisierúngs- und Export-Funktion steht bisher noch nicht zur Verfügung</span></li>
+		<li>HTML : <span>zum Drucken (über den Browser als PDF oder auf Papier)</span></li>
+		<li>CSV : <span>zum Verändern (z.b: in einer Tabellenkalkulation)</span></li>
+		<li>JSON : <span>zur Sicherheit (Datenbankformat als Backup)</span></li>
+		<li>Kopie : <span>Klassen-Kopie auf diesem Gerät erstellen (z.B. bei Klassen im 2. Hj.)</span></li>
 	</ul>
 	
 	<div class="close"><a class="stay" href="#">x</a></div>
 	<div>
-		<!-- DEV: Kein Sync, kein Export ! -->
+		<a id="export_to_html" class="button" href="#" onclick='popUpSwitch(this);klassenSyncHandler("export_html.htm", true);'>HTML</a>
 		<!--
-		<a id="export_to_html" class="button" href="#">HTML</a>
 		<a class="button OK stay" href="#" onclick="setTimeout(function(){popUp('item0Copy');},1000);popUpClose(this);">Kopie</a>
 		<a id="export_to_csv" class="button" href="https://www.teachertab.de/webapp/export.htm" title="CSV Export">CSV</a>
 		<a id="export_to_pdf" class="button OK" href="" target="_blank">PDF</a>

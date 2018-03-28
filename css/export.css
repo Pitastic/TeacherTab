@@ -1,11 +1,11 @@
 * {margin: 0; padding: 0;}
 html, body {
+	background: none;
 	}
 section {
-	width: 93%;
 	margin: auto;
 	page-break-after: always;
-	page-breakr-inside: avoid;
+	page-break-inside: avoid;
 	}
 h1 {
 	margin: 1em 0;
@@ -24,7 +24,7 @@ h2 {
 	font-size: 20px;
 	}
 table {
-	border-spacing: 25px 5px;
+	border-spacing: 10px 5px;
 	table-layout:fixed;
 	width:100%;
 	}
@@ -94,9 +94,18 @@ table {
 	div{
 		margin-bottom: 2em;
 		}
-		div.nobreak {page-breakr-inside: avoid;}
+		div.nobreak {page-break-inside: avoid;}
 		div.breaker {
 			page-break-before: always;
 			margin: auto;
 			}
 		.hide {display: none;}
+
+#fadeBlack, #fadeBlack div {
+	margin: 0;
+}
+
+@media print {
+	#fadeBlack {display: none !important;}
+	.popUp {display: none !important;}
+}

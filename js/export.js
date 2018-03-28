@@ -1,3 +1,10 @@
+/*
+- Hinweise einblenden:
+	- PopUps zu erlauben
+	- Querformat
+	- auf Papier oder PDF drucken
+*/
+
 $(document).ready(function() {
 
 	GLOBALS.mndl = [];
@@ -20,6 +27,8 @@ $(document).ready(function() {
 		}, "leistung");
 
 	}, "settings");
+
+	closeListener();
 
 });
 
