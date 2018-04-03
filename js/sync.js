@@ -32,7 +32,7 @@ function sync_getAccount(callback, localAccount) {
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
 				// Merge
 				var merged = mergeAccount(newData, localAccount);
-				//DEV console.log("SYNC: Merged", merged);
+				//DEVconsole.log("SYNC: Merged", merged);
 				// Save and Push back
 				db_replaceData(function(){
 					sync_pushBack(callback, merged, "account");
@@ -150,13 +150,14 @@ function sync_pushBack(callback, Data, uri) {
 			},
 			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
-				//DEV console.log("Push:", pushData);
+				console.log("Push:", pushData);
 				//DEV console.log("Response:", jqXHR);
 				console.log("SYNC:", data.payload, " changed dataset(s) on server");
 				callback(Data); // Callback bekommt gepushten Daten im Klartext
 			},
 			error: function(data, status, jqXHR){
 				console.log("Failed !", data);
+				updateStatus(0, "Server nicht erreicht oder antwortet nicht", "Fehler beim Senden der Daten !", false, true);
 			},
 		});
 	}else{
@@ -291,8 +292,12 @@ function mergeKlasse(newData, localData) {
 		var Klasse = {};
 
 		// -- Key-Blacklist mergen (alle Keys dieser Liste werden im Folgenden ausgeschlossen)
-		var Blacklist = localData[1].blacklist.concat(newData[1].blacklist);
-		Blacklist = removeDups(Blacklist);
+		if (newData[1].isBackup) {
+			var Blacklist = newData[1].blacklist;
+		}else{
+			var Blacklist = localData[1].blacklist.concat(newData[1].blacklist);
+			Blacklist = removeDups(Blacklist);
+		}
 
 		// -- Liste mit allen Keys beider Objecte (unique und gefiltert)
 		var keyList = Object.keys(localData).concat(Object.keys(newData));
@@ -316,6 +321,7 @@ function mergeKlasse(newData, localData) {
 					// Attribut 'changed' bei Typ 'student' differenzierter betrachten
 					//DEV console.log("MERGE: id", row, "TRICKY mode");
 					Klasse[row] = Object.assign({}, localData[row]);
+					//DEV console.log("MERGE: starte mit Object", Klasse[row]);
 					
 					// Name
 					delete Klasse[row].name
@@ -383,13 +389,6 @@ function mergeKlasse(newData, localData) {
 
 	}
 }
-
-
-
-// =================================================== //
-// =============== Export- Functions ================= //
-// =================================================== //
-
 
 
 // =================================================== //

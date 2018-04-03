@@ -7,9 +7,10 @@ details_leistungen.htm
 details_students.htm
 index.htm
 export.htm
+export_html.htm
+export_json.htm
 settings.htm
 uebersicht.htm
-export-PDF.htm
 
 # CSS Stylesheets
 ./css/basic.css
@@ -25,6 +26,7 @@ export-PDF.htm
 ./js/database.js
 ./js/details_leistungen.js
 ./js/details_students.js
+./js/export.js
 ./js/sync.js
 ./js/index.js
 ./js/settings.js

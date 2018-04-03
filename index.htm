@@ -167,23 +167,74 @@
 </div>
 
 <div id="item0Export" class="popUp">
-	<h3>Klasse Exportieren - Format wählen</h3>
+	<h3>Klasse exportieren - Format wählen</h3>
 	<ul>
-		<li>HTML : <span>zum Drucken (über den Browser als PDF oder auf Papier)</span></li>
-		<li>JSON : <span>zur Sicherheit (Datenbankformat als Backup)</span></li>
-		<li class="soon">CSV : <span>zum Verändern (z.b: in einer Tabellenkalkulation / kommt bald !)</span></li>
-		<li class="soon">Kopie : <span>Klassen-Kopie auf diesem Gerät erstellen (z.B. bei Klassen im 2. Hj. - kommt bald!)</span></li>
+		<li>Der Export wird in einem neuen Fenster geöffnet. Achte daher auf deinen PopUp-Blocker...</li>
+	</ul>
+	<ul>
+		<li>HTML
+			<ul>
+				<li>zum Archivieren oder Mitnehmen</li>
+				<li>Ausdruck über den Browser als PDF oder auf Papier</li>
+			</ul>
+		</li>
+		<li>JSON
+			<ul>
+				<li>zum Archivieren oder Wiederherstellen</li>
+				<li>rohes Backup aus der Datenbank als Text, um den Stand einer Klasse wiederherzustellen</li>
+				<li>für den Import ist ein Sync-Account erforderlich</li>
+			</ul>
+		</li>
+
+		<li class="soon">CSV (kommt bald...)
+		<!--
+			<ul>
+				<li>zum Bearbeiten z.b in einer Tabellenkalkulation</li>
+			</ul>
+		-->
+		</li>
+		<li class="soon">Kopie (kommt bald...)
+		<!--
+			<ul>
+				<li>neue Klasse durch Kopie erstellen</li>
+				<li>nur Grunddaten und Schüler werden übernommen</li>
+				<li>hilfreich bei Fortführung einer Klasse im nächsten Schuljahr</li>
+				<li>...erst bald verfügbar...</li>
+			</ul>
+		-->
+		</li>
 	</ul>
 	
 	<div class="close"><a class="stay" href="#">x</a></div>
 	<div>
-		<a id="export_to_html" class="button" href="#" onclick='popUpSwitch(this);klassenSyncHandler("export_html.htm", true);'>HTML</a>
 		<a id="export_to_json" class="button" href="#" onclick='popUpSwitch(this);klassenSyncHandler("export_json.htm", true);'>JSON</a>
+		<a id="export_to_html" class="button" href="#" onclick='popUpSwitch(this);klassenSyncHandler("export_html.htm", true);'>HTML</a>
 		<!--
 		<a class="button OK stay" href="#" onclick="setTimeout(function(){popUp('item0Copy');},1000);popUpClose(this);">Kopie</a>
 		<a id="export_to_csv" class="button" href="https://www.teachertab.de/webapp/export.htm" title="CSV Export">CSV</a>
-		<a id="export_to_pdf" class="button OK" href="" target="_blank">PDF</a>
 		-->
+	</div>
+</div>
+
+<div id="item0Import" class="popUp">
+	<h3>Klasse importieren - Format wählen</h3>
+	<ul>
+		<li class="msg error">Eventuell vorhandene Daten in dieser Klasse werden überschrieben !</li>
+		<li>Die Daten werden erst verschlüsselt und dann an den Server gesendet:
+			<ul>
+				<li>Öffne die .json-Datei mit einem Texteditor</li>
+				<li>Markiere den gesamten Inhalt mit [STRG+A] / [Command+A]</li>
+				<li>Kopiere ihn mit [STRG+C] / [Command+C]</li>
+				<li>Klicke in das Textfeld und füge ihn dort ein mit [STRG+V] / [Command+V]</li>
+			</ul>
+		</li>
+	</ul>
+	<ul>
+		<li><textarea name="jsonBackup" id="jsonBackup" placeholder="Inhalt der .json-Datei hier einfügen..."></textarea></li>
+	</ul>
+	<div class="close"><a class="stay" href="#">x</a></div>
+	<div>
+		<a id="export_to_html" class="button OK stay" href="#" onclick='popUpSwitch(this);klassenImportHandler();'>Importieren</a>
 	</div>
 </div>
 
@@ -257,6 +308,7 @@
 	<div class="centerWrap-child">
 	<div class="">
 		<a id="btn_Add" class="button OK stay" data-name="item0Add" href="#">Hinzufügen</a>
+		<a  id="import" class="button stay" href="#">Import</a>
 		<a  id="export" class="button stay" href="#">Export</a>
 		<a id="btn_Delete" class="button ABORT stay">Löschen</a>
 		<div class="clearer"></div>

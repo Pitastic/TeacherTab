@@ -82,8 +82,9 @@ li.edit {
         		font-weight: bold;
         		}
 
-            .popUp li ul {
+            .popUp li ul li {
                 list-style-type: circle;
+                line-height: 1.5em;
             }
                 .popUp li ul li {
                     display: list-item;
@@ -117,7 +118,7 @@ Hinzufügen (AddMenu)
 ===============================================================================
 */
 /* Schüler */
-#item1Add textarea{
+#item1Add textarea, #item0Import textarea{
     padding: 5px;
     margin: -4px; margin-left: 0;
     height: 80px;

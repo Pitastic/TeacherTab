@@ -328,12 +328,12 @@ function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 							toUpdate[prop] = [];
 						}
 
-					// Klasse in Account hinzufügen
+					// Klasse in Account hinzufügen oder updaten
 					}else if (mode == "addKlasse") {
 						// in Klassenliste
 						toUpdate.klassenliste[val[0]] = val[1];
 						// in Local
-						if (toUpdate.local.indexOf(val[0]) === -1) {
+						if (toUpdate.local.indexOf(val[0]) === -1 && prop != "notlocal") {
 							toUpdate.local.push(val[0]);
 						}
 

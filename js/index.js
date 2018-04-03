@@ -32,6 +32,14 @@ $(document).ready(function() {
 		}
 	});
 
+	document.getElementById('import').addEventListener('click', function(){
+		if (GLOBALS.AUTH) {
+			popUp("item0Import");
+		}else{
+			alert("Dein Account ist nicht für den Import auf den Server berechtigt.");
+		}
+	});
+
 	document.getElementById('closeSync').addEventListener('click', function(){
 		// ( Zurücksetzen der ProgressBar )
 		var syncStatus = document.getElementById('syncStatus');

@@ -7,7 +7,7 @@ var GLOBALS = {
 	'userID'			: null,
 	'passW'				: null,
 	'SyncServer'		: "/c/api",
-	'timeout'			: 4000,
+	'timeout'			: 6000,
 
 	'appversion'		: "0.33b",
 	'dbname'			: null,
@@ -262,6 +262,7 @@ function updateStatus(progress, statustext, statustitle, elements, error){
 			el_statusbar.classList.add('ok');
 			el_statusbar.classList.remove('error');
 		}else if (error) {
+			el_statusbar.style.width = "100%";
 			el_statusbar.classList.remove('ok');
 			el_statusbar.classList.add('error');
 		}
@@ -411,6 +412,39 @@ function uniqueID() {
 	return id;
 }
 
+function stampImport(importData, stamp) {
+//-> Überschreiben eines Klassenobjekts mit Timestamp
+	if (typeof stamp == "undefined") {
+		stamp = timestamp();
+	}
+	for (key in importData){
+		if (importData.hasOwnProperty(key)) {
+			// Settings / Leistungen
+			if (importData[key].typ == "leistung" || importData[key].typ == "settings") {
+				importData[key].changed = stamp;
+			}
+			// Students
+			if (importData[key].typ == "student") {
+				// -- allgemein
+				importData[key].name.changed = stamp;
+				importData[key].gesamt.changed = stamp;
+				// -- fspz
+				for (leistung in importData[key].fspz){
+					importData[key].fspz[leistung].changed = stamp;
+				}
+				// -- mndl
+				for (leistung in importData[key].mndl){
+					importData[key].mndl[leistung].changed = stamp;
+				}
+				// -- schr
+				for (leistung in importData[key].schr){
+					importData[key].schr[leistung].changed = stamp;
+				}
+			}
+		}
+	}
+	return importData;
+}
 
 // =================================================== //
 // ================ Durchschnitte === ================ //
@@ -795,6 +829,7 @@ function klassenSyncHandler(location, newWindow){
 				progress += 10; // Statusbar
 				updateStatus(progress, progress+" %", "Synchronisation erfolgreich !");
 				// --- Klasse aufrufen/schließen ---
+				/*
 				setTimeout(function(){
 					if (newWindow) {
 						window.open(location, '_blank');
@@ -802,6 +837,7 @@ function klassenSyncHandler(location, newWindow){
 						window.location.href = location
 					}
 				}, 1200);
+				*/
 			},500);
 
 		}, klassenObject);
@@ -833,6 +869,52 @@ function klassenDeleteHandler(id) {
 			}
 		});
 	});
+
+	return;
+}
+
+function klassenImportHandler() {
+//-> Lesen, Formatieren, Senden
+	popUp("item0Sync");
+
+	// Animation, Sync und DB
+	var progress = 0;
+	progress += 50;
+	updateStatus(progress, "Einlesen der Daten", "Importiere Backup...");
+
+	// Textfeld lesen, untersuchen und Timestamp setzen
+	var jsonBackup = document.getElementById("jsonBackup").value;
+	try {
+		jsonBackup = JSON.parse(jsonBackup);
+	} catch(e) {
+		updateStatus(progress, "Falsches Datenformat!", "Importiere Backup: Ein Fehler ist aufgetreten !", false, true);
+	}
+	var target = jsonBackup[1].klasse;
+	var changed = timestamp();
+	jsonBackup = stampImport(jsonBackup, changed);
+	jsonBackup[1].isBackup = true;
+	
+	// Sync an Server
+	progress += 30; // Statusbar
+	updateStatus(progress, "verschlüsselte Daten senden", "Importiere Backup...");
+	sync_pushBack(function(){
+
+		// auf Klassenliste setzen oder aktualisieren
+		console.log("IDB: adding Class to Account (not local)");
+		db_simpleUpdate(function(){
+	
+			setTimeout(function(){
+				progress = 100; // Statusbar
+				updateStatus(progress, progress+" %", "Import erfolgreich abgeschlossen !");
+				// --- Klasse aufrufen/schließen ---
+				setTimeout(function(){
+					//window.location.reload();
+				}, 1200);
+			},500);
+			
+		}, 1, "notlocal", "addKlasse", [target, {'bezeichnung': jsonBackup[1].name, 'id' : target, 'changed' : changed}], "account");	
+
+	}, jsonBackup, ["class", target])
 
 	return;
 }

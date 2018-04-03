@@ -23,7 +23,7 @@ $(document).ready(function() {
 
 					var a = document.createElement('a');
 					a.href = 'data:application/json;charset=utf-8;base64,' + jsonData;
-					a.download = GLOBALS.klasse+'.json';
+					a.download = GLOBALS.klasse+'.txt';
 
 					// Append - Click - Remove
 					document.body.appendChild(a);

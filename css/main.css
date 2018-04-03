@@ -413,6 +413,9 @@ Details Leistungen (item2details)
 		#item2_info_Verteilung div {
 			text-align: left;
 		}
+		#arbeit_info .bottom {
+			margin-bottom: 20px;
+		}
 		#arbeit_info .button {
 			margin-left: 0;
 			margin-right: 0;
