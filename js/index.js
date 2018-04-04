@@ -219,7 +219,7 @@ function addKlasse(thisElement) {
 			jahrKlasse.value + ' - ' + // Schuljahr
 			fachKlasse.value + ' ' + // Fach
 			nameKlasse.value;  // Name
-		var newId = hashData(newKlasse+timestamp());
+		var newId = uniqueClassID(newKlasse);
 		sessionStorage.setItem('klasse', newId);
 		db_neueKlasse(function(){
 			window.location = "settings.htm";

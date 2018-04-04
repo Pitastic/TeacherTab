@@ -292,12 +292,8 @@ function mergeKlasse(newData, localData) {
 		var Klasse = {};
 
 		// -- Key-Blacklist mergen (alle Keys dieser Liste werden im Folgenden ausgeschlossen)
-		if (newData[1].isBackup) {
-			var Blacklist = newData[1].blacklist;
-		}else{
-			var Blacklist = localData[1].blacklist.concat(newData[1].blacklist);
-			Blacklist = removeDups(Blacklist);
-		}
+		var Blacklist = localData[1].blacklist.concat(newData[1].blacklist);
+		Blacklist = removeDups(Blacklist);
 
 		// -- Liste mit allen Keys beider Objecte (unique und gefiltert)
 		var keyList = Object.keys(localData).concat(Object.keys(newData));

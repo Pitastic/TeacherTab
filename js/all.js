@@ -381,14 +381,18 @@ function compareStudents(a, b) {
 }
 
 
-function datum(){
+function datum(nummeric){
 	var d = new Date();
 	var monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 	var tag, monat, jahr;
-		tag = d.getDate();
+	tag = d.getDate();
+	if (!nummeric) {
 		monat = monate[d.getMonth()];
 		jahr = d.getFullYear();
-	return tag+'. '+monat+' '+jahr;
+		return tag+'. '+monat+' '+jahr;
+	}else{
+		return d.toLocaleDateString();
+	}
 }
 
 function timestamp() {
@@ -410,6 +414,10 @@ function uniqueID() {
 	part_guid += screen.pixelDepth || '';
 	var id = parseInt(part_ts+part_guid) || parseInt(part_ts);
 	return id;
+}
+
+function uniqueClassID(klassenname) {
+	return hashData(klassenname+timestamp());
 }
 
 function stampImport(importData, stamp) {
@@ -829,7 +837,6 @@ function klassenSyncHandler(location, newWindow){
 				progress += 10; // Statusbar
 				updateStatus(progress, progress+" %", "Synchronisation erfolgreich !");
 				// --- Klasse aufrufen/schließen ---
-				/*
 				setTimeout(function(){
 					if (newWindow) {
 						window.open(location, '_blank');
@@ -837,7 +844,6 @@ function klassenSyncHandler(location, newWindow){
 						window.location.href = location
 					}
 				}, 1200);
-				*/
 			},500);
 
 		}, klassenObject);
@@ -889,10 +895,12 @@ function klassenImportHandler() {
 	} catch(e) {
 		updateStatus(progress, "Falsches Datenformat!", "Importiere Backup: Ein Fehler ist aufgetreten !", false, true);
 	}
-	var target = jsonBackup[1].klasse;
-	var changed = timestamp();
 	jsonBackup = stampImport(jsonBackup, changed);
-	jsonBackup[1].isBackup = true;
+	jsonBackup[1].name = jsonBackup[1].name + " (Import "+ datum(true) +")";
+	jsonBackup[1].klasse = uniqueClassID(jsonBackup[1].name);
+
+	var changed = timestamp();
+	var target = jsonBackup[1].klasse;
 	
 	// Sync an Server
 	progress += 30; // Statusbar
@@ -908,7 +916,7 @@ function klassenImportHandler() {
 				updateStatus(progress, progress+" %", "Import erfolgreich abgeschlossen !");
 				// --- Klasse aufrufen/schließen ---
 				setTimeout(function(){
-					//window.location.reload();
+					window.location.reload();
 				}, 1200);
 			},500);
 			
