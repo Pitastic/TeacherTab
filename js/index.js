@@ -98,13 +98,13 @@ $(document).ready(function() {
 // =================================================== //
 
 function settingsAllgemein(){
-	localStorage.setItem('TeacherTab', true);
-	GLOBALS.userID = document.getElementById('userID').value || "AppArchiv";
+	GLOBALS.userID = document.getElementById('userID').value || "Niemand";
 	localStorage.setItem('userID', GLOBALS.userID);
-	GLOBALS.passW = document.getElementById('passW').value || false;
+	GLOBALS.passW = document.getElementById('passW').value || "false";
 	// Check Credentials wenn Password gegeben
+	testCreds(setAuth);
+	/*
 	if (GLOBALS.passW) {
-		testCreds(setAuth, GLOBALS.passW);
 	}else{
 		localStorage.setItem('auth', false);
 		localStorage.setItem('passW', false);
@@ -114,22 +114,28 @@ function settingsAllgemein(){
 			window.location.reload();
 		},550);
 	}
+	*/
 	return;
 }
 
 function setAuth(status) {
 	if (status != "200" && status != "ok") {
 		// erneut nach PW fragen
+		localStorage.removeItem('TeacherTab');
 		localStorage.setItem('auth', false);
+		localStorage.setItem('passW', GLOBALS.passW);
 		document.getElementById('passW').value = "";
 
 		// - DOM Manipulation: Meldung !
 		// -- unterscheiden ob Daten oder Verbinungsproblem
-		var msg = "Fehler beim Anmelden";
+		var msg = "Fehler beim Anmelden ("+status+")";
 		if (status == "401" || status == "403") {
-			msg += ":<br>Die Zugangsdaten sind entweder falsch oder nicht (mehr) für diese Funktion berechtigt !";
+			msg += ":<br>Emailadresse oder Passwort sind falsch !";
+
 		}else if (status == "400" || status == "0") {
 			msg = ":<br>Der Server ist nicht erreichbar. Bist du online ?";
+		}else if (status == "500") {
+			msg += ":<br>Uuups ! Auf dem Server ist etwas schiefgegangen. Probier es bitte nochmal...";
 		}
 		var errorMsg = document.querySelector("#item0First .msg.error");
 		errorMsg.innerHTML = msg;
@@ -142,6 +148,7 @@ function setAuth(status) {
 		// OK: Speichern und neu laden
 		localStorage.setItem('passW', GLOBALS.passW);
 		localStorage.setItem('auth', true);
+		localStorage.setItem('TeacherTab', true);
 		var thisElement = document.querySelector("#item0First .OK");
 		popUpClose(thisElement);
 		setTimeout(function() {

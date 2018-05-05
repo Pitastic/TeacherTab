@@ -93,11 +93,12 @@ li.edit {
                     padding: 0;
                     margin-left: 1.5em;
                 }
-    .popUp input[type="text"], .popUp input[type="number"], .popUp input[type="password"], li.inputs input {
+    .popUp input[type="text"], .popUp input[type="email"], .popUp input[type="number"], .popUp input[type="password"], li.inputs input {
         padding: 0 5px;
         margin: -7px; margin-right: 0;
         width: 96%;
         border: none;
+        font-size: 1em;
         }
         .popUp input[type="number"] {
             width: 60%;

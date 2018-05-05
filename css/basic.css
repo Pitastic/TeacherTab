@@ -54,6 +54,10 @@ html, body {
     font-style: italic !important;
     color: grey !important;
 }
+.highlight {
+    font-style: italic !important;
+    font-weight: bold !important;
+}
 
 
 /* ============== Blendelemente =============== */

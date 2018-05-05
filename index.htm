@@ -271,33 +271,31 @@
 	<ul>
 		<li>
 			<span>
-			Zu diesem Benutzernamen werden die Daten auf deinem Gerät gespeichert
+				Gib hier deine Accountdaten von <a href="https://my.teachertab.de" class="extern" target="_blank">my.teachertab.de</a> an.<br>
+			</span>
+			<span class="highlight">
+				Du hast noch keinen Account ? Dann kannst du dich <a href="https://my.teachertab.de/register.php" class="extern" target="_blank">hier</a> einfach kostenlos registrieren !
 			</span>
 		</li>
 		<li>
-			<input id="userID" type="text" placeholder="Benutzername" tabindex="1">
+			<input id="userID" type="email" placeholder="Emailadresse" required="required" tabindex="1">
+		</li>
+		<li>
+			<input id="passW" type="password" placeholder="Passwort" required="required" tabindex="2">
 		</li>
 		<li>
 			<span>
-			Wenn du erweiterte Funktionen nutzt (z.B. die Synchronisierung), wird dein Passwort für das Benutzerkonto auf <a href="my.teachertab.de" class="extern" target="_blank">my.teachertab.de</a> benötigt (sonst lasse das Feld leer)
+			Wenn du erweiterte Funktionen nutzen möchtest (z.B. die Synchronisierung und Backup-Import) kannst du deinen Account auf Pro updaten, ohne Abo, so oft und lange wie du es möchtest !<br>
+			Auf <a href="https://my.teachertab.de" class="extern" target="_blank">my.teachertab.de</a> kannst du deinen Account verwalten und dir den Pro-Account anschauen.
 			</span>
-		</li>
-		<li>
-			<input id="passW" type="password" placeholder="Passwort" tabindex="2">
 		</li>
 		<li class="msg error hide">
 			Fehlermeldung
 		</li>
-		<li>
-			<span>
-			Bei einem Anmeldefehler solltest du dich unter <a href="my.teachertab.de" class="extern" target="_blank">my.teachertab.de</a> anmelden und überprüfen, ob dein Passwort richtig ist und dein Account auch für erweiterte Funktionen freigeschaltet ist
-			</span>
-		</li>
 	</ul>
 	</form>
-	<div class="close"><a class="stay" href="#">x</a></div>
 	<div>
-		<a class="button OK stay" onclick="settingsAllgemein()" href="#">Speichern</a>
+		<a class="button OK stay" onclick="settingsAllgemein()" href="#">Login</a>
 	</div>
 </div>
 
