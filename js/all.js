@@ -830,21 +830,43 @@ function klassenSyncHandler(location, newWindow){
 			GLOBALS.perfEnd = performance.now(); // DEV
 			console.log("INFO: Finished opening Class in " + Math.round((GLOBALS.perfEnd - GLOBALS.perfStart), 1) + " milliseconds."); // DEV
 			
-			progress += 30; // Statusbar
-			updateStatus(progress, "Daten entschlüsseln und zusammenführen", "Synchronisiere...");
-			
-			setTimeout(function(){
-				progress += 10; // Statusbar
-				updateStatus(progress, progress+" %", "Synchronisation erfolgreich !");
-				// --- Klasse aufrufen/schließen ---
+			if (isObject(mergedKlasse)) {
+
+				progress += 30; // Statusbar
+				updateStatus(progress, "Daten entschlüsseln und zusammenführen", "Synchronisiere...");
+
 				setTimeout(function(){
-					if (newWindow) {
-						window.open(location, '_blank');
-					}else{
-						window.location.href = location
-					}
-				}, 1200);
-			},500);
+					progress += 10; // Statusbar
+					updateStatus(progress, progress+" %", "Synchronisation erfolgreich !");
+					// --- Klasse aufrufen/schließen ---
+					setTimeout(function(){
+						if (newWindow) {
+							window.open(location, '_blank');
+						}else{
+							window.location.href = location
+						}
+					}, 1200);
+				},500);
+
+			}else{
+
+				// mergedKlasse als Fehlermeldung ausgeben
+				if (klassenObject) {
+					// Klasse kann trotzdem geöffnet
+					updateStatus(progress, mergedKlasse, "Keine Synchronisation durchgeführt !", false, true);
+					setTimeout(function(){
+						if (newWindow) {
+							window.open(location, '_blank');
+						}else{
+							window.location.href = location
+						}
+					}, 3000);
+				}else{
+					// Klasse nicht lokal vorhanden und kein Sync
+					updateStatus(progress, mergedKlasse, "Keine Synchronisation und Klasse nicht vorhanden !", false, true);
+				}
+
+			}
 
 		}, klassenObject);
 
@@ -864,18 +886,16 @@ function klassenDeleteHandler(id) {
 	db_dropKlasse(GLOBALS.klasse, function(){
 		progress += 40;
 		updateStatus(progress, progress+" %", "Lösche Klassendaten: Aus dem Speicher und Verzeichnis des Servers");
-		sync_deleteKlasse(GLOBALS.klasse, function(error){
-			progress = 100;
-			if (!error) {
+		sync_deleteKlasse(GLOBALS.klasse, function(msg){
+			if (msg) {
+				progress = 100;
 				updateStatus(progress, progress+" %", "Lösche Klassendaten: Erfolgreich !");
-				setTimeout(function(){window.location.reload()}, 2000)
 			}else{
-				updateStatus(progress, progress+" %", "Lösche Klassendaten: Ein Fehler ist aufgetreten !", false, true);
-				document.getElementById('item0Sync').getElementsByClassName('button')[1].classList.remove('hide');
+				updateStatus(progress, msg, "Klasse nicht vom Server gelöscht", false, true);
 			}
+			setTimeout(function(){window.location.reload()}, 3000)
 		});
 	});
-
 	return;
 }
 
@@ -905,8 +925,13 @@ function klassenImportHandler() {
 	// Sync an Server
 	progress += 30; // Statusbar
 	updateStatus(progress, "verschlüsselte Daten senden", "Importiere Backup...");
-	sync_pushBack(function(){
+	sync_pushBack(function(unencrypted, errormsg){
 
+		if (errormsg && typeof errormsg != "undefined") {
+			setTimeout(function(){
+				updateStatus(progress, errormsg, "Import fehlgeschlagen !", false, true);
+			}, 3000);
+		}
 		// auf Klassenliste setzen oder aktualisieren
 		console.log("IDB: adding Class to Account (not local)");
 		db_simpleUpdate(function(){

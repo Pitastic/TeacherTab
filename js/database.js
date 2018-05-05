@@ -447,7 +447,7 @@ function db_readKlasse(callback, targetClass) {
 		}else{
 			// Close and Callback
 			connection.close();
-			callback([targetClass]);
+			callback(false);
 		}
 	}
 

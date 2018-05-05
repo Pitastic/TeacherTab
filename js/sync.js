@@ -72,19 +72,23 @@ function sync_getKlasse(callback, classObjectArray) {
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
 				//DEV console.log("SYNC recieved:", newData);
 				// Merge Klasse
-				var merged = mergeKlasse(newData, klassenObject);
-				if (merged) {
-					//DEV console.log("SYNC merged to:", merged);
-					// (Create)
-					db_neueKlasse(function(){
-						// Save lokal
-						db_replaceData(function(){
-							// Push zurück zu Server
-							sync_pushBack(callback, merged, ["class", klassenHash]);
-						}, merged, klassenHash, true);
-					}, klassenHash, merged[1].name)
+				if (objLength(newData)) {
+					var merged = mergeKlasse(newData, klassenObject);
+					if (merged) {
+						//DEV console.log("SYNC merged to:", merged);
+						// (Create)
+						db_neueKlasse(function(){
+							// Save lokal
+							db_replaceData(function(){
+								// Push zurück zu Server
+								sync_pushBack(callback, merged, ["class", klassenHash]);
+							}, merged, klassenHash, true);
+						}, klassenHash, merged[1].name)
+					}else{
+						alert("Diese Klasse kann nicht geöffnet werden !\nSie ist weder auf dem Gerät, noch konnte sie vom Server geladen werden !");
+					}
 				}else{
-					alert("Die Klasse konnte nicht abgerufen werden, weil weder auf dem Server noch auf deinem Gerät Daten dazu gefunden wurden !\nDer Eintrag ist eine Karteileiche !");
+					return callback(data.msg)
 				}
 			},
 			error: function(data, status, jqXHR){
@@ -179,13 +183,18 @@ function sync_deleteKlasse(id, callback){
 			},
 			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
-				console.log("SYNC: erfolgreich !");
-				callback();
+				if (data.payload) {
+					console.log("SYNC: erfolgreich !");
+					callback(data.payload);
+				}else{
+					console.log("SYNC-ERROR: Löschen auf dem Server nicht möglich");
+					callback(data.msg);
+				}
 			},
 			error: function(data, status, jqXHR){
 				console.log("SYNC-ERROR: Löschen auf dem Server nicht möglich");
 				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
-				callback(true);
+				callback(false);
 			},
 		});
 	}else{

@@ -31,7 +31,8 @@ li.edit {
     text-align: right;
 }
 
-.popUp { 
+.popUp {
+        font-family: Helvetica, Arial;
         position: absolute; z-index: 5;
         right: 10%; left: 10%;
         margin: 0 auto; padding: 15px;
