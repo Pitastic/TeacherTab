@@ -215,7 +215,7 @@ function listIdx_Select(account) {
 		google_ad_height = 200;
 		text.innerHTML = 'FREE Account';
 		text.classList.add("free");
-		info.innerHTML = '<a href="my.teachertab.de/home.php" title="Zu deinem Account">Hol\' dir Pro</a>'
+		info.innerHTML = '<a href="my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>'
 	}
 }
 
