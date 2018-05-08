@@ -165,6 +165,7 @@ function setAuth(status) {
 // =================================================== //
 
 function listIdx_Select(account) {
+	console.log(account);
 	var options = [];
 	var result = account.klassenliste;
 	var sel = document.getElementById("klasseSelect");
@@ -199,6 +200,23 @@ function listIdx_Select(account) {
 
 	sel.parentNode.replaceChild(clone,sel);
 	document.getElementById("indexKlassen").getElementsByTagName("span")[0].innerHTML = "Insgesamt " + optCount + " Klassen in deinem Account";
+	var auth_status = document.getElementById('AuthStatus')
+	var text = auth_status.getElementsByClassName('statusText')[0];
+	var info = auth_status.getElementsByClassName('statusInfo')[0];
+	if (account.valid) {
+		text.innerHTML = 'PRO Account'
+		text.classList.add("pro");
+		info.innerHTML = 'bis ' + datum(true, account.validDate);
+	}else{
+		// Werbung: Square
+		google_ad_client = "ca-pub-5341512616014650";
+		google_ad_slot = "9424168592";
+		google_ad_width = 200;
+		google_ad_height = 200;
+		text.innerHTML = 'FREE Account';
+		text.classList.add("free");
+		info.innerHTML = '<a href="my.teachertab.de/home.php" title="Zu deinem Account">Hol\' dir Pro</a>'
+	}
 }
 
 

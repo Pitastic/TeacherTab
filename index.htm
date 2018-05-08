@@ -65,6 +65,7 @@
 <div id="item0" class="uebersicht show">
 	<div class="content">
 		<h2>Willkommen</h2>
+
 		<div class="styleWrap scrollable">
 			<div id="indexKlassen" class="indexBox">
 				Liste aller verfügbaren Klassen
@@ -79,34 +80,24 @@
 				<span>Lade...</span>
 			</div>
 		</div>
+
 		<div class="styleWrap">
 			<div class="indexBox">
-				<a class="button stay" href="#" title="Grundeinstellungen" onclick="popUp('item0First')">Grundeinstellungen</a><br>
-				<a class="button HELP stay" href="https://www.teachertab.de" title="Hilfe" target="_blank">TeacherTab.de</a>
-				<p>
-					Eine kleine Einführung zur WebApp, Hilfe und Kontakt findest du auf TeacherTab.de
-				</p>
+				<div class="cell">
+					<a class="button stay" href="#" title="Grundeinstellungen" onclick="popUp('item0First')">Grundeinstellungen</a><br>
+					<a class="button HELP stay" href="https://www.teachertab.de" title="Hilfe" target="_blank">TeacherTab.de</a>
+				</div class="cell">
 			</div>
 		</div>
 		
-		<div class="styleWrap Werbung">
-			<script type="text/javascript">
-				/*
-				google_ad_client = "ca-pub-5341512616014650";
-				// Square
-				google_ad_slot = "9424168592";
-				google_ad_width = 200;
-				google_ad_height = 200;
-				
-				if (navigator.onLine){
-					document.write('<span>Schenk mir ab und zu einen Klick:<\/span><script type="text/javascript" src="https://pagead2.googlesyndication.com/pagead/show_ads.js"><\/script>')
-				}else{
-					document.write('<div class="offlineBanner">Du bist im Offline-Modus !</div>')
-				}
-				*/
-				// -- DEV
-				document.write('<div class="offlineBanner">Du bist im DEV-Modus !</div>')
-			</script>
+		<div class="styleWrap">
+			<div class="indexBox">
+				<div class="cell" id="AuthStatus">
+					<h4>Dein Status:</h4>
+					<div class="statusText">Lade...</div>
+					<footer class="statusInfo">...</footer>
+				</div>
+			</div>
 		</div>
 		
 	</div>
@@ -271,8 +262,8 @@
 	<ul>
 		<li>
 			<span>
-				Gib hier deine Accountdaten von <a href="https://my.teachertab.de" class="extern" target="_blank">my.teachertab.de</a> an.<br>
-			</span>
+				Gib hier deine Accountdaten von <a href="https://my.teachertab.de" class="extern" target="_blank">my.teachertab.de</a> an.
+			</span><br>
 			<span class="highlight">
 				Du hast noch keinen Account ? Dann kannst du dich <a href="https://my.teachertab.de/register.php" class="extern" target="_blank">hier</a> einfach kostenlos registrieren !
 			</span>
@@ -285,8 +276,10 @@
 		</li>
 		<li>
 			<span>
-			Wenn du erweiterte Funktionen nutzen möchtest (z.B. die Synchronisierung und Backup-Import) kannst du deinen Account auf Pro updaten, ohne Abo, so oft und lange wie du es möchtest !<br>
-			Auf <a href="https://my.teachertab.de" class="extern" target="_blank">my.teachertab.de</a> kannst du deinen Account verwalten und dir den Pro-Account anschauen.
+			Wenn du erweiterte Funktionen nutzen möchtest (z.B. die Synchronisierung und Backup-Import) kannst du deinen Account auf Pro updaten, ohne Abo, so oft und lange wie du es möchtest !
+			</span><br>
+			<span class="highlight">
+			Auf <a href="https://my.teachertab.de" class="extern" target="_blank">my.teachertab.de</a> kannst du deinen Account verwalten und dir Pro anschauen.
 			</span>
 		</li>
 		<li class="msg error hide">
@@ -295,6 +288,7 @@
 	</ul>
 	</form>
 	<div>
+		<a class="button ABORT stay" onclick="window.location.reload()" href="#">Abbrechen</a>
 		<a class="button OK stay" onclick="settingsAllgemein()" href="#">Login</a>
 	</div>
 </div>

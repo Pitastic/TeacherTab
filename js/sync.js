@@ -21,7 +21,7 @@ function sync_getAccount(callback, localAccount) {
 	if (GLOBALS.AUTH) {
 		console.log("ACCOUNT: sync/merge");
 		$.ajax({
-			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/account',
+			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/account/',
 			type: 'GET',
 			headers: {
 				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
@@ -32,6 +32,8 @@ function sync_getAccount(callback, localAccount) {
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
 				// Merge
 				var merged = mergeAccount(newData, localAccount);
+				merged['valid'] = data.valid;
+				merged['validDate'] = data.validDate;
 				//DEVconsole.log("SYNC: Merged", merged);
 				// Save and Push back
 				db_replaceData(function(){

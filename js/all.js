@@ -9,7 +9,7 @@ var GLOBALS = {
 	'SyncServer'		: "/c/api",
 	'timeout'			: 6000,
 
-	'appversion'		: "0.33b",
+	'appversion'		: "0.35b",
 	'dbname'			: null,
 	'dbversion'			: null,	
 	'dbToGo'			: null,
@@ -381,17 +381,22 @@ function compareStudents(a, b) {
 }
 
 
-function datum(nummeric){
-	var d = new Date();
+function datum(numeric, given){
+	if (!given) {
+		var d = new Date();
+	}else{
+		var d = new Date(given);
+	}
 	var monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 	var tag, monat, jahr;
 	tag = d.getDate();
-	if (!nummeric) {
+	if (!numeric) {
 		monat = monate[d.getMonth()];
 		jahr = d.getFullYear();
 		return tag+'. '+monat+' '+jahr;
 	}else{
-		return d.toLocaleDateString();
+		var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+		return d.toLocaleDateString("de-DE", options);
 	}
 }
 
