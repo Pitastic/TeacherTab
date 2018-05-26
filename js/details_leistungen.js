@@ -31,8 +31,9 @@ $(document).ready(function() {
 		var id_Leistung = parseInt(sessionStorage.getItem('leistung_id'));
 		var art_Leistung = sessionStorage.getItem('leistung_art');
 		if (window.confirm('Bist du sicher, dass du diese Leistung und alle eingetragenen Daten dazu unwiderruflich löschen möchtest ?')){
+			pop.classList.remove('showPop');
 			handleDeleteLeistung(function(r){
-				slide1('item2details', "details_leistungen.htm");
+				slide1('item2details', "uebersicht.htm");
 			}, art_Leistung, id_Leistung);
 		}
 	});

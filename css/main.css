@@ -402,11 +402,11 @@ Details Leistungen (item2details)
 	*/
 	margin-right: 0;
 	right: 0 !important;
-	width: 300px;
+	width: 230px;
 	overflow-y: auto !important;
 }
 .styleWrap.arbeit_leistung {
-	margin-left: 360px;
+	margin-left: 285px;
 }
 
 #arbeit_info {

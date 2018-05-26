@@ -265,6 +265,7 @@ function updateStatus(progress, statustext, statustitle, elements, error){
 			el_statusbar.style.width = "100%";
 			el_statusbar.classList.remove('ok');
 			el_statusbar.classList.add('error');
+			el_statusbar.style.width = "";
 		}
 	}
 	return;

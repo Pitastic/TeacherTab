@@ -70,14 +70,15 @@ function sync_getKlasse(callback, classObjectArray) {
 			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
 				// GET Klasse
+				console.log("SYNC: Data ", data);
 				//DEV console.log("SYNC local:", klassenObject);
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
-				//DEV console.log("SYNC recieved:", newData);
 				// Merge Klasse
-				if (objLength(newData)) {
+				if (objLength(newData) > -1) {
+					console.log("SYNC recieved:", newData);
 					var merged = mergeKlasse(newData, klassenObject);
 					if (merged) {
-						//DEV console.log("SYNC merged to:", merged);
+						console.log("SYNC merged to:", merged);
 						// (Create)
 						db_neueKlasse(function(){
 							// Save lokal

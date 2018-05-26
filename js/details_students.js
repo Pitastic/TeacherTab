@@ -45,6 +45,7 @@ $(document).ready(function() {
 	// DEV : Änderung syncen !?!
 	pop.getElementsByClassName('button ABORT')[0].addEventListener('click', function(){
 		if (window.confirm('Bist du sicher, dass du diesen Schüler inklusive allen Eintragungen unwiderruflich löschen möchtest ?')){
+			pop.classList.remove('showPop');
 			// Schüler löschen
 			db_deleteDoc(
 				// anschließend seine id auf Blacklist setzen
