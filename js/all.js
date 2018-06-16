@@ -6,7 +6,7 @@ var GLOBALS = {
 	'AUTH'				: null,
 	'userID'			: null,
 	'passW'				: null,
-	'SyncServer'		: "/c/api",
+	'SyncServer'		: "c/api",
 	'timeout'			: 6000,
 
 	'appversion'		: "0.35b",

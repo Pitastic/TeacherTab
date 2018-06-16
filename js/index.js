@@ -204,18 +204,21 @@ function listIdx_Select(account) {
 	var text = auth_status.getElementsByClassName('statusText')[0];
 	var info = auth_status.getElementsByClassName('statusInfo')[0];
 	if (account.valid) {
-		text.innerHTML = 'PRO Account'
+		text.innerHTML = 'PRO Account !'
 		text.classList.add("pro");
-		info.innerHTML = 'bis ' + datum(true, account.validDate);
+		//info.innerHTML = 'bis ' + datum(true, account.validDate);
+		info.parentNode.removeChild(info);
 	}else{
 		// Werbung: Square
+		/*
 		google_ad_client = "ca-pub-5341512616014650";
 		google_ad_slot = "9424168592";
 		google_ad_width = 200;
 		google_ad_height = 200;
+		*/
 		text.innerHTML = 'Basic Account';
 		text.classList.add("basic");
-		info.innerHTML = '<a href="my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>'
+		info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>'
 	}
 }
 
