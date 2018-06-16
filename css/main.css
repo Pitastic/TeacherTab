@@ -97,7 +97,7 @@ Listen in allen Ansichten
 				border-width: 1px 0 1px 0;
 			}
 				#AuthStatus .statusText.pro{background-color: #76e97f;}
-				#AuthStatus .statusText.free{background-color: #76cde9;}
+				#AuthStatus .statusText.basic{background-color: #76cde9;}
 			#AuthStatus .statusInfo{
 				font-style: italic;
 				margin-top: 0.5em;

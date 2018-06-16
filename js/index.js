@@ -213,8 +213,8 @@ function listIdx_Select(account) {
 		google_ad_slot = "9424168592";
 		google_ad_width = 200;
 		google_ad_height = 200;
-		text.innerHTML = 'FREE Account';
-		text.classList.add("free");
+		text.innerHTML = 'Basic Account';
+		text.classList.add("basic");
 		info.innerHTML = '<a href="my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>'
 	}
 }
