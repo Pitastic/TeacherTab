@@ -43,7 +43,10 @@ function sync_getAccount(callback, localAccount) {
 			error: function(data, status, jqXHR){
 				console.log("SYNC-ERROR: Kein Sync des Accounts durchgeführt !");
 				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
-				callback(localAccount); 
+				GLOBALS.AUTH = false;
+				localStorage.setItem("auth", false);
+				localStorage.removeItem("TeacherTab");
+				window.location.reload();
 			},
 		});
 	}else{
