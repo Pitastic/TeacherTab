@@ -30,6 +30,7 @@ function sync_getAccount(callback, localAccount) {
 			success: function(data, status, jqXHR){
 				// GET
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
+				//DEVconsole.log("SYNC: data", data);
 				// Merge
 				var merged = mergeAccount(newData, localAccount);
 				merged['valid'] = data.valid;
@@ -100,7 +101,7 @@ function sync_getKlasse(callback, classObjectArray) {
 			error: function(data, status, jqXHR){
 				console.log("SYNC-ERROR: Kein Sync der Klasse "+klassenObject.name+" ("+klassenHash+") durchgeführt !");
 				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
-				callback(klassenObject); 
+				callback("Öffne Klasse ohne Sync..."); 
 			},
 		});
 	}else{

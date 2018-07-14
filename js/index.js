@@ -165,7 +165,7 @@ function setAuth(status) {
 // =================================================== //
 
 function listIdx_Select(account) {
-	console.log(account);
+	//DEVconsole.log(account);
 	var options = [];
 	var result = account.klassenliste;
 	var sel = document.getElementById("klasseSelect");
@@ -204,10 +204,14 @@ function listIdx_Select(account) {
 	var text = auth_status.getElementsByClassName('statusText')[0];
 	var info = auth_status.getElementsByClassName('statusInfo')[0];
 	if (account.valid) {
-		text.innerHTML = 'PRO Account !'
 		text.classList.add("pro");
-		//info.innerHTML = 'bis ' + datum(true, account.validDate);
-		info.parentNode.removeChild(info);
+		if (account.validDate != "2099-01-01") {
+			text.innerHTML = 'PRO Account bis ' + datum(true, account.validDate);
+			info.innerHTML =  '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">unbegrenzt Pro holen</a>';
+		}else{
+			text.innerHTML = 'PRO Account !';
+			info.parentNode.removeChild(info);
+		}
 	}else{
 		// Werbung: Square
 		/*
