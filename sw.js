@@ -11,7 +11,6 @@ self.addEventListener('install', function(e) {
 				'/apple-touch-icon.png',
 				'/apple-touch-startup-image-748x1024.png',
 				'/apple-touch-startup-image-768x1004.png',
-				'/cache.manifest',
 				'/css/basic.css',
 				'/css/button.css',
 				'/css/export.css',
