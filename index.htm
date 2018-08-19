@@ -1,16 +1,16 @@
 <!doctype html>
-<html manifest="cache.manifest">
+<!--<html manifest="cache.manifest">-->
 
 <head>
 	<meta charset="utf-8">
-	<link rel="manifest" href="manifest.webmanifest">
+	<link rel="manifest" href="manifest.json">
 	<meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<meta id="dynamicViewport" name="viewport">
 	<script type="text/javascript">
 	// ServiceWorker
-	if('serviceWorker' in navigator) { // <--- Safari sollte Support haben, anderes IF ?
+	if('serviceWorker' in navigator) {
 		navigator.serviceWorker
-			.register('/sw.js')
+			.register( '/sw.js', {scope: '.'} )
 			.then(function() { console.log("SW: Service Worker Registered"); })
 			.catch(function(err) { console.log("SW: Error, Service Worker failed to register !", err); });
 	}else{

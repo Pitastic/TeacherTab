@@ -1,12 +1,15 @@
-// Caching: find . -type f | grep -v "\.git\|README\.md" | sort -u
+// Caching: find . -type f | grep -v "\.git\|README\.md\|sw\.js\|\.manifest" | sort -u
 //
 // Cache with Wildcard ?
 // Cache auch ohne Install (bei Desktop)
 // Cache-Policy
 //
-self.addEventListener('install', function(e) {
-	e.waitUntil(
-		caches.open('tt_webapp').then(function(cache) {
+
+var CACHE = "tt_webapp";
+
+self.addEventListener('install', function(event) {
+	event.waitUntil(
+		caches.open(CACHE).then(function(cache) {
 			var needToCache = [
 				'/apple-touch-icon.png',
 				'/apple-touch-startup-image-748x1024.png',
@@ -44,6 +47,7 @@ self.addEventListener('install', function(e) {
 				'/favicon/favicon-32x32.png',
 				'/favicon/favicon-96x96.png',
 				'/favicon/favicon.ico',
+				'/favicon/icon-512x512.png',
 				'/favicon.ico',
 				'/img/back_tisch.jpg',
 				'/img/DropDown.png',
@@ -191,7 +195,6 @@ self.addEventListener('install', function(e) {
 				'/js/sync.js',
 				'/js/touch.js',
 				'/js/uebersicht.js',
-				'/manifest.webmanifest',
 				'/settings.htm',
 				'/sw.js',
 				'/uebersicht.htm',
@@ -204,3 +207,77 @@ self.addEventListener('install', function(e) {
 		})
 	);
 });
+
+self.addEventListener('fetch', function(event) {
+	console.log("Mode:", event.request.mode, (event.request.mode === 'navigate'));
+	// Network-First-Policy
+	/*
+	event.respondWith(
+		// Ressource anfragen
+		tryNetwork(evt.request, 400)
+		.then(function (response) {
+			// Update Cache weil online
+			// (wird hier 'response' richtig weitergegeben?)
+			cache.open(CACHE)
+			.then(funtion(cache){
+				cache.put(event.request, response.clone());
+				return response;
+			})
+			.catch(function(){
+				console.log("SW: Cache", CACHE, "unerreichbar für Updates!");
+				return response;
+			})
+		}
+		.catch(function () {
+			// Ressource aus Cache raussuchen, weil offline/timeout
+			return fromCache(evt.request);
+		})
+	);
+	*/
+	event.respondWith(fetch(event.request));
+});
+
+/*
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.open(CACHE).then(function(cache) {
+      return cache.match(event.request).then(function (response) {
+        return response || fetch(event.request).then(function(response) {
+          cache.put(event.request, response.clone());
+          return response;
+        });
+      });
+    })
+  );
+});
+
+
+function fromCache(request) {
+	return caches.open(CACHE).then(function (cache) {
+		return cache.match(request).then(function (matching) {
+			return matching || Promise.reject('no-match');
+		});
+	});
+}
+
+function update(request) {
+	return caches.open(CACHE).then(function (cache) {
+		return fetch(request).then(function (response) {
+			return cache.put(request, response);
+		});
+	});
+}
+*/
+
+function tryNetwork(request, timeout){
+	return new Promise(function (fulfill, reject) {
+		var timeoutId = setTimeout(reject, timeout);
+		fetch(request).then(function (response) {
+			clearTimeout(timeoutId);
+			// ...update Cache
+			// ...
+			// return Ressource
+			fulfill(response);
+		}, reject);
+	});
+}
