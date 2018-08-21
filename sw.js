@@ -196,63 +196,43 @@ self.addEventListener('install', function(event) {
 				'/js/touch.js',
 				'/js/uebersicht.js',
 				'/settings.htm',
-				'/sw.js',
 				'/uebersicht.htm',
 			];
 			for (var i = needToCache.length - 1; i >= 0; i--) {
-				console.log("SW: ...caching", needToCache[i]);
+				console.log("SW: ...caching ( von", needToCache.length, ")");
 				cache.add( needToCache[i] )
-				.catch(function(err) { console.log("SW: Fehler beim Cachen", err) });
+				.catch(function(err) { console.log("SW: Fehler beim Cachen von", needToCache[i], err) });
 			}
 		})
 	);
 });
 
 self.addEventListener('fetch', function(event) {
-	console.log("Mode:", event.request.mode, (event.request.mode === 'navigate'));
+	console.log("SW: Looking for", event.request.url);
 	// Network-First-Policy
-	/*
-	event.respondWith(
-		// Ressource anfragen
-		tryNetwork(evt.request, 400)
-		.then(function (response) {
-			// Update Cache weil online
-			// (wird hier 'response' richtig weitergegeben?)
-			cache.open(CACHE)
-			.then(funtion(cache){
-				cache.put(event.request, response.clone());
-				return response;
+	// nur Request nach Ressourcen abfangen (kein CGI)
+	if (event.request.mode != "cors") {
+		event.respondWith(
+			// Ressource anfragen
+			tryNetwork(event.request, 1000)
+			// Offline oder Timeout
+			.catch(function (request) {
+				// Ressource aus Cache raussuchen, weil offline/timeout
+				console.log("SW: Not in the Web, Lookup im Cache...");
+				return fromCache(event.request).catch( function(err){
+					console.log("SW: Not in Cache nor the Web:", err);
+					return false;
+				});
 			})
-			.catch(function(){
-				console.log("SW: Cache", CACHE, "unerreichbar für Updates!");
-				return response;
-			})
-		}
-		.catch(function () {
-			// Ressource aus Cache raussuchen, weil offline/timeout
-			return fromCache(evt.request);
-		})
-	);
-	*/
-	event.respondWith(fetch(event.request));
+		);
+		/*
+		event.respondWith(fetch(event.request));
+		*/
+	}
 });
-
-/*
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.open(CACHE).then(function(cache) {
-      return cache.match(event.request).then(function (response) {
-        return response || fetch(event.request).then(function(response) {
-          cache.put(event.request, response.clone());
-          return response;
-        });
-      });
-    })
-  );
-});
-
 
 function fromCache(request) {
+	console.log("SW: Serving from Cache", request);
 	return caches.open(CACHE).then(function (cache) {
 		return cache.match(request).then(function (matching) {
 			return matching || Promise.reject('no-match');
@@ -260,24 +240,32 @@ function fromCache(request) {
 	});
 }
 
-function update(request) {
-	return caches.open(CACHE).then(function (cache) {
-		return fetch(request).then(function (response) {
-			return cache.put(request, response);
-		});
-	});
-}
-*/
 
 function tryNetwork(request, timeout){
-	return new Promise(function (fulfill, reject) {
-		var timeoutId = setTimeout(reject, timeout);
+	var promise = new Promise(function(resolve, reject){
+		var timeoutId = setTimeout(function(){
+			console.log("SW: Timed out:", request.url);
+			reject(request);
+		}, timeout);
 		fetch(request).then(function (response) {
 			clearTimeout(timeoutId);
 			// ...update Cache
-			// ...
-			// return Ressource
-			fulfill(response);
-		}, reject);
-	});
+			caches.open(CACHE)
+			.then(function(cache){
+				var cacheResponse = response.clone();
+				cache.put(request, cacheResponse);
+				console.log("SW: Fullfilling", request.url);
+				resolve(response); // ...response
+			})
+			.catch(function(err) {
+				console.log("SW: Cache-Error", response.clone().url, err, "fullfilling anyway...")
+				resolve(response); // ...response mit Cache-Fail
+			})
+		})
+		.catch(function(){
+			console.log("SW: Fetch-Error:", request.url);
+			reject(request);
+		});
+	})
+	return promise;
 }

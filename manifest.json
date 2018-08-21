@@ -1,6 +1,6 @@
 {
-	"background_color": "brown",
-	"theme_color": "brown",
+	"background_color": "#d4975d",
+	"theme_color": "#d4975d",
 	"description": "TeacherTab für Lehrer, Noten organisieren und berechnen",
 	"display": "fullscreen",
 	"icons": [
