@@ -5,7 +5,7 @@
 // Cache-Policy
 //
 
-var CACHE = "tt_webapp_v1";
+var CACHE = "tt_webapp_v2";
 var needToCache = [
 	'/index.htm',
 	'/settings.htm',
@@ -64,6 +64,7 @@ var needToCache = [
 	'/js/details_students.js',
 	'/js/export.js',
 	'/js/index.js',
+	'/js/mobile.js',
 	'/js/settings.js',
 	'/js/stay.js',
 	'/js/sync.js',

@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version: 1.0.1
+# Version: 1.0.2
 
 CACHE:
 
@@ -60,6 +60,7 @@ CACHE:
 ./js/details_students.js
 ./js/export.js
 ./js/index.js
+./js/mobile.js
 ./js/settings.js
 ./js/stay.js
 ./js/sync.js
