@@ -5,20 +5,19 @@
 	<meta charset="utf-8">
 	<meta id="dynamicViewport" name="viewport">
 	<script type="text/javascript">
-    if (screen.width > 767) {
-        switch(window.orientation){
-            case 180:
-            case 0:
-                // Portrait = 0 or 180:
-                document.getElementById('dynamicViewport').setAttribute('content', "width=device-width");
-                break;
-            default:
-                // Landscape = 90 or -90:
-                document.getElementById('dynamicViewport').setAttribute('content', "width="+document.documentElement.clientWidth);
-                break;
-        }
-    }
+    	// ServiceWorker
+	if('serviceWorker' in navigator) {
+		navigator.serviceWorker
+			.register( '/sw.js', {scope: '.'} )
+			.then(function() { console.log("SW: Service Worker Registered"); })
+			.catch(function(err) { console.log("SW: Error, Service Worker failed to register !", err); });
+	}else{
+		console.log("SW: Service Worker werden nicht unterstützt ! - Fallback zu cache.manifest...");
+	}
     </script>
+    
+    <!-- Mobile -->
+    <script type="text/javascript" src="js/mobile.js"></script>
 
     <!-- Apple Statusbar -->
     <meta name="apple-mobile-web-app-capable" content="yes">
