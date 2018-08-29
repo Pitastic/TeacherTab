@@ -1,22 +1,11 @@
 <!doctype html>
-<!--<!--<html manifest="cache.manifest">-->-->
+<html manifest="cache.manifest">
 
 <head>
 	<meta charset="utf-8">
-	<link rel="manifest" href="manifest.json">
 	<meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<meta id="dynamicViewport" name="viewport">
 	<script type="text/javascript">
-	// ServiceWorker
-	if('serviceWorker' in navigator) {
-		navigator.serviceWorker
-			.register( '/sw.js', {scope: '.'} )
-			.then(function() { console.log("SW: Service Worker Registered"); })
-			.catch(function(err) { console.log("SW: Error, Service Worker failed to register !", err); });
-	}else{
-		console.log("SW: Service Worker werden nicht unterstützt ! - Fallback zu cache.manifest...");
-	}
-	// Mobile
 	if (screen.width > 767) {
 		switch(window.orientation){
 			case 180:
@@ -41,27 +30,27 @@
 	<link href="apple-touch-startup-image-748x1024.png" media="(device-width: 768px) and (orientation: landscape)" rel="apple-touch-startup-image">
 
 	<!-- CSS Media Queries -->
-	<link rel="stylesheet" href="/css/basic.css" />
-	<link rel="stylesheet" href="/css/main.css" />
-	<link rel="stylesheet" href="/css/popup.css" />
-	<link rel="stylesheet" href="/css/button.css" />
-	<link rel="stylesheet" media="only screen and (min-device-width: 768px)" href="/css/tablet.css" />
-	<link rel="stylesheet" media="only screen and (max-device-width: 767px)" href="/css/phone.css" />
+	<link rel="stylesheet" href="./css/basic.css" />
+	<link rel="stylesheet" href="./css/main.css" />
+	<link rel="stylesheet" href="./css/popup.css" />
+	<link rel="stylesheet" href="./css/button.css" />
+	<link rel="stylesheet" media="only screen and (min-device-width: 768px)" href="./css/tablet.css" />
+	<link rel="stylesheet" media="only screen and (max-device-width: 767px)" href="./css/phone.css" />
 
 	<!-- Favicons -->
-	<link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
-	<link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
-	<link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
-	<link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
-	<link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
-	<link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
-	<link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
-	<link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
-	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
-	<link rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png">
-	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="57x57" href="./favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="./favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="./favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="./favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="./favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="./favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="./favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="./favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="./favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="./favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
 	
 	
 	<title>TeacherTab</title>
@@ -317,7 +306,7 @@
 		<div class="clearer"></div>
 	</div>
 	</div>
-	<div id="btn_refresh" class="button"><a href="#" class="stay" onclick="window.location.reload();"><img src="/img/reload_button.gif"></a></div>
+	<div id="btn_refresh" class="button"><a href="#" class="stay" onclick="window.location.reload();"><img src="./img/reload_button.gif"></a></div>
 </nav>
 
 <div id="footer"></div>

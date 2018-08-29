@@ -9,7 +9,7 @@ var GLOBALS = {
 	'SyncServer'		: "c/api",
 	'timeout'			: 6000,
 
-	'appversion'		: "1.0",
+	'appversion'		: "0.35b",
 	'dbname'			: null,
 	'dbversion'			: null,	
 	'dbToGo'			: null,
@@ -818,7 +818,7 @@ function waitForDB(callback){
 
 function klassenSyncHandler(location, newWindow){
 //-> Synchronisierung, Animation und Weiterleitung
-	// DEV GLOBALS.perfStart = performance.now();
+	GLOBALS.perfStart = performance.now(); // DEV
 	popUp("item0Sync");
 
 	// Animation, Sync und DB
@@ -833,8 +833,8 @@ function klassenSyncHandler(location, newWindow){
 		
 		sync_getKlasse(function(mergedKlasse) {
 
-			// DEV GLOBALS.perfEnd = performance.now();
-			// DEV console.log("INFO: Finished opening Class in " + Math.round((GLOBALS.perfEnd - GLOBALS.perfStart), 1) + " milliseconds.");
+			GLOBALS.perfEnd = performance.now(); // DEV
+			console.log("INFO: Finished opening Class in " + Math.round((GLOBALS.perfEnd - GLOBALS.perfStart), 1) + " milliseconds."); // DEV
 			
 			if (isObject(mergedKlasse)) {
 
