@@ -422,7 +422,6 @@ function db_replaceData(callback, newObject, oStore, multi) {
 // Gesamte Klasse selektieren
 function db_readKlasse(callback, targetClass) {
 	if (typeof targetClass == "undefined") {targetClass = GLOBALS.klasse;}
-	console.log("IDB: Selecting", targetClass); //DEV
 	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
@@ -433,7 +432,6 @@ function db_readKlasse(callback, targetClass) {
 			request.onerror = errorHandler;
 			request.onsuccess = function(event){
 				var resultList = event.target.result;
-				console.log("IDB: Found", resultList);//DEV
 
 				// Liste in Object nach IDs umwandeln
 				var result = {};
@@ -449,7 +447,7 @@ function db_readKlasse(callback, targetClass) {
 		}else{
 			// Close and Callback
 			connection.close();
-			callback([targetClass]);
+			callback(false);
 		}
 	}
 
