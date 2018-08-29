@@ -92,7 +92,11 @@ function sync_getKlasse(callback, classObjectArray) {
 							}, merged, klassenHash, true);
 						}, klassenHash, merged[1].name)
 					}else{
-						alert("Diese Klasse kann nicht geöffnet werden !\nSie ist weder auf dem Gerät, noch konnte sie vom Server geladen werden !");
+						alert("Diese Klasse kann nicht geöffnet werden !\nSie ist weder auf dem Gerät, noch konnte sie vom Server geladen werden !\nDie Liste wird bereinigt...");
+						// Klasse aus Account entfernen
+						db_simpleUpdate(function(){
+							window.location.reload();
+						}, 1, "klassenliste", "delKlasse", klassenHash, "account");
 					}
 				}else{
 					return callback(data.msg)
