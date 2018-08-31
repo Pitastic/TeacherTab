@@ -19,7 +19,7 @@ $(document).ready(function() {
 
 	// Event-Listener
 	closeListener();
-	touchListener(['header', 'footer', 'fadeBlack', 'KeyBar'])
+	//touchListener(['header', 'footer', 'fadeBlack', 'KeyBar'])
 	var pop = document.getElementById('item0edit');
 
 	// -- Editieren

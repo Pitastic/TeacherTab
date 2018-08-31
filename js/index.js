@@ -3,7 +3,7 @@ $(document).ready(function() {
 	// Style and Listeners
 	addListener();
 	closeListener();
-	touchListener(['header', 'footer', 'fadeBlack', 'MenuMain']);
+	//touchListener(['header', 'footer', 'fadeBlack', 'MenuMain']);
 
 	// -- Buttons
 	document.getElementById('syncOpen').addEventListener('click', function(){

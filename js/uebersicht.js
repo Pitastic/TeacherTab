@@ -11,7 +11,7 @@ $(document).ready(function() {
 	addListener();
 	closeListener();
 	touchSlider()
-	touchListener()
+	//touchListener()
 	// Hide Scrollbars
 	setTimeout(function(){
 		slide2(sessionStorage.getItem('lastview'));

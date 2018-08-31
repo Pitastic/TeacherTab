@@ -7,7 +7,7 @@ $(document).ready(function() {
 	}, "settings", console.log);
 
 	// Style and Listeners
-	touchListener(['header', 'footer', 'fadeBlack']);
+	//touchListener(['header', 'footer', 'fadeBlack']);
 	closeListener();
 });
 
