@@ -1,48 +1,48 @@
-var content = document.getElementsByClassName('styleWrap scrollable');
 var slideBeginX;
 var slideBeginY;
 
 function touchListener(){
-	if (!GLOBALS.isPhone){
-	    var i;
-	    var temp;
-		temp=document.getElementsByClassName('content');
-		for (i=0; i<temp.length; i++){
-		    temp[i].addEventListener("touchmove", function(e){e.preventDefault();});
-		}
-		// make scrollable-
-		for (i=0; i<content.length; i++){
-			content[i].addEventListener('touchstart', function(event){
-				this.allowUp = (this.scrollTop > 0);
-				this.allowDown = (this.scrollTop < this.scrollHeight - this.clientHeight);
-				this.slideBeginY = event.pageY;
-			});
-			content[i].addEventListener('touchmove', function(event){
-				var up = (event.pageY > this.slideBeginY);
-				var down = (event.pageY < this.slideBeginY);
-				this.slideBeginY = event.pageY;
-				if ((up && this.allowUp) || (down && this.allowDown)){
-					event.stopPropagation();
-				}else{
-					event.preventDefault();
-				}
-			});
-		}
+	// Prevent Bumping/Scrolling
+	var contents = document.getElementsByClassName('content');
+	for (var i=0; i<contents.length; i++){
+		contents[i].addEventListener("touchmove", function(e){e.preventDefault();});
+	}
+
+	// ausgesuchte scrollable machen
+	var scrollables = document.getElementsByClassName('styleWrap scrollable');
+	for (i=0; i<scrollables.length; i++){
+		scrollables[i].addEventListener('touchstart', function(event){
+			this.allowUp = (this.scrollTop > 0);
+			this.allowDown = (this.scrollTop < this.scrollHeight - this.clientHeight);
+			this.slideBeginY = event.pageY;
+		});
+		scrollables[i].addEventListener('touchmove', function(event){
+			var up = (event.pageY > this.slideBeginY);
+			var down = (event.pageY < this.slideBeginY);
+			this.slideBeginY = event.pageY;
+			if ((up && this.allowUp) || (down && this.allowDown)){
+				event.stopPropagation();
+			}else{
+				event.preventDefault();
+			}
+		});
 	}
 }
 
 function touchSlider(){
     // Schüler- und Leistungsübersicht
-	for (var i=0; i<content.length; i++){
-		content[i].addEventListener("touchstart", touchStart, false);
-		content[i].addEventListener("touchend", touchEnd, false);
+	var scrollables = document.getElementsByClassName('styleWrap scrollable');
+	for (var i=0; i<scrollables.length; i++){
+		scrollables[i].addEventListener("touchstart", touchStart, false);
+		scrollables[i].addEventListener("touchend", touchEnd, false);
 	}
 }
 
 function noTouchSlider() {
-	for (var i=0; i<content.length; i++){
-		content[i].removeEventListener("touchstart", touchStart, false);
-		content[i].removeEventListener("touchend", touchEnd, false);
+	var scrollables = document.getElementsByClassName('styleWrap scrollable');
+	for (var i=0; i<scrollables.length; i++){
+		scrollables[i].removeEventListener("touchstart", touchStart, false);
+		scrollables[i].removeEventListener("touchend", touchEnd, false);
 	}
 }
 function noTouchThisSlider(target_el) {
