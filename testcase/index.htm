@@ -1,43 +1,35 @@
 <!doctype html>
 <html>
-<!--<html manifest="cache.manifest">-->
 
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-	<meta id="dynamicViewport" name="viewport">
-	
-	<!-- Apple -->
 	<meta name="mobile-web-app-capable" content="yes">
-
-	<!-- CSS Media Queries -->
-	<link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="style.css">
 
 	<title>MacBook Trackpad Scrolling-Bug</title>
 </head>
 
 <body ontouchstart="">
 
-	<div id="seitenleiste" class="">
-		<div onclick="slide(event)" class="selector stay">
-			<span class="marker item1"></span>
-		</div>
-	</div>
-
 	<div id="item1" class="uebersicht flip">
-	<div class="notenHeader">
-		<h3 class="mndl">(mndl)</h3><h3 class="fspz">(fspz)</h3><h3 class="schr">(schr)</h3>
-	</div>
 	
+	<h2>MacBook Trackpad Scrolling-Bug</h2>
+
 	<div class="content">
 	
-	<h2>Schüler</h2>
 	<div class="styleWrap scrollable">
 
-		<div id="listStudents">
+		<div id="list">
 			<ul>
-				<li>Dummy List Item Here</li>
-					<li>Dummy List Item Here</li>
+				<li><b>Tags:</b></li>
+				<li>html: silver</li>
+				<li>body: green</li>
+				<li>.uebersicht: orange</li>
+				<li>.content: red</li>
+				<li>styleWrap: blue</li>
+				<li>list: yellow</li>
+			<li>-----------</li>
 					<li>Dummy List Item Here</li>
 					<li>Dummy List Item Here</li>
 					<li>Dummy List Item Here</li>
@@ -90,49 +82,16 @@
 
 <script type="text/javascript">
 
-	function slide2(slideName){
-	//-> Nur für die Übersichten
+	function slide(slideName){
+		// scroll to top
 		scroll(0,0);
-		var addBtn = document.getElementById('btn_Add');
-		document.getElementsByClassName('marker')[0].className = "marker "+slideName;
-		//document.getElementsByClassName('marker')[1].className = "marker "+slideName;
-		var items = ["item1"];
-		var slideElement = items.splice(items.indexOf(slideName),1)[0];
-			slideElement = document.getElementById(slideElement);
+		// show the Slide
+		var slideElement = document.getElementById(slideName);
 			slideElement.classList.add('show');
-		/*
-		var hideElement = document.getElementById(items[0]);
-			hideElement.classList.remove('show');
-		addBtn.setAttribute('data-name', slideName+'Add');
-		sessionStorage.setItem('lastview', slideName);
-		*/
-	}
-
-
-	function slide(event) {
-	//-> Onclick dreht die Ansicht
-		scroll(0,0);
-		var addBtn = document.getElementById('btn_Add');
-		var i, slideElements = document.getElementsByClassName('uebersicht');
-		// Flip
-		for (i=0;i<slideElements.length;i++){
-			slideElements[i].classList.toggle('show');
-		}
-		// Add-Button
-		var slideIndex = document.getElementsByClassName('uebersicht show')[0].id;
-		addBtn.setAttribute('data-name', slideIndex+'Add');
-		// Marker
-		document.getElementsByClassName('marker')[0].className = "marker "+slideIndex;
-		//document.getElementsByClassName('marker')[1].className = "marker "+slideIndex;
-		// Store
-		sessionStorage.setItem('lastview', slideIndex);
 	}
 
 	setTimeout(function(){
-		slide2(sessionStorage.getItem('item1'));
-		// Touch-Friendly-Buttons
-		//var target_el = document.getElementById('seitenleiste');
-		//noTouchThisSlider(target_el);
+		slide('item1');
 	},100);
 
 </script>

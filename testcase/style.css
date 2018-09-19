@@ -7,22 +7,20 @@
 	overflow-x: hidden;
 }
 
-#item0 .styleWrap, #item1 .styleWrap, #item2 .styleWrap, #item1details .styleWrap, #item2details .styleWrap, #item1setting .styleWrap, #item1setting_gruppen .styleWrap {
+#item1 .styleWrap {
 	position: absolute;
 	top: 0; bottom: 0; right: 30px; left: 0;
 	overflow-y:scroll; overflow-x: hidden;
 	-webkit-overflow-scrolling: touch;
-	background-color: yellow;
 }
 
-.notenHeader {display: none;}
-
 /*Scroll-Bug-Fix*/
-#listStudents, #listLeistung {
+#list {
 	-webkit-transform: translate3d(0%,0,0);
 	-moz-transform: translate3d(0%,0,0);
 	transform: translate3d(-0%,0,0);
 }
+
 
 .uebersicht {
 	/* Style */
@@ -93,7 +91,26 @@
 
 
 /* Temporär */
-html {background-color: silver;}
-body {background-color: green;}
-.content {background-color: red;}
-#item0 .styleWrap { background-color: yellow; }
+html {
+	background-color: silver;
+	padding: 1em;
+}
+body {
+	background-color: green;
+	padding: 1em;
+}
+.content {
+	background-color: red;
+	padding: 1em;
+}
+.uebersicht {
+	background-color: orange;
+}
+#list{
+	background-color: yellow;
+	padding: 1em;
+}
+.styleWrap {
+	background-color: blue;
+	padding: 1em;
+}
