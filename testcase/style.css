@@ -1,0 +1,99 @@
+.content{
+	position: absolute;
+	margin: 0 0 30px 150px;
+	top: 75px; bottom: 0;
+	left: 0;
+	right: 0;
+	overflow-x: hidden;
+}
+
+#item0 .styleWrap, #item1 .styleWrap, #item2 .styleWrap, #item1details .styleWrap, #item2details .styleWrap, #item1setting .styleWrap, #item1setting_gruppen .styleWrap {
+	position: absolute;
+	top: 0; bottom: 0; right: 30px; left: 0;
+	overflow-y:scroll; overflow-x: hidden;
+	-webkit-overflow-scrolling: touch;
+	background-color: yellow;
+}
+
+.notenHeader {display: none;}
+
+/*Scroll-Bug-Fix*/
+#listStudents, #listLeistung {
+	-webkit-transform: translate3d(0%,0,0);
+	-moz-transform: translate3d(0%,0,0);
+	transform: translate3d(-0%,0,0);
+}
+
+.uebersicht {
+	/* Style */
+	position: fixed;
+	top: 25px; /*status-bar-fix*/
+	bottom: 0;
+	width: 100%;
+	-webkit-backface-visibility:hidden;
+	backface-visibility:hidden;
+	-webkit-perspective: 1000;
+	perspective: 1000;
+	overflow-x: hidden;
+	-webkit-transition: right 0s linear 0.3s, -webkit-transform 1s;
+	-moz-transition: right 0s linear 0.3s, -webkit-transform 1s;
+	transition: right 0s linear 0.3s, -webkit-transform 1s;
+}
+
+	/* Startpositionen */
+	.uebersicht.left {
+		-webkit-transform: translate3d(-150%,0,0);
+		-moz-transform: translate3d(-150%,0,0);
+		transform: translate3d(-150%,0,0);
+		}
+		.uebersicht.right {
+			-webkit-transform: translate3d(150%,0,0);
+			-moz-transform: translate3d(150%,0,0);
+			transform: translate3d(150%,0,0);
+			}
+		.uebersicht.bottom {
+			-webkit-transform: translateY(100%);
+			-moz-transform: translateY(100%);
+			transform: translateY(100%);
+			}
+		.uebersicht.top {
+			-webkit-transform: translateY(-100%);
+			-moz-transform: translateY(-100%);
+			transform: translateY(-100%);
+			}
+
+	/* Endposition */
+	.uebersicht.top.show, .uebersicht.bottom.show {
+		-webkit-transform: translateY(0);
+		-moz-transform: translateY(0);
+		transform: translateY(0);
+		}
+		.uebersicht.right.show, .uebersicht.left.show {
+			-webkit-transform: translateX(0);
+			-moz-transform: translateX(0);
+			transform: translateX(0);
+		}
+
+	/* Dreh-Animation */
+	.uebersicht.flip {
+		-webkit-transform: rotateY(180deg);
+		-moz-transform: rotateY(180deg);
+		transform: rotateY(180deg);
+		right: -100%;
+		}
+		.uebersicht.flip.show {
+			right: 0;
+			-webkit-transform: rotateY(0deg);
+			-moz-transform: rotateY(0deg);
+			transform: rotateY(0deg);
+			-webkit-transition: right 0s linear 0.25s, -webkit-transform 1s;
+			-moz-transition: right 0s linear 0.25s, -webkit-transform 1s;
+			transition: right 0s linear 0.25s, -webkit-transform 1s;
+		}
+
+
+/* Temporär */
+html {background-color: silver;}
+body {background-color: green;}
+.content {background-color: red;}
+#item0 .styleWrap { background-color: yellow; }
