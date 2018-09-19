@@ -7,12 +7,15 @@
 	overflow-x: hidden;
 }
 
-#item1 .styleWrap {
+#item1 .styleWrap, #item2 .styleWrap {
 	position: absolute;
 	top: 0; bottom: 0; right: 30px; left: 0;
 	overflow-y:scroll; overflow-x: hidden;
 	-webkit-overflow-scrolling: touch;
 }
+
+.uebersicht.show{display: block;}
+
 
 /*Scroll-Bug-Fix*/
 #list {
@@ -24,18 +27,23 @@
 
 .uebersicht {
 	/* Style */
-	position: fixed;
+	position: fixed !important;
 	top: 25px; /*status-bar-fix*/
 	bottom: 0;
 	width: 100%;
+	overflow-x: hidden;
+
+	display: none;
+
+	/*
 	-webkit-backface-visibility:hidden;
 	backface-visibility:hidden;
 	-webkit-perspective: 1000;
 	perspective: 1000;
-	overflow-x: hidden;
 	-webkit-transition: right 0s linear 0.3s, -webkit-transform 1s;
-	-moz-transition: right 0s linear 0.3s, -webkit-transform 1s;
-	transition: right 0s linear 0.3s, -webkit-transform 1s;
+	-moz-transition: right 0s linear 0.3s, -moz-transform 1s;
+	transition: right 0s linear 0.3s, transform 1s;
+	*/
 }
 
 	/* Startpositionen */
@@ -44,32 +52,17 @@
 		-moz-transform: translate3d(-150%,0,0);
 		transform: translate3d(-150%,0,0);
 		}
-		.uebersicht.right {
-			-webkit-transform: translate3d(150%,0,0);
-			-moz-transform: translate3d(150%,0,0);
-			transform: translate3d(150%,0,0);
-			}
 		.uebersicht.bottom {
 			-webkit-transform: translateY(100%);
 			-moz-transform: translateY(100%);
 			transform: translateY(100%);
 			}
-		.uebersicht.top {
-			-webkit-transform: translateY(-100%);
-			-moz-transform: translateY(-100%);
-			transform: translateY(-100%);
-			}
 
 	/* Endposition */
-	.uebersicht.top.show, .uebersicht.bottom.show {
+	.uebersicht.bottom.show, .uebersicht.left.show {
 		-webkit-transform: translateY(0);
 		-moz-transform: translateY(0);
 		transform: translateY(0);
-		}
-		.uebersicht.right.show, .uebersicht.left.show {
-			-webkit-transform: translateX(0);
-			-moz-transform: translateX(0);
-			transform: translateX(0);
 		}
 
 	/* Dreh-Animation */
@@ -93,11 +86,9 @@
 /* Temporär */
 html {
 	background-color: silver;
-	padding: 1em;
 }
 body {
 	background-color: green;
-	padding: 1em;
 }
 .content {
 	background-color: red;
