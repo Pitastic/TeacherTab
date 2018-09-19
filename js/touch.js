@@ -1,7 +1,7 @@
 var slideBeginX;
 var slideBeginY;
 
-function touchListener(){
+function touchScroller(){
 	// Prevent Bumping/Scrolling
 	var contents = document.getElementsByClassName('content');
 	for (var i=0; i<contents.length; i++){
@@ -46,6 +46,7 @@ function noTouchSlider() {
 	}
 }
 function noTouchThisSlider(target_el) {
+	var target_el = document.getElementById('seitenleiste');
 	target_el.removeEventListener("touchstart", touchStart, false);
 	target_el.removeEventListener("touchend", touchEnd, false);
 }

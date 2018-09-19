@@ -90,12 +90,50 @@ $(document).ready(function() {
 		GLOBALS.passW = '-';
 		popUp('item0First');
 	}
-});
 
+	// Install-Prompt
+	window.addEventListener('beforeinstallprompt', function (e) {
+		// Prevent Chrome 67 and earlier from automatically showing the prompt
+		console.log("SW: Verzögere das Install-Prompt");
+		e.preventDefault();
+		GLOBALS['deferredPrompt'] = e;
+		var old_pop = document.querySelector('#item0First div a');
+		popUpSwitch(old_pop, 'item0Install');
+	});
+
+});
 
 // =================================================== //
 // ================== Setup ========================== //
 // =================================================== //
+
+function addToHomeScreen(thisElement) {
+
+	// Show the prompt, hide the pop
+	GLOBALS['deferredPrompt'].prompt();
+	popUpClose(thisElement, false, true);
+
+	// Wait for the user to respond to the prompt
+	GLOBALS['deferredPrompt'].userChoice
+	.then(function(choiceResult){
+		if (choiceResult.outcome === 'accepted') {
+			console.log('SW: Prompt accepted');
+		} else {
+			console.log('SW: Prompt not accepted');
+		}
+		GLOBALS['deferredPrompt'] = null;
+		window.location.reload();
+	})
+	.catch(function(err){
+		console.log("SW:", err);
+		setTimeout(function() {
+			window.location.reload();
+		}, 3000);
+	})
+
+}
+
+
 
 function settingsAllgemein(){
 	GLOBALS.userID = document.getElementById('userID').value || "Niemand";

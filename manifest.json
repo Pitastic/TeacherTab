@@ -1,9 +1,25 @@
 {
-	"background_color": "#d4975d",
-	"theme_color": "#d4975d",
+	"background_color": "#5a5a5a",
+	"theme_color": "#8c5c31",
+	"orientation": "portrait",
 	"description": "TeacherTab für Lehrer, Noten organisieren und berechnen",
 	"display": "fullscreen",
 	"icons": [
+		{
+			"src": "favicon/android-icon-48x48.png",
+			"sizes": "48x48",
+			"type": "image/png"
+		},
+		{
+			"src": "favicon/android-icon-96x96.png",
+			"sizes": "96x96",
+			"type": "image/png"
+		},
+		{
+			"src": "favicon/android-icon-144x144.png",
+			"sizes": "144x144",
+			"type": "image/png"
+		},
 		{
 			"src": "favicon/android-icon-192x192.png",
 			"sizes": "192x192",
@@ -13,7 +29,7 @@
 			"src": "favicon/icon-512x512.png",
 			"sizes": "512x512",
 			"type": "image/png"
-		}
+		}		
 	],
 	"name": "TeacherTab Notenorganisation",
 	"short_name": "TeacherTab",

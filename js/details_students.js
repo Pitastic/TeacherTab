@@ -391,7 +391,7 @@ function studentDetails(row){
 	};
 
 	// Animation
-	slide1('item1details');
+	//slide1('item1details');
 	return;
 }
 

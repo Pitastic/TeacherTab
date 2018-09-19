@@ -23,6 +23,7 @@ var GLOBALS = {
 	'isPhone'			: null,
 	'perfStart'			: null,
 	'perfEnd'			: null,
+	'deferredPrompt'	: null,
 };
 
 var SETTINGS;
@@ -680,17 +681,19 @@ function popUp(popWindow){
 }
 
 
-function popUpClose(thisElement, bol_refresh){
+function popUpClose(thisElement, bol_refresh, keepBlack){
 	if(bol_refresh){
 		db_readMultiData(listStudents, "student");
 		db_readMultiData(listLeistung, "leistung");
 	}
 	thisElement.parentNode.parentNode.classList.remove('showPop');
-	document.getElementById('fadeBlack').classList.remove('show');
 
-	setTimeout(function() {
-		thisElement.parentNode.parentNode.parentNode.classList.add('hide');
-	}, 250);
+	if (!(keepBlack)) {
+		document.getElementById('fadeBlack').classList.remove('show');
+		setTimeout(function() {
+			thisElement.parentNode.parentNode.parentNode.classList.add('hide');
+		}, 250);
+	}
 	window.removeEventListener('keydown', keyFunctions);
 }
 

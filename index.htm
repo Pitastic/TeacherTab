@@ -17,12 +17,12 @@
 		console.log("SW: Service Worker werden nicht unterstützt ! - Fallback zu cache.manifest...");
 	}
 	</script>
-    
-    <!-- Mobile -->
+
+	<!-- Mobile -->
 	<script type="text/javascript" src="js/mobile.js"></script>
 	
 	<!-- Apple -->
-	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<!-- iPad (portrait) SPLASHSCREEN -->
 	<link href="apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (orientation: portrait)" rel="apple-touch-startup-image">
@@ -103,7 +103,7 @@
 		</div>
 		
 	</div>
-	<div id="dev_info"></div>
+	<pre id="dev_info1"></pre>
 </div>
 <!-- /Index-->
 
@@ -292,6 +292,19 @@
 	<div>
 		<a class="button ABORT stay" onclick="window.location.reload()" href="#">Abbrechen</a>
 		<a class="button OK stay" onclick="settingsAllgemein()" href="#">Login</a>
+	</div>
+</div>
+
+<div id="item0Install" class="popUp">
+	<h3>Installation</h3>
+	<ul>
+		<li>Klicke auf Installieren</li>
+		<li>Es erscheint ein Systemdialog, der dich durch die Installation leitet</li>
+		<li>Schließe dieses Fenster und öffne die WebApp vom Homescreen oder der App-Liste</li>
+	</ul>
+	<div class="close"><a class="stay" href="#">x</a></div>
+	<div>
+		<a class="button OK stay" onclick="addToHomeScreen(this)" href="#">Installieren</a>
 	</div>
 </div>
 

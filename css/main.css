@@ -138,6 +138,7 @@ Listen in allen Ansichten
 	top: 0; bottom: 0; right: 30px; left: 0;
 	overflow-y:scroll; overflow-x: hidden;
 	-webkit-overflow-scrolling: touch;
+	
 }
 	#item0 .styleWrap {
 		text-align: center;

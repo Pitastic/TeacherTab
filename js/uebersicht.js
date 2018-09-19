@@ -10,14 +10,14 @@ $(document).ready(function() {
 	// Event-Listener
 	addListener();
 	closeListener();
-	touchSlider()
+	//touchSlider()
 	//touchListener()
 	// Hide Scrollbars
 	setTimeout(function(){
 		slide2(sessionStorage.getItem('lastview'));
 		// Touch-Friendly-Buttons
-		var target_el = document.getElementById('seitenleiste');
-		noTouchThisSlider(target_el);
+		//var target_el = document.getElementById('seitenleiste');
+		//noTouchThisSlider(target_el);
 	},100);
 	// Extras für Smartphone-Nutzer
 	if (GLOBALS.isPhone){change_buttons()}

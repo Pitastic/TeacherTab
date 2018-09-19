@@ -5,8 +5,10 @@
 // Cache-Policy
 //
 
-var CACHE = "tt_webapp_v2";
+var CACHE = "tt_webapp_v1";
 var needToCache = [
+	'/',
+	'index.htm',
 	'/index.htm',
 	'/settings.htm',
 	'/uebersicht.htm',
