@@ -1,16 +1,17 @@
-// Design-Anpassung für mobile Geräte
+// Design- und Funktionsanpassung für die verschiedenen Geräte
 
 var DEV_LOG1 = "";
 
 
 function handle_orientation_landscape(evt) {
 	console.log("STYLE: Handle Orientation, isLandscape:", evt.matches);
+	var viewport = "initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
 	if (evt.matches) {
 		DEV_LOG1 += "> STYLE: Orientation landscape\n";
-		document.getElementById('dynamicViewport').setAttribute('content', "width="+document.documentElement.clientWidth);
+		document.getElementById('dynamicViewport').setAttribute('content', viewport+" width="+document.documentElement.clientWidth);
 	}else{
 		DEV_LOG1 += "> STYLE: Orientation portrait\n";
-		document.getElementById('dynamicViewport').setAttribute('content', "width=device-width");		
+		document.getElementById('dynamicViewport').setAttribute('content', viewport+" width=device-width");		
 	}
 }
 
@@ -47,7 +48,6 @@ window.onload = function(evt){
 	var isTouch = "only screen and (pointer:coarse)";
 	var isSmartphone = "only screen and (max-device-width: 480px)";
 	var isLandscape = "(orientation: landscape)";
-	var isPortrait = "(orientation: portrait)";
 
 	// MatchMedias
 	var checkOrientation = window.matchMedia( isLandscape );
@@ -75,8 +75,7 @@ window.onload = function(evt){
 		touchHandlers.onload = function () {
 			touchScroller();
 			touchSlider();
-			// Touch-Friendly-Buttons
-			noTouchThisSlider();
+			noTouchThisSlider(); // touch-friendly-Buttons
 		};
 
 		var checkDeviceMobile = window.matchMedia( isSmartphone );
