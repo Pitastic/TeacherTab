@@ -6,13 +6,17 @@ var DEV_LOG1 = "";
 function handle_orientation_landscape(evt) {
 	console.log("STYLE: Handle Orientation, isLandscape:", evt.matches);
 	var viewport = "initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
+	var dwidth = "width=device-width";
+	/*
 	if (evt.matches) {
 		DEV_LOG1 += "> STYLE: Orientation landscape\n";
-		document.getElementById('dynamicViewport').setAttribute('content', viewport+" width="+document.documentElement.clientWidth);
+		dwidth = "width=" + documentElement.clientWidth + "px";
 	}else{
 		DEV_LOG1 += "> STYLE: Orientation portrait\n";
-		document.getElementById('dynamicViewport').setAttribute('content', viewport+" width=device-width");		
+		dwidth = "width=device-width";
 	}
+	*/
+	document.getElementById('dynamicViewport').setAttribute('content', viewport+" "+dwidth);		
 }
 
 
@@ -55,11 +59,6 @@ window.onload = function(evt){
 	var checkDesktop = window.matchMedia( isDesktop );
 
 
-	// Orientation / Seitenverhältnisse
-	handle_orientation_landscape( checkOrientation );
-	checkOrientation.addListener( handle_orientation_landscape );
-
-
 	// Gerätespezifische Tests
 	if ( checkDesktop.matches && !checkTouch.matches ) {
 		// Hat eine Maus und kein Touch == Desktop
@@ -69,6 +68,10 @@ window.onload = function(evt){
 	}else if (checkTouch.matches) {
 		// Hat Touch == Tablet oder Smartphone oder ähnlich
 		DEV_LOG1 += "> STYLE: Touchscreen\n";
+
+		// Orientation / Seitenverhältnisse
+		handle_orientation_landscape(checkOrientation);
+		checkOrientation.addListener(handle_orientation_landscape);
 
 		// add Touchscreen Handlers
 		var touchHandlers = passJs("/js/touch.js");
