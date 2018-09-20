@@ -15,6 +15,31 @@ function handle_orientation_landscape(evt) {
 }
 
 
+function passCss(absolutePath) {
+	var cssId = btoa(absolutePath);
+	if (!document.getElementById(cssId)) {
+		var head = document.getElementsByTagName('head')[0];
+		var link = document.createElement('link');
+		link.id = cssId;
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = absolutePath;
+		document.head.appendChild(link);
+	}
+}
+
+
+function passJs(absolutePath) {
+	var jsId = btoa(absolutePath);
+	if (!document.getElementById(jsId)) {
+		var script = document.createElement('script');
+		script.type = "text/javascript";
+		script.src = absolutePath;
+		document.head.appendChild(script);
+		return script;
+	}
+}
+
 window.onload = function(evt){
 
 	// Queries
@@ -38,30 +63,28 @@ window.onload = function(evt){
 	// Gerätespezifische Tests
 	if ( checkDesktop.matches && !checkTouch.matches ) {
 		// Hat eine Maus und kein Touch == Desktop
-		DEV_LOG1 += " > STYLE: Desktop\n";
+		DEV_LOG1 += "> STYLE: Desktop\n";
 
 
 	}else if (checkTouch.matches) {
 		// Hat Touch == Tablet oder Smartphone oder ähnlich
-		DEV_LOG1 += " > STYLE: Touchscreen\n";
+		DEV_LOG1 += "> STYLE: Touchscreen\n";
 
 		// add Touchscreen Handlers
-		var touchHandlers = document.createElement('script');
+		var touchHandlers = passJs("/js/touch.js");
 		touchHandlers.onload = function () {
 			touchScroller();
 			touchSlider();
 			// Touch-Friendly-Buttons
 			noTouchThisSlider();
 		};
-		touchHandlers.type = "text/javascript";
-		touchHandlers.src = "js/touch.js";
-		document.head.appendChild(touchHandlers);
 
 		var checkDeviceMobile = window.matchMedia( isSmartphone );
 
 		if (checkDeviceMobile.matches) {
 			// Lade CSS und Buttons für Smartphone
 			GLOBALS.isPhone = true;
+			passCss("/css/phone.css");
 			DEV_LOG1 += " - Smartphone\n";
 		}else{
 			// Lade CSS und Buttons für Tablet
@@ -70,11 +93,11 @@ window.onload = function(evt){
 
 	}else{
 		// nicht unterstützt (z.B. FireFox auf Desktop/Tablet/Smartphone)
-		DEV_LOG1 += " > STYLE: unsupported\n";
+		DEV_LOG1 += "> STYLE: unsupported\n";
 	}
 
 
-	DEV_LOG1 += "STYLE: Pixel-Width "+window.innerWidth;
+	DEV_LOG1 += "> STYLE: Pixel-Width "+window.innerWidth;
 
 	devlog_container = document.getElementById("dev_info1");
 	console.log(DEV_LOG1);
