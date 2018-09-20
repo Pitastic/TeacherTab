@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="mobile-web-app-capable" content="yes">
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+	<title>MacBook Trackpad Scrolling-Bug</title>
+</head>
+
+<body ontouchstart="">
+
+	MacBook Trackpad Scrolling-Bug - FIX with w3.css
+
+	<div id="item1" class="uebersicht w3-animate-left show">
+	
+	<h2>Page 1</h2>
+
+	<div class="content">
+	
+	<div class="styleWrap scrollable">
+
+		<div id="list">
+			<ul>
+				<li><b>Tags:</b></li>
+				<li>html: silver</li>
+				<li>body: green</li>
+				<li>.uebersicht: orange</li>
+				<li>.content: red</li>
+				<li>styleWrap: blue</li>
+				<li>list: yellow</li>
+			<li>-----------</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+			</ul>
+		</div>
+
+	</div>
+
+	</div>
+	</div>
+
+
+	<div id="item2" class="uebersicht w3-animate-left">
+	
+	<h2>Page 2</h2>
+
+	<div class="content">
+	
+	<div class="styleWrap scrollable">
+
+		<div id="list">
+			<ul>
+			<li>ITEM 2</li>
+			<li>-----------</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+					<li>Dummy List Item Here</li>
+			</ul>
+		</div>
+
+	</div>
+
+	</div>
+	</div>
+
+
+<script type="text/javascript">
+
+	function slide(slideName){
+		// scroll to top
+		scroll(0,0);
+
+		// show the Slide
+		if (slideName) {
+			var slideElement = document.querySelector("#"+slideName+" .w3-animate-left");
+			slideElement.classList.add('show');
+		}else{
+			var slideElements = document.querySelectorAll(".w3-animate-left");
+			for (var i = 0; i < slideElements.length; i++) {
+				slideElements[i].classList.toggle('show');
+			}
+		}
+	}
+
+</script>
+</body>
+</html>
