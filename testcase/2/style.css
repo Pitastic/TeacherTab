@@ -58,20 +58,16 @@
 /* Temporär */
 html, body {
 	background-color: green;
-	padding: 1em;
 }
 .content {
 	background-color: red;
-	padding: 1em;
 }
 .uebersicht {
-	background-color: orange;
+	background-color: silver;
 }
 #list{
 	background-color: yellow;
-	padding: 1em;
 }
 .styleWrap {
 	background-color: blue;
-	padding: 1em;
 }
