@@ -1,6 +1,6 @@
 /* Background */
 html, body {
-	background: url(../img/back_tisch.jpg) top left repeat;
+	background: url(/img/back_tisch.jpg) top left repeat;
 	background-size: 767px 250px;
 	line-height: 1.25em;
 	}
@@ -18,6 +18,13 @@ h1 {
 }
 h2 {display: none;}
 
+
+/*
+===============================================================================
+Header und Footer Leiste
+===============================================================================
+*/
+
 /* nav */
 nav {
 	padding: 1em 0;
@@ -28,8 +35,11 @@ nav {
 	.centerWrap-child {
 		text-align: center;
 	}
-
-/* Inhalt im StyleWrap */
+/*
+===============================================================================
+Panels allgemein
+===============================================================================
+*/
 .styleWrap {
 	margin: 1em 0.5em;
 }
@@ -47,8 +57,12 @@ nav {
 	padding-bottom: 5em;
 }
 
-/* PopUps */
-#fadeBlack {background-color: rgba(0,0,0,0.9);}
+
+/*
+===============================================================================
+PopUp Fenster
+===============================================================================
+*/
 .popUp {
 	left: 0; right: 0;
 	padding: 10px 5px;
@@ -71,13 +85,65 @@ nav {
 	    text-align: center;
 	}
 
-/* temporär ausgeblendet */
-#btn_refresh {display: none;}
-#btn_slider {display: none;}
-
-
 /*
 ===============================================================================
-PopUp Fenster
+Buttons
 ===============================================================================
 */
+
+select {
+	display: block;
+	margin: 1em auto;
+	padding: 5px; padding-right: 20px;
+	font-size: 0.8em;
+	overflow: hidden;
+	width: 90%;
+}
+.indexBox .button {
+	display: block;
+	width: 50%;
+	margin: auto; margin-bottom: 1em;
+	text-align: center;
+}
+#btn_Delete {
+	padding: 1em 1.25em;
+	margin-top: -0.5em; margin-bottom: -0.5em;
+	color: black;
+	border: 0;
+	background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%);
+}
+#btn_Add {
+	padding: 1em 1.25em;
+	margin-top: -0.5em; margin-bottom: -0.5em;
+	color: black;
+	font-weight: bold;
+	border: 0;
+	background: linear-gradient(to bottom, #52FF63 0%,#52BB63 47%,#52FF63 100%);
+}
+#export {
+	padding: 1em 1.25em;
+	margin-top: -0.5em; margin-bottom: -0.5em;
+	color: black;
+	border: 0;
+	background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%);
+}
+#btn_Back {
+	padding: 1em 1.25em;
+	margin-top: -0.5em; margin-bottom: -0.5em;
+	color: black;
+	font-weight: bold;
+	border: 0;
+	background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%);
+}
+#btn_Settings {
+	padding: 1em 1.25em;
+	margin-top: -0.5em; margin-bottom: -0.5em;
+	color: black;
+	border: 0;
+	background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%);
+}
+.popUp .button {
+	padding-left: 0; padding-right: 0;
+	width: 20%;
+	margin: 0 1%;
+}

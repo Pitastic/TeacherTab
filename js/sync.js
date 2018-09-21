@@ -74,15 +74,15 @@ function sync_getKlasse(callback, classObjectArray) {
 			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
 				// GET Klasse
-				console.log("SYNC: Data ", data);
+				//DEV console.log("SYNC: Data ", data);
 				//DEV console.log("SYNC local:", klassenObject);
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
 				// Merge Klasse
 				if (objLength(newData) > -1) {
-					console.log("SYNC recieved:", newData);
+					//DEV console.log("SYNC recieved:", newData);
 					var merged = mergeKlasse(newData, klassenObject);
 					if (merged) {
-						console.log("SYNC merged to:", merged);
+						//DEV console.log("SYNC merged to:", merged);
 						// (Create)
 						db_neueKlasse(function(){
 							// Save lokal
@@ -165,7 +165,7 @@ function sync_pushBack(callback, Data, uri) {
 			},
 			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
-				console.log("Push:", pushData);
+				//DEV console.log("Push:", pushData);
 				//DEV console.log("Response:", jqXHR);
 				console.log("SYNC:", data.payload, " changed dataset(s) on server");
 				callback(Data); // Callback bekommt gepushten Daten im Klartext
@@ -296,19 +296,19 @@ function mergeKlasse(newData, localData) {
 	}else if (Object.keys(newData).length === 0) {
 
 		// Es sind keine Daten auf dem Server vorhanden => localData zurückgeben
-		console.log("MERGE: no action - return localData");
+		//DEV console.log("MERGE: no action - return localData");
 		return localData;
 
 	}else if (Object.keys(localData).length === 0) {
 
 		// Es sind keine Daten lokal vorhanden => newData zurückgeben
-		console.log("MERGE: no action - return newData");
+		//DEV console.log("MERGE: no action - return newData");
 		return newData;
 
 	}else{
 
 		// Es sind Daten vorhanden => TRICKY Merge - Loop
-		console.log("MERGE: localData and newData - return TRICKY");
+		//DEV console.log("MERGE: localData and newData - return TRICKY");
 		var Klasse = {};
 
 		// -- Key-Blacklist mergen (alle Keys dieser Liste werden im Folgenden ausgeschlossen)

@@ -45,7 +45,8 @@ function noTouchSlider() {
 		scrollables[i].removeEventListener("touchend", touchEnd, false);
 	}
 }
-function noTouchThisSlider(target_el) {
+
+function noTouchThisSlider() {
 	var target_el = document.getElementById('seitenleiste');
 	target_el.removeEventListener("touchstart", touchStart, false);
 	target_el.removeEventListener("touchend", touchEnd, false);

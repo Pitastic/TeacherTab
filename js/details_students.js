@@ -59,7 +59,7 @@ $(document).ready(function() {
 
 	// -- Eventlistener für Leistungen
 	setTimeout(function() {
-		var i, liAll = document.getElementsByClassName('uebersicht')[0].getElementsByTagName('li');
+		var i, liAll = document.getElementById('studentInfo').getElementsByTagName('li');
 		for (i=0; i<liAll.length; i++){
 			liAll[i].addEventListener('click', function(){
 				sessionStorage.setItem('leistung_id', this.id);

@@ -10,14 +10,8 @@ $(document).ready(function() {
 	// Event-Listener
 	addListener();
 	closeListener();
-	//touchSlider()
-	//touchListener()
-	// Hide Scrollbars
 	setTimeout(function(){
 		slide2(sessionStorage.getItem('lastview'));
-		// Touch-Friendly-Buttons
-		//var target_el = document.getElementById('seitenleiste');
-		//noTouchThisSlider(target_el);
 	},100);
 	// Extras für Smartphone-Nutzer
 	if (GLOBALS.isPhone){change_buttons()}
@@ -36,7 +30,7 @@ function listStudents(results) {
 	results.sort(compareStudents);
 
 	// Listing
-	var c, r, ul, old, row, omndl, ofspz, oschr, gesamt, len;
+	var c, r, ul, old, row, omndl, ofspz, oschr, len;
 	old = document.getElementById("listStudents").getElementsByTagName('ul')[0];
 	ul = document.createElement('ul');
 	for (var i = 0; i < results.length; i++) {
@@ -109,7 +103,7 @@ function listStudents(results) {
 // Auflisten aller Leistungen als Tabelle
 function listLeistung(results){
 	if (typeof results === 'undefined') {results = [];}
-	var c, r, ul, idx, art, id_Leistung, Leistung, hasEntries;
+	var c, r, ul, idx, art, Leistung, hasEntries;
 	var old = document.getElementById("listLeistung").getElementsByTagName('ul');
 	
 	var arten = ['mndl', 'fspz', 'schr'];
@@ -228,7 +222,7 @@ function massenAdd(el){
 		return false;
 	}
 
-	var i, zeilen = []; var namen = []; var vnn;
+	var zeilen = []; var namen = []; var vnn;
 	zeilen = textblock.value.split(trennZeile);
 	GLOBALS.dbToGo = 0;
 	for (zeile in zeilen){

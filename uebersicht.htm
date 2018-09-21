@@ -52,8 +52,6 @@
 	<h1>TeacherTab WebApp</h1>
 </div>
 
-<!-- Menus -->
-
 
 <!--Übersicht Schüler -->
 <div id="item1" class="uebersicht flip">
@@ -192,23 +190,21 @@
 </div>
 <!-- /popUp-PopUp -->
 
+<!-- Steuerung / Buttons -->
 <nav>
 	<div class="centerWrap-child">
-	<div id="seitenleiste" class="">
-		<a id="btn_Add" class="button OK stay" data-name="item1Add" href="#">Hinzufügen</a>
+	<div id="seitenleiste">
+		<a id="btn_Back" class="button ABORT stay" href="#" onclick="klassenSyncHandler('index.htm')">Beenden</a>
 		<a id="btn_Settings" class="button stay" href="#" onclick="itemAbort(['item1', 'item2'],'settings.htm');">Settings</a>
-		<div onclick="slide(event)" class="selector stay">
+		<a id="btn_Add" class="button OK stay" data-name="item1Add" href="#">Hinzufügen</a>
+		<div onclick="slide(event)" class="button selector stay">
 			<span class="marker"></span>
 		</div>
 
-		<a id="btn_Back" class="button ABORT stay" href="#" onclick="klassenSyncHandler('index.htm')">Beenden</a>
 		<div class="clearer"></div>
 	</div>
 	</div>
-	<div id="btn_refresh" class="button"><a href="#" class="stay" onclick="window.location.reload();"><img src="./img/reload_button.gif"></a></div>
-	<div id="btn_slider" class="selector stay" onclick="slide(event)">
-		<span class="marker"></span>
-	</div>
+	<div id="btn_refresh" class="button"><a href="#" class="stay" onclick="window.location.reload();"><img src="/img/reload_button.gif"></a></div>
 </nav>
 
 	
@@ -216,14 +212,13 @@
 	
 </div>
 </body>
-	<script src="js/jquery-3.3.1.min.js"></script>
-	<script src="js/crypto-js-v3.1.2/rollups/aes.js"></script>
-	<script src="js/crypto-js-v3.1.2/rollups/sha1.js"></script>
-
-	<script type="text/javascript" src="js/all.js"></script>
-	<script type="text/javascript" src="js/database.js"></script>
-	<!--<script type="text/javascript" src="js/touch.js"></script>-->
-	<script type="text/javascript" src="js/stay.js"></script>
-	<script type="text/javascript" src="js/sync.js"></script>
-	<script type="text/javascript" src="js/uebersicht.js"></script>
+	<!-- Basismodule -->
+	<script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="/js/crypto-js-v3.1.2/rollups/aes.js"></script>
+	<script type="text/javascript" src="/js/crypto-js-v3.1.2/rollups/sha1.js"></script>
+	<script type="text/javascript" src="/js/all.js"></script>
+	<script type="text/javascript" src="/js/database.js"></script>
+	<script type="text/javascript" src="/js/stay.js"></script>
+	<script type="text/javascript" src="/js/sync.js"></script>
+	<script type="text/javascript" src="/js/uebersicht.js"></script>
 </html>

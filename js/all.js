@@ -9,7 +9,7 @@ var GLOBALS = {
 	'SyncServer'		: "c/api",
 	'timeout'			: 6000,
 
-	'appversion'		: "1.0",
+	'appversion'		: "1.1",
 	'dbname'			: null,
 	'dbversion'			: null,	
 	'dbToGo'			: null,
@@ -595,7 +595,6 @@ function slide(event) {
 	addBtn.setAttribute('data-name', slideIndex+'Add');
 	// Marker
 	document.getElementsByClassName('marker')[0].className = "marker "+slideIndex;
-	document.getElementsByClassName('marker')[1].className = "marker "+slideIndex;
 	// Store
 	sessionStorage.setItem('lastview', slideIndex);
 }
@@ -622,7 +621,6 @@ function slide2(slideName){
 	scroll(0,0);
 	var addBtn = document.getElementById('btn_Add');
 	document.getElementsByClassName('marker')[0].className = "marker "+slideName;
-	document.getElementsByClassName('marker')[1].className = "marker "+slideName;
 	var items = ["item1","item2"];
 	var slideElement = items.splice(items.indexOf(slideName),1)[0];
 		slideElement = document.getElementById(slideElement);

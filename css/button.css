@@ -140,7 +140,7 @@ select {
     line-height: initial !important;
 	color: darkslategray;
 	/*Kopie von background-image (s.o.) + DropDown Pfeil*/
-	background-image: url(../img/DropDown.png), linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+	background-image: url(/img/DropDown.png), linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
     background-position: 99% center, top left;
     background-repeat: no-repeat;
     
@@ -159,10 +159,6 @@ select {
 
 #indexKlassen .button {
     width: 150px;
-}
-
-#btn_slider {
-    display: none;
 }
 
 #btn_refresh {
@@ -192,20 +188,20 @@ select {
 .selector {
     position: relative;
     z-index: 2;
-    padding: 0 !important;
-    margin: 0 !important;
-    margin-left: 15px !important; margin-right: 15px !important;
+	background: none !important;
+	border: none !important;
 }
     .selector a {display: none;}
     	.selector .marker {
-			display: block;
+    		position: absolute;
+    		top: 0; bottom: 0; left: 0; right: 0;
+			height: 65px;
+			border-top-color: grey !important;
+			border-bottom-color: gray !important;
 			-webkit-tap-highlight-color: rgba(0,0,0,0);
-			width: 85px;
-			height: 85px;
-			border-radius: 10px;
-			border: 1px solid rgb(32,32,32);
 			background-position: center center;
 			background-repeat: no-repeat, no-repeat;
+			background-size: contain;
             -moz-transition-property: -moz-transform;
             -moz-transition-duration: .7s;
             -moz-transition-timing-function: cubic-bezier(.77,0,.18,1);
@@ -219,34 +215,30 @@ select {
 		
 			.selector .marker:active, .selector .marker:focus {
 				-webkit-tap-highlight-color: rgba(0,0,0,0);
-				background-image: url(../img/slider.png), -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
-				background-image: url(../img/slider.png), -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%);
-				background-image: url(../img/slider.png), linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%);
+				background-image: url(/img/slider.png), -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
+				background-image: url(/img/slider.png), -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%);
+				background-image: url(/img/slider.png), linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%);
 				
 			}
 			.marker.item1 {
-				-moz-transform: rotateY(-180deg);
-				-webkit-transform: rotateY(-180deg);
-				transform: rotateY(-180deg);
-				border-bottom-color: grey !important;
-				border-right-color: grey !important;
-				border-top-color: gray !important;
-				border-left-color: darkslategray !important;
-				background-image: url(../img/slider.png), -moz-linear-gradient(left, rgba(237,237,237,1) 49%, rgba(70,70,70,1) 50%, rgba(100,100,100,1) 100%);
-				background-image: url(../img/slider.png), -webkit-linear-gradient(left, rgba(237,237,237,1) 49%,rgba(70,70,70,1) 50%,rgba(100,100,100,1) 100%);
-				background-image: url(../img/slider.png), linear-gradient(to right, rgba(237,237,237,1) 49%,rgba(70,70,70,1) 50%,rgba(100,100,100,1) 100%);
-			}
-			.marker.item2 {
 			    -moz-transform: rotateY(0deg);
 			    -webkit-transform: rotateY(0deg);
 				transform: rotateY(0deg);
-				border-bottom-color: gray !important;
+				border-right-color: grey !important;
+				border-left-color: darkslategray !important;
+				background-image: url(/img/slider.png), -moz-linear-gradient(left, rgba(237,237,237,1) 49%, rgba(70,70,70,1) 50%, rgba(100,100,100,1) 100%);
+				background-image: url(/img/slider.png), -webkit-linear-gradient(left, rgba(237,237,237,1) 49%,rgba(70,70,70,1) 50%,rgba(100,100,100,1) 100%);
+				background-image: url(/img/slider.png), linear-gradient(to right, rgba(237,237,237,1) 49%,rgba(70,70,70,1) 50%,rgba(100,100,100,1) 100%);
+			}
+			.marker.item2 {
+				-moz-transform: rotateY(-180deg);
+				-webkit-transform: rotateY(-180deg);
+				transform: rotateY(-180deg);
 				border-right-color: darkslategray !important;
-				border-top-color: grey !important;
 				border-left-color: grey !important;
-				background-image: url(../img/slider.png), -moz-linear-gradient(left, rgba(100,100,100,1) 0%, rgba(70,70,70,1) 50%, rgba(237,237,237,1) 51%);
-				background-image: url(../img/slider.png), -webkit-linear-gradient(left, rgba(100,100,100,1) 0%,rgba(70,70,70,1) 50%,rgba(237,237,237,1) 51%);
-				background-image: url(../img/slider.png), linear-gradient(to right, rgba(100,100,100,1) 0%,rgba(70,70,70,1) 50%,rgba(237,237,237,1) 51%);
+				background-image: url(/img/slider.png), -moz-linear-gradient(left, rgba(100,100,100,1) 0%, rgba(70,70,70,1) 50%, rgba(237,237,237,1) 51%);
+				background-image: url(/img/slider.png), -webkit-linear-gradient(left, rgba(100,100,100,1) 0%,rgba(70,70,70,1) 50%,rgba(237,237,237,1) 51%);
+				background-image: url(/img/slider.png), linear-gradient(to right, rgba(100,100,100,1) 0%,rgba(70,70,70,1) 50%,rgba(237,237,237,1) 51%);
 			}
         	
 .close a {
@@ -288,94 +280,22 @@ select {
 }
 
 
-/* ================================================ */
-/* ============ Media Queries Tablet ============== */
-/* ================================================ */
+/*
+----------------------------------- @ medias -----------------------------------
+*/
 @media (orientation:portrait) {
-	.selector {
-		display: none;
+
+	nav a, nav .button {
+		display: initial;
+		margin: 15px 20px; margin-bottom: 10px;
+		float: right;
+	}
+	nav .button.selector {
+		float: left;
 	}
 	#btn_refresh a {
 		margin-top: -13px;
 		margin-right: -15px;
 	}
-	#btn_slider {
-		display: block;
-		position: fixed;
-		bottom: 10px; left: 10px;
-		width: 80px; height: 80px;
-		margin: 0 !important; padding: 0 !important;
-	}
-    	#btn_slider a {
-    	    padding: 30px;
-    	    margin-top: -15px; margin-right: -17px;
-    	    width: 25px; height: 25px;
-        }
-		#btn_slider img {
-			margin-top: -2px;
-			width: 25px; height: 25px;
-		}
-}
 
-
-/* ================================================ */
-/* ============ Media Queries Phone ============== */
-/* ================================================ */
-@media only screen and (max-device-width: 767px) {
-	select {
-		display: block;
-	    margin: 1em auto;
-	    padding: 5px; padding-right: 20px;
-	    font-size: 0.8em;
-	    overflow: hidden;
-	    width: 90%;
-	}
-	.indexBox .button {
-		display: block;
-		width: 50%;
-		margin: auto; margin-bottom: 1em;
-		text-align: center;
-	}
-	#btn_Delete {
-		padding: 1em 1.25em;
-		margin-top: -0.5em; margin-bottom: -0.5em;
-		color: black;
-		border: 0;
-		background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%);
-	}
-	#btn_Add {
-		padding: 1em 1.25em;
-		margin-top: -0.5em; margin-bottom: -0.5em;
-		color: black;
-		font-weight: bold;
-		border: 0;
-		background: linear-gradient(to bottom, #52FF63 0%,#52BB63 47%,#52FF63 100%);
-	}
-	#export {
-		padding: 1em 1.25em;
-		margin-top: -0.5em; margin-bottom: -0.5em;
-		color: black;
-		border: 0;
-		background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%);
-	}
-	#btn_Back {
-		padding: 1em 1.25em;
-		margin-top: -0.5em; margin-bottom: -0.5em;
-		color: black;
-		font-weight: bold;
-		border: 0;
-		background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%);
-	}
-	#btn_Settings {
-		padding: 1em 1.25em;
-		margin-top: -0.5em; margin-bottom: -0.5em;
-		color: black;
-		border: 0;
-		background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%);
-	}
-	.popUp .button {
-		padding-left: 0; padding-right: 0;
-        width: 20%;
-        margin: 0 1%;
-    }
 }
