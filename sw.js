@@ -8,7 +8,6 @@
 
 
 
-var TESTCACHE = false;
 var CACHE = "tt_webapp_v1";
 var needToCache = [
 	'/',
@@ -84,7 +83,6 @@ var needToCache = [
 
 
 self.addEventListener('install', function(event) {
-	console.log("SW: I would like to cache ehm...", TESTCACHE);
 	event.waitUntil(
 		caches.open(CACHE).then(function(cache) {
 			for (var i = needToCache.length - 1; i >= 0; i--) {

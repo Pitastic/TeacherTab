@@ -3,10 +3,8 @@
 var DEV_LOG1 = "";
 var CACHE = "tt_webapp_v1";
 
-// Sende Device-Info an ServiceWorker
-// window.cache erweitern:
-/*
-*/
+
+// Cache mit Device-Info erweitern
 
 function extendCache(device_info) {
 	toCache = [];
@@ -30,15 +28,15 @@ function extendCache(device_info) {
 		toCache.push("/js/frameworks/babel_polyfill.min.js");
 	}
 
-	var lenToCache = toCache.length;
-	if (lenToCache > 0) {
-		console.log("SW: extending Cache", lenToCache, toCache);
-		for (var i = 0; i < lenToCache; i++) {
-			var res = toCache[i];
-			caches.open(CACHE).then(function(cache) {
-				cache.add(res);
-			});
-		}
+	if (toCache.length > 0) {
+		console.log("SW: extending Cache", toCache);
+		caches.open(CACHE).then(function(cache) {
+			for (var i = toCache.length - 1; i >= 0; i--) {
+				console.log("SW: caching", toCache[i]);
+				cache.add( toCache[i] )
+				.catch(function (err) { console.log("SW: Fehler beim Cachen von", toCache[i], err) });
+			}
+		})
 	}
 }
 	
