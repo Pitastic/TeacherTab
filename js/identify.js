@@ -2,13 +2,12 @@
 
 var DEV_LOG1 = "";
 var CACHE = "tt_webapp_v1";
+var toCache = []
 
 
 // Cache mit Device-Info erweitern
 
 function extendCache(device_info) {
-	toCache = [];
-
 	// Device abhängig
 	if (device_info.indexOf('phone') >= 0) {
 		//toCache.push("");
@@ -45,15 +44,6 @@ function handle_orientation_landscape(evt) {
 	console.log("STYLE: Handle Orientation, isLandscape:", evt.matches);
 	var viewport = "initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
 	var dwidth = "width=device-width";
-	/*
-	if (evt.matches) {
-		DEV_LOG1 += "> STYLE: Orientation landscape\n";
-		dwidth = "width=" + documentElement.clientWidth + "px";
-	}else{
-		DEV_LOG1 += "> STYLE: Orientation portrait\n";
-		dwidth = "width=device-width";
-	}
-	*/
 	document.getElementById('dynamicViewport').setAttribute('content', viewport+" "+dwidth);		
 }
 
@@ -69,6 +59,7 @@ function passCss(absolutePath) {
 		link.href = absolutePath;
 		document.head.appendChild(link);
 	}
+	toCache.push(absolutePath);
 }
 
 
@@ -81,6 +72,13 @@ function passJs(absolutePath) {
 		document.head.appendChild(script);
 		return script;
 	}
+	toCache.push(absolutePath);
+}
+
+function checkForSHIM() {
+	// Check indexedDB Polyfill
+
+	// Check JS Polyfill
 }
 
 window.onload = function(evt){
@@ -142,5 +140,7 @@ window.onload = function(evt){
 	devlog_container = document.getElementById("dev_info1");
 	console.log(DEV_LOG1);
 	if (devlog_container) { devlog_container.innerHTML = DEV_LOG1; }
-	extendCache(["noidx", "nojs"]);
+	
+	/*TODO: vorerst wird alles (zuviel gecached... issue #49) */
+	//extendCache(["noidx", "nojs"]);
 };
