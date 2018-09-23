@@ -1,10 +1,14 @@
+/*
 // Caching: find . -type f | grep -v "\.git\|README\.md\|sw\.js\|\.manifest" | sort -u
 //
 // Cache with Wildcard ?
 // Cache auch ohne Install (bei Desktop)
 // Cache-Policy
-//
+*/
 
+
+
+var TESTCACHE = false;
 var CACHE = "tt_webapp_v1";
 var needToCache = [
 	'/',
@@ -20,10 +24,8 @@ var needToCache = [
 	'/css/button.css',
 	'/css/export.css',
 	'/css/main.css',
-	'/css/phone.css',
 	'/css/plot.css',
 	'/css/popup.css',
-	'/css/tablet.css',
 	'/img/back_tisch.jpg',
 	'/img/DropDown.png',
 	'/img/lupe_klein.gif',
@@ -66,11 +68,10 @@ var needToCache = [
 	'/js/details_students.js',
 	'/js/export.js',
 	'/js/index.js',
-	'/js/mobile.js',
+	'/js/identify.js',
 	'/js/settings.js',
 	'/js/stay.js',
 	'/js/sync.js',
-	'/js/touch.js',
 	'/js/uebersicht.js',
 	'/js/jquery-3.3.1.min.js',
 	'/js/crypto-js-v3.1.2/rollups/aes.js',
@@ -81,7 +82,9 @@ var needToCache = [
 	'/jsflot/jquery.flot.valuelabels.js'
 ];
 
+
 self.addEventListener('install', function(event) {
+	console.log("SW: I would like to cache ehm...", TESTCACHE);
 	event.waitUntil(
 		caches.open(CACHE).then(function(cache) {
 			for (var i = needToCache.length - 1; i >= 0; i--) {

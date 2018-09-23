@@ -1,15 +1,11 @@
 // Testen und anlegen einer DB
 function initDB(callback) {
-	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-	window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
-	window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
-
-	if (!indexedDB) {
+	if (!SHIMindexedDB) {
 	   window.alert("Dein Browser ist für die WebApp-Funktionen leider zu alt. Mit einem aktuellen Browser bist du sicherer im Internet unterwegs und kannst die TeacherTab nutzen !")
 	}else{
 		console.log("IDB: supported !");
 		// >> first visit ?
-		var vCheck = indexedDB.open(GLOBALS.dbname);
+		var vCheck = SHIMindexedDB.open(GLOBALS.dbname);
 		vCheck.onerror = errorHandler;
 		vCheck.onsuccess = function(event){
 			var connection = event.target.result;
@@ -21,7 +17,7 @@ function initDB(callback) {
 					var called = false;
 					var needUpgrade = false;
 					connection.close();
-					var request = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion+1);
+					var request = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion+1);
 					request.onerror = errorHandler;
 					request.onupgradeneeded = function(event){
 						console.log("IDB: start upgrade");
@@ -88,7 +84,7 @@ function initDB(callback) {
 
 // Neue Klasse anlegen
 function db_neueKlasse(callback, id, bezeichnung) {
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -103,7 +99,7 @@ function db_neueKlasse(callback, id, bezeichnung) {
 			GLOBALS.dbversion = parseInt(GLOBALS.dbversion) + 1
 			localStorage.setItem("dbversion_"+GLOBALS.userID, GLOBALS.dbversion);
 
-			var newdb = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+			var newdb = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 			newdb.onerror = errorHandler;
 			newdb.onupgradeneeded = function(event){
 				var connection = event.target.result;
@@ -111,12 +107,20 @@ function db_neueKlasse(callback, id, bezeichnung) {
 				// Erstelle ObjectStore
 				var oStore = connection.createObjectStore(id, {keyPath: "id", autoIncrement: true});
 				// Erstelle Indexes
-				oStore.createIndex("typ", "typ", { unique: false });				
+				var result_Index = oStore.createIndex("typ", "typ", { unique: false });				
 				// Globale Variable speichern
 				GLOBALS.klasse = id;
 				console.log("IDB:", bezeichnung, " (", id, ") created");
+				console.log("IDB: Index:", result_Index);
 			}
-			newdb.onsuccess = function(event){SettingsRequest(event, id, bezeichnung, callback)};
+			newdb.onsuccess = function(event){
+				console.log("db_neueKlasse onsuccess");//DEV
+				SettingsRequest(event, id, bezeichnung, callback)
+			};
+			newdb.onversionchange = function (event) {
+				console.log("IDB: Schließe onversionchange von newdb");
+				event.target.transaction.db.close();
+			};
 
 		}else{
 			// Store ist vorhanden, kein Upgrade notwendig
@@ -137,7 +141,7 @@ function db_neueKlasse(callback, id, bezeichnung) {
 // Neues Document in DB anlegen (typen-unabhängig)
 function db_addDocument(callback, newObject, oStore) {
 	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse}
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event, rowlist){
 		var connection = event.target.result;
@@ -174,7 +178,7 @@ function db_addDocument(callback, newObject, oStore) {
 function db_dropKlasse(oStore, callback) {
 	if (oStore == "" || !oStore) {return;}
 	// First: Clear the store
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onsuccess = function(event){
 		var connection = event.target.result;
 
@@ -188,7 +192,7 @@ function db_dropKlasse(oStore, callback) {
 				// Second: Delete the store
 				GLOBALS.dbversion += 1;
 				localStorage.setItem("dbversion_"+GLOBALS.userID, GLOBALS.dbversion);
-				var db2 = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+				var db2 = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 				db2.onsuccess = function(event){
 					var connection2 = event.target.result;
 
@@ -231,7 +235,7 @@ function db_dropKlasse(oStore, callback) {
 
 // Document nach ID löschen
 function db_deleteDoc(callback, id){
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -257,7 +261,7 @@ function db_deleteDoc(callback, id){
 // Document nach ID ohne anderen Einschränkungen lesen
 function db_readGeneric(callback, id, oStore) {
 	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse;}
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -285,7 +289,7 @@ function db_readGeneric(callback, id, oStore) {
 // Update eines Eintrags mit Value nach ID, Property und Modus
 function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse;}
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -373,7 +377,7 @@ function db_replaceData(callback, newObject, oStore, multi) {
 	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse;}
 	if (typeof multi == "undefined") {multi = false;}
 
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -423,7 +427,7 @@ function db_replaceData(callback, newObject, oStore, multi) {
 function db_readKlasse(callback, targetClass) {
 	if (typeof targetClass == "undefined") {targetClass = GLOBALS.klasse;}
 	console.log("IDB: Selecting", targetClass); //DEV
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -462,7 +466,7 @@ function db_readKlasse(callback, targetClass) {
 
 // Document anhand Typ und ID selektieren
 function db_readSingleData(callback, typ, id, emptyCall) {
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var result = false;
@@ -503,7 +507,7 @@ function db_readSingleData(callback, typ, id, emptyCall) {
 
 // Alle Documente eines Typs selektieren
 function db_readMultiData(callback, typ, emptyCall) {
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var result = [];
@@ -541,7 +545,7 @@ function db_updateData(callback, newObjects, oStore, overwrite) {
 	if (typeof overwrite == "undefined") {overwrite = false;}
 	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse;}
 
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -553,7 +557,8 @@ function db_updateData(callback, newObjects, oStore, overwrite) {
 			if (cursor) {
 				id = cursor.value.id;
 				if (newObjects.hasOwnProperty(id.toString())) {
-					var toUpdate = (overwrite) ? newObjects[id] : mergeDeep(cursor.value, newObjects[id]);
+					//var toUpdate = (overwrite) ? newObjects[id] : mergeDeep(cursor.value, newObjects[id]);
+					var toUpdate = (overwrite) ? newObjects[id] : mergeDeep.apply(cursor.value, spread(newObjects[id]));
 					var requestUpdate = cursor.update(toUpdate);
 					requestUpdate.onsuccess = function() {
 						console.log("indexDB: ID", id, "updated...")
@@ -577,7 +582,7 @@ function db_updateData(callback, newObjects, oStore, overwrite) {
 
 // Wendet eine Funktion auf einen Eintrag (Typ/ID) an und updatet mit dem Ergebnis
 function db_dynamicUpdate(callback, toApply, typ, eID) {
-	var db = indexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
+	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
 		var connection = event.target.result;
@@ -625,7 +630,7 @@ function db_dynamicUpdate(callback, toApply, typ, eID) {
 function errorHandler(event) {
 	console.log("IDB: operation went wrong:");
 	console.log("IDB:", event);
-	updateStatus(100, "!", "Fehler beim Zugriff auf die lokale Datenbank", true);
+	updateStatus(100, "Fehler beim Zugriff auf die lokale Datenbank", "Ein Datenbankfehler ist aufgetreten", undefined, true);
 	return;
 }
 
@@ -637,10 +642,12 @@ function blockHandler(event) {
 
 // Settings erstellen
 function SettingsRequest(event, id, bezeichnung, callback){
+	console.log("SettingsRequest function");//DEV
 	var connectionSR = event.target.result;
 	var checkRequest = connectionSR.transaction(id).objectStore(id).get(1)
 		checkRequest.onerror = errorHandler;
 		checkRequest.onsuccess = function(event){
+			console.log("checkRequest onsuccess");//DEV
 			event.target.transaction.db.close();
 
 			if (!event.target.result){
@@ -656,6 +663,7 @@ function SettingsRequest(event, id, bezeichnung, callback){
 		
 		}
 		checkRequest.oncomplete = function(event){
+			console.log("checkRequest oncomplete");//DEV
 			event.target.transaction.db.close();
 		}
 

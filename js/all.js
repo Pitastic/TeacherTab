@@ -28,6 +28,11 @@ var GLOBALS = {
 
 var SETTINGS;
 
+window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+window.SHIMindexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
+
 
 $(document).ready(function() {
 	// Init Vars
@@ -248,10 +253,11 @@ function updateStatus(progress, statustext, statustitle, elements, error){
 //-> Animation der Statusleiste im PopUp
 	if (document.getElementById('item0Sync')) {
 		// Elemente
-		if (!elements || typeof elements == "undefined") {elements = [];}
-		el_statusbar 	= elements[0] || document.getElementById('syncStatus');
-		el_statustitle 	= elements[1] || document.getElementById('syncText');
-		el_statustext 	= elements[2] || document.getElementById('syncInnerText');
+		if (!elements || elements == [] || typeof elements == "undefined") {elements = false;}
+
+		el_statusbar	= (elements) ? elements[0] : document.getElementById('syncStatus');
+		el_statustitle	= (elements) ? elements[1] : document.getElementById('syncText');
+		el_statustext	= (elements) ? elements[2] : document.getElementById('syncInnerText');
 
 		// DOM-Werte setzen
 		el_statusbar.style.width = progress.toString()+"%";
@@ -266,7 +272,6 @@ function updateStatus(progress, statustext, statustitle, elements, error){
 			el_statusbar.style.width = "100%";
 			el_statusbar.classList.remove('ok');
 			el_statusbar.classList.add('error');
-			el_statusbar.style.width = "";
 		}
 	}
 	return;
@@ -302,7 +307,7 @@ function mergeObjects(old1, new1){
 
 // Objekte rekursiv zusammenführen:
 // von: https://stackoverflow.com/a/34749873
-function mergeDeep(target, ...sources) {
+function mergeDeep_old(target, ...sources) {
 	if (!sources.length) return target;
 	var source = sources.shift();
 
@@ -319,6 +324,43 @@ function mergeDeep(target, ...sources) {
 
 	return mergeDeep(target, ...sources);
 }
+
+/*
+function mergeDeep_noJS_support(target, sources) {
+	if (!sources.length) return target;
+	var source = sources.shift();
+	
+	if (isObject(target) && isObject(source)) {
+		for (var key in source) {
+			if (isObject(source[key])) {
+				if (!target[key]) Object.assign(target, { [key]: {} });
+				mergeDeep(target[key], source[key]);
+			} else {
+				Object.assign(target, { [key]: source[key] });
+			}
+		}
+	}
+	
+	return mergeDeep.apply(target, spread(sources));
+}
+*/
+
+function spread() {
+	var args = [];
+	var a = [].slice.call(arguments).forEach(function (n) {
+		if (Array.isArray(n)) {
+			args = args.concat(n);
+		} else if (n.next) {
+			for (var i = n, r = i.next(); !r.done; result = i.next()) {
+				args.push(r.value);
+			}
+		} else {
+			args.push(n);
+		}
+	});
+	return args;
+}
+
 
 function checkAuth() {
 	GLOBALS.AUTH = (localStorage.getItem("auth") == "true") ? true : false;
@@ -510,12 +552,12 @@ function schnitt_gesamt(Student, Leistungen) {
 				kompetenzen[4] += 1;
 			}
 		}
-	Student.kompetenzen = Array(
+	Student.kompetenzen = [
 		Math.round((kompetenzen[0]/kompetenzen[4])*100)/100 || 0,
 		Math.round((kompetenzen[1]/kompetenzen[4])*100)/100 || 0,
 		Math.round((kompetenzen[2]/kompetenzen[4])*100)/100 || 0,
 		Math.round((kompetenzen[3]/kompetenzen[4])*100)/100 || 0,
-	);
+	];
 
 	return Student;
 }
@@ -819,7 +861,7 @@ function waitForDB(callback){
 
 function klassenSyncHandler(location, newWindow){
 //-> Synchronisierung, Animation und Weiterleitung
-	// DEV GLOBALS.perfStart = performance.now();
+	GLOBALS.perfStart = performance.now();// DEV
 	popUp("item0Sync");
 
 	// Animation, Sync und DB
@@ -831,11 +873,12 @@ function klassenSyncHandler(location, newWindow){
 		
 		progress += 50; // Statusbar
 		updateStatus(progress, "Serverdaten anfordern", "Synchronisiere...");
+		console.log("DEV: kurz vor sync_getKlasse");
 		
 		sync_getKlasse(function(mergedKlasse) {
 
-			// DEV GLOBALS.perfEnd = performance.now();
-			// DEV console.log("INFO: Finished opening Class in " + Math.round((GLOBALS.perfEnd - GLOBALS.perfStart), 1) + " milliseconds.");
+			GLOBALS.perfEnd = performance.now();// DEV
+			console.log("INFO: Finished opening Class in " + Math.round((GLOBALS.perfEnd - GLOBALS.perfStart), 1) + " milliseconds.");// DEV
 			
 			if (isObject(mergedKlasse)) {
 

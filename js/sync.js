@@ -82,10 +82,11 @@ function sync_getKlasse(callback, classObjectArray) {
 					//DEV console.log("SYNC recieved:", newData);
 					var merged = mergeKlasse(newData, klassenObject);
 					if (merged) {
-						//DEV console.log("SYNC merged to:", merged);
+						console.log("SYNC merged to:", merged);//DEV
 						// (Create)
 						db_neueKlasse(function(){
 							// Save lokal
+							console.log("SYNC: Save lokal");//DEV
 							db_replaceData(function(){
 								// Push zurück zu Server
 								sync_pushBack(callback, merged, ["class", klassenHash]);

@@ -60,19 +60,21 @@ CACHE:
 ./js/details_students.js
 ./js/export.js
 ./js/index.js
-./js/mobile.js
+./js/identify.js
 ./js/settings.js
 ./js/stay.js
 ./js/sync.js
 ./js/touch.js
 ./js/uebersicht.js
-./js/jquery-3.3.1.min.js
 ./js/crypto-js-v3.1.2/rollups/aes.js
 ./js/crypto-js-v3.1.2/rollups/sha1.js
 ./jsflot/jquery.flot.min.js
 ./jsflot/jquery.flot.pie.min.js
 ./jsflot/jquery.flot.categories.min.js
 ./jsflot/jquery.flot.valuelabels.js
+./js/frameworks/jquery-3.3.1.min.js
+./js/frameworks/indexeddbshim.min.js
+./js/frameworks/babel_polyfill.min.js
 
 
 NETWORK:

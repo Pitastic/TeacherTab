@@ -1,8 +1,48 @@
 // Design- und Funktionsanpassung für die verschiedenen Geräte
 
 var DEV_LOG1 = "";
+var CACHE = "tt_webapp_v1";
 
+// Sende Device-Info an ServiceWorker
+// window.cache erweitern:
+/*
+*/
 
+function extendCache(device_info) {
+	toCache = [];
+
+	// Device abhängig
+	if (device_info.indexOf('phone') >= 0) {
+		//toCache.push("");
+	} else if (device_info.indexOf('tablet') >= 0) {
+		//toCache.push("");
+	} else if (device_info.indexOf('desktop') >= 0) {
+		//toCache.push("");
+	}	
+
+	// Polyfills
+	if (device_info.indexOf('noidx') >= 0) {
+		// omg - run for babel and idx
+		toCache.push("/js/frameworks/babel_polyfill.min.js");
+		toCache.push("/js/frameworks/indexeddbshim.min.js");
+	} else if (device_info.indexOf('nojs') >= 0) {
+		// nur babel
+		toCache.push("/js/frameworks/babel_polyfill.min.js");
+	}
+
+	var lenToCache = toCache.length;
+	if (lenToCache > 0) {
+		console.log("SW: extending Cache", lenToCache, toCache);
+		for (var i = 0; i < lenToCache; i++) {
+			var res = toCache[i];
+			caches.open(CACHE).then(function(cache) {
+				cache.add(res);
+			});
+		}
+	}
+}
+	
+	
 function handle_orientation_landscape(evt) {
 	console.log("STYLE: Handle Orientation, isLandscape:", evt.matches);
 	var viewport = "initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
@@ -104,5 +144,5 @@ window.onload = function(evt){
 	devlog_container = document.getElementById("dev_info1");
 	console.log(DEV_LOG1);
 	if (devlog_container) { devlog_container.innerHTML = DEV_LOG1; }
-
+	extendCache(["noidx", "nojs"]);
 };

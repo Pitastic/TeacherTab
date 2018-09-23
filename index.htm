@@ -1,24 +1,26 @@
 <!doctype html>
-<!--<html manifest="cache.manifest">-->
+<html manifest="cache.manifest">
 
 <head>
 	<meta charset="utf-8">
 	<link rel="manifest" href="manifest.json">
 	<meta id="dynamicViewport" name="viewport">
+
+	<!-- Service Worker -->
 	<script type="text/javascript">
-	// ServiceWorker
 	if('serviceWorker' in navigator) {
 		navigator.serviceWorker
-			.register( '/sw.js', {scope: '.'} )
-			.then(function() { console.log("SW: Service Worker Registered"); })
-			.catch(function(err) { console.log("SW: Error, Service Worker failed to register !", err); });
+		.register( '/sw.js', {scope: '.'} )
+		.then(function() { console.log("SW: Service Worker Registered"); })
+		.catch(function(err) { console.log("SW: Error, Service Worker failed to register !", err); });
 	}else{
 		console.log("SW: Service Worker werden nicht unterstützt ! - Fallback zu cache.manifest...");
 	}
 	</script>
 
-	<!-- Mobile -->
-	<script type="text/javascript" src="/js/mobile.js"></script>
+	<!-- Detect DEVICE -->
+	<script type="text/javascript" src="/js/identify.js"></script>
+
 	
 	<!-- Apple -->
 	<meta name="mobile-web-app-capable" content="yes">
@@ -322,14 +324,17 @@
 
 <div id="footer"></div>
 </body>
-	<script src="js/jquery-3.3.1.min.js"></script>
-	<script src="js/crypto-js-v3.1.2/rollups/aes.js"></script>
-	<script src="js/crypto-js-v3.1.2/rollups/sha1.js"></script>
+	<script src="/js/frameworks/babel_polyfill.min.js"></script>
+	<script src="/js/frameworks/indexeddbshim.min.js"></script>
+	<script>shimIndexedDB.__useShim();</script>
 
-	<script type="text/javascript" src="js/all.js"></script>
-	<script type="text/javascript" src="js/database.js"></script>
-	<!--<script type="text/javascript" src="js/touch.js"></script>-->
-	<script type="text/javascript" src="js/index.js"></script>
-	<script type="text/javascript" src="js/sync.js"></script>
-	<script type="text/javascript" src="js/stay.js"></script>
+	<script src="/js/frameworks/jquery-3.3.1.min.js"></script>
+	<script src="/js/crypto-js-v3.1.2/rollups/aes.js"></script>
+	<script src="/js/crypto-js-v3.1.2/rollups/sha1.js"></script>
+
+	<script type="text/javascript" src="/js/all.js"></script>
+	<script type="text/javascript" src="/js/database.js"></script>
+	<script type="text/javascript" src="/js/index.js"></script>
+	<script type="text/javascript" src="/js/sync.js"></script>
+	<script type="text/javascript" src="/js/stay.js"></script>
 </html>
