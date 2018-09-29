@@ -1,3 +1,4 @@
+"use strict";
 function testCreds(callback) {
 // eingetragene Credentials testen
 	$.ajax({
@@ -30,12 +31,12 @@ function sync_getAccount(callback, localAccount) {
 			success: function(data, status, jqXHR){
 				// GET
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
-				//DEVconsole.log("SYNC: data", data);
+				console.log("SYNC: data", data); //DEV
 				// Merge
 				var merged = mergeAccount(newData, localAccount);
 				merged['valid'] = data.valid;
 				merged['validDate'] = data.validDate;
-				//DEVconsole.log("SYNC: Merged", merged);
+				console.log("SYNC: Merged", merged); //DEV
 				// Save and Push back
 				db_replaceData(function(){
 					sync_pushBack(callback, merged, "account");

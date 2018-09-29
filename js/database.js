@@ -1,3 +1,4 @@
+"use strict";
 // Testen und anlegen einer DB
 function initDB(callback) {
 	if (!SHIMindexedDB) {
@@ -35,7 +36,7 @@ function initDB(callback) {
 							// Accountinformationen anlegen
 							var connection2 = event.target.result;
 							var objectStore = connection2.transaction(['account'], "readwrite").objectStore("account");
-							row = createAccount(GLOBALS.dbname);
+							var row = createAccount(GLOBALS.dbname);
 							var adding = objectStore.add(row);
 							adding.onsuccess = function(){
 								window.location.reload();
@@ -51,7 +52,7 @@ function initDB(callback) {
 					};
 					request.oncomplete = function(event){
 						if (!called) {
-							called = true;
+							var called = true;
 							callback();
 						}
 					}
@@ -260,10 +261,11 @@ function db_deleteDoc(callback, id){
 
 // Document nach ID ohne anderen Einschränkungen lesen
 function db_readGeneric(callback, id, oStore) {
-	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse;}
+	if (typeof oStore == "undefined") { oStore = GLOBALS.klasse; }
 	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function(event){
+		var result;
 		var connection = event.target.result;
 		var objectStore = connection.transaction(oStore).objectStore(oStore);
 		var transaction = objectStore.openCursor()
@@ -278,6 +280,7 @@ function db_readGeneric(callback, id, oStore) {
 				cursor.continue();
 			}else{
 				// Close and Callback
+				console.log("IDB: result is:", result); //DEV
 				connection.close();
 				callback(result);
 			}
@@ -385,7 +388,7 @@ function db_replaceData(callback, newObject, oStore, multi) {
 
 		if (!multi) {
 			// einzelnes Object
-			updateRequest = objectStore.put(newObject);
+			var updateRequest = objectStore.put(newObject);
 			updateRequest.onsuccess = function(event){
 				console.log("IDB: item", newObject.id, "replaced");
 				callback();
@@ -396,7 +399,7 @@ function db_replaceData(callback, newObject, oStore, multi) {
 			for (var i = IDsToGo.length - 1; i >= 0; i--) {
 				var id = parseInt(IDsToGo[i]);
 				var toGo = 1;
-				updateRequest = objectStore.put(newObject[id]);
+				var updateRequest = objectStore.put(newObject[id]);
 				updateRequest.onsuccess = function(event){
 					if (toGo == IDsToGo.length) {
 						console.log("IDB:", toGo, "items replaced");
@@ -557,8 +560,8 @@ function db_updateData(callback, newObjects, oStore, overwrite) {
 			if (cursor) {
 				id = cursor.value.id;
 				if (newObjects.hasOwnProperty(id.toString())) {
-					//var toUpdate = (overwrite) ? newObjects[id] : mergeDeep(cursor.value, newObjects[id]);
-					var toUpdate = (overwrite) ? newObjects[id] : mergeDeep.apply(cursor.value, spread(newObjects[id]));
+					var toUpdate = (overwrite) ? newObjects[id] : mergeDeep(cursor.value, newObjects[id]);
+					//var toUpdate = (overwrite) ? newObjects[id] : mergeDeep.apply(cursor.value, spread(newObjects[id]));
 					var requestUpdate = cursor.update(toUpdate);
 					requestUpdate.onsuccess = function() {
 						console.log("indexDB: ID", id, "updated...")

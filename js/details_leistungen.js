@@ -1,4 +1,4 @@
-
+"use strict";
 $(document).ready(function() {
 	// Event-Listener
 	closeListener();

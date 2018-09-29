@@ -1,3 +1,4 @@
+"use strict";
 /*!
  * jQuery stayInWebApp Plugin
  * version: 0.4 (2012-06-19)

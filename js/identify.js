@@ -1,16 +1,14 @@
+"use strict";
 // Design- und Funktionsanpassung für die verschiedenen Geräte
 
 var DEV_LOG1 = "";
 var CACHE = "tt_webapp_v1";
+var toCache = []
 
-// Sende Device-Info an ServiceWorker
-// window.cache erweitern:
-/*
-*/
+
+// Cache mit Device-Info erweitern
 
 function extendCache(device_info) {
-	toCache = [];
-
 	// Device abhängig
 	if (device_info.indexOf('phone') >= 0) {
 		//toCache.push("");
@@ -30,15 +28,15 @@ function extendCache(device_info) {
 		toCache.push("/js/frameworks/babel_polyfill.min.js");
 	}
 
-	var lenToCache = toCache.length;
-	if (lenToCache > 0) {
-		console.log("SW: extending Cache", lenToCache, toCache);
-		for (var i = 0; i < lenToCache; i++) {
-			var res = toCache[i];
-			caches.open(CACHE).then(function(cache) {
-				cache.add(res);
-			});
-		}
+	if (toCache.length > 0) {
+		console.log("SW: extending Cache", toCache);
+		caches.open(CACHE).then(function(cache) {
+			for (var i = toCache.length - 1; i >= 0; i--) {
+				console.log("SW: caching", toCache[i]);
+				cache.add( toCache[i] )
+				.catch(function (err) { console.log("SW: Fehler beim Cachen von", toCache[i], err) });
+			}
+		})
 	}
 }
 	
@@ -47,15 +45,6 @@ function handle_orientation_landscape(evt) {
 	console.log("STYLE: Handle Orientation, isLandscape:", evt.matches);
 	var viewport = "initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
 	var dwidth = "width=device-width";
-	/*
-	if (evt.matches) {
-		DEV_LOG1 += "> STYLE: Orientation landscape\n";
-		dwidth = "width=" + documentElement.clientWidth + "px";
-	}else{
-		DEV_LOG1 += "> STYLE: Orientation portrait\n";
-		dwidth = "width=device-width";
-	}
-	*/
 	document.getElementById('dynamicViewport').setAttribute('content', viewport+" "+dwidth);		
 }
 
@@ -71,6 +60,7 @@ function passCss(absolutePath) {
 		link.href = absolutePath;
 		document.head.appendChild(link);
 	}
+	toCache.push(absolutePath);
 }
 
 
@@ -83,6 +73,13 @@ function passJs(absolutePath) {
 		document.head.appendChild(script);
 		return script;
 	}
+	toCache.push(absolutePath);
+}
+
+function checkForSHIM() {
+	// Check indexedDB Polyfill
+
+	// Check JS Polyfill
 }
 
 window.onload = function(evt){
@@ -141,8 +138,10 @@ window.onload = function(evt){
 
 	DEV_LOG1 += "> STYLE: Pixel-Width "+window.innerWidth;
 
-	devlog_container = document.getElementById("dev_info1");
+	var devlog_container = document.getElementById("dev_info1");
 	console.log(DEV_LOG1);
 	if (devlog_container) { devlog_container.innerHTML = DEV_LOG1; }
-	extendCache(["noidx", "nojs"]);
+	
+	/*TODO: vorerst wird alles (zuviel gecached... issue #49) */
+	//extendCache(["noidx", "nojs"]);
 };

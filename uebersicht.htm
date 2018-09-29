@@ -17,7 +17,7 @@
 	</script>
 
     <!-- Mobile -->
-	<script type="text/javascript" src="/js/mobile.js"></script>
+	<!--<script type="text/javascript" src="/js/identify.js"></script>-->
 
     <!-- Apple Statusbar -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -212,8 +212,13 @@
 	
 </div>
 </body>
+	<!-- issue #50 -->
+	<script src="/js/frameworks/babel.min.js"></script>
+	<script src="/js/frameworks/babel_polyfill.min.js"></script>
+	<script src="/js/frameworks/indexeddbshim.min.js"></script>
+	<script>shimIndexedDB.__useShim();</script>
 	<!-- Basismodule -->
-	<script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="/js/frameworks/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="/js/crypto-js-v3.1.2/rollups/aes.js"></script>
 	<script type="text/javascript" src="/js/crypto-js-v3.1.2/rollups/sha1.js"></script>
 	<script type="text/javascript" src="/js/all.js"></script>

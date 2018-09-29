@@ -8,7 +8,6 @@
 
 
 
-var TESTCACHE = false;
 var CACHE = "tt_webapp_v1";
 var needToCache = [
 	'/',
@@ -26,6 +25,7 @@ var needToCache = [
 	'/css/main.css',
 	'/css/plot.css',
 	'/css/popup.css',
+	'/css/phone.css',
 	'/img/back_tisch.jpg',
 	'/img/DropDown.png',
 	'/img/lupe_klein.gif',
@@ -73,18 +73,20 @@ var needToCache = [
 	'/js/stay.js',
 	'/js/sync.js',
 	'/js/uebersicht.js',
-	'/js/jquery-3.3.1.min.js',
 	'/js/crypto-js-v3.1.2/rollups/aes.js',
 	'/js/crypto-js-v3.1.2/rollups/sha1.js',
-	'/jsflot/jquery.flot.min.js',
-	'/jsflot/jquery.flot.pie.min.js',
-	'/jsflot/jquery.flot.categories.min.js',
-	'/jsflot/jquery.flot.valuelabels.js'
+	'/js/jsflot/jquery.flot.min.js',
+	'/js/jsflot/jquery.flot.pie.min.js',
+	'/js/jsflot/jquery.flot.categories.min.js',
+	'/js/jsflot/jquery.flot.valuelabels.js',
+	'/js/frameworks/jquery-3.3.1.min.js',
+	'/js/frameworks/babel_polyfill.min.js',
+	'/js/frameworks/indexeddbshim.min.js',
+	'/js/touch.js'	
 ];
 
 
 self.addEventListener('install', function(event) {
-	console.log("SW: I would like to cache ehm...", TESTCACHE);
 	event.waitUntil(
 		caches.open(CACHE).then(function(cache) {
 			for (var i = needToCache.length - 1; i >= 0; i--) {
