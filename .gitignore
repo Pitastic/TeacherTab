@@ -10,6 +10,9 @@ UserDBs/*
 # ftpSync
 ftpsync.settings
 
+# keine versteckten
+.*
+
 
 # Created by https://www.gitignore.io/api/sublimetext,visualstudiocode
 
@@ -54,3 +57,9 @@ GitHub.sublime-settings
 
 
 # End of https://www.gitignore.io/api/sublimetext,visualstudiocode
+
+# NPM
+node_modules
+node_modules/*
+package.json
+package-lock.json

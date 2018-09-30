@@ -3,6 +3,11 @@
 // ================ Globale Variablen ================ //
 // =================================================== //
 
+// esLint Globals:
+/* global $ hashData listStudents listLeistung
+db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc
+sync_deleteKlasse sync_pushBack sync_getKlasse*/
+
 var GLOBALS = {
 	'AUTH'				: null,
 	'userID'			: null,
@@ -92,16 +97,16 @@ function closeListener() {
 
 function changeOrientation(){
 	switch(window.orientation){
-		case 180:
-		case 0:
-			// Portrait :
-			document.getElementById('dynamicViewport').setAttribute('content', "width=device-width");
-			break;
-		default:
-			// Landscape :
-			document.getElementById('dynamicViewport').setAttribute('content', "");
-			break;
-		}
+	case 180:
+	case 0:
+		// Portrait :
+		document.getElementById('dynamicViewport').setAttribute('content', "width=device-width");
+		break;
+	default:
+		// Landscape :
+		document.getElementById('dynamicViewport').setAttribute('content', "");
+		break;
+	}
 }
 
 function Schuljahre() {
@@ -111,24 +116,24 @@ function Schuljahre() {
 	var nextYear = (thisYear+1).toString().substring(2,4);
 	var opt, opt2;
 	opt = new Option(thisYear+" / "+nextYear+" (2. Hj.)");
-		opt2 = new Option(thisYear+" / "+nextYear+" (2. Hj.)");
-		selectBox.appendChild(opt);
-		copyBox.appendChild(opt2);
+	opt2 = new Option(thisYear+" / "+nextYear+" (2. Hj.)");
+	selectBox.appendChild(opt);
+	copyBox.appendChild(opt2);
 	thisYear = thisYear+1;
 	nextYear = (thisYear+1).toString().substring(2,4);
 	opt = new Option(thisYear+" / "+nextYear+" (1. Hj.)");
-		opt2 = new Option(thisYear+" / "+nextYear+" (1. Hj.)");
-		selectBox.appendChild(opt);
-		copyBox.appendChild(opt2);
+	opt2 = new Option(thisYear+" / "+nextYear+" (1. Hj.)");
+	selectBox.appendChild(opt);
+	copyBox.appendChild(opt2);
 	opt = new Option(thisYear+" / "+nextYear+" (2. Hj.)");
-		opt2 = new Option(thisYear+" / "+nextYear+" (2. Hj.)");
-		selectBox.appendChild(opt);
-		copyBox.appendChild(opt2);
+	opt2 = new Option(thisYear+" / "+nextYear+" (2. Hj.)");
+	selectBox.appendChild(opt);
+	copyBox.appendChild(opt2);
 }
 
 function loadVerteilung(Pkt_Verteilung) {
 //--> Laden einer Verteilung (default="Standard") und updaten der Anzeige
-	if (Pkt_Verteilung == null) {Pkt_Verteilung = "Standard"};
+	if (Pkt_Verteilung == null) {Pkt_Verteilung = "Standard";}
 	return;
 }
 
@@ -136,18 +141,19 @@ function loadVerteilung(Pkt_Verteilung) {
 function updateNoten(liste, bol_singel, newObs_init) {
 //-> Errechnen und Anzeigen von eingetragenen Leistungen
 	// -- Abwärtskompatibilität
+	var newObs;
 	if (newObs_init == null) {
 		// keine Schülerdaten aus DB, bereits angezeigte Daten optisch updaten
 		// In DB wird später gespeichert (Speichern Button)
 		updateNotenHTML(liste, bol_singel);
 		return;
 	}else if (Array.isArray(newObs_init)) {
-		var newObs = {};
+		newObs = {};
 		for (var k = 0; k < newObs_init.length; k++) {
 			newObs[newObs_init[k].id] = newObs_init[k];
 		}
 	}else{
-		var newObs = newObs_init;
+		newObs = newObs_init;
 	}
 
 	// -- eigentliche Funktion
@@ -162,6 +168,7 @@ function updateNoten(liste, bol_singel, newObs_init) {
 		// Fehlende Daten für das Objekt errechnen und anzeigen
 		if (liste[i].querySelector("[data-name=Gesamt]")) { // Kompetenzen
 			span = liste[i].getElementsByClassName('Note')[0].getElementsByTagName('span');
+			var erreicht_prozent;
 			if (newObs[sID][lART][lID] && newObs[sID][lART][lID].Mitschreiber == true) {
 				// Daten vorhanden
 				gesamtWert = sessionStorage.getItem(newObs[sID][lART][lID].Verteilung+'_Gesamt');
@@ -226,12 +233,12 @@ function updateNotenHTML(liste, bol_singel) {
 				span.innerHTML = (liste[i].getAttribute('data-mitschreiber') == "true") ? note : "-";
 			}
 		}
-	}, 10)
+	}, 10);
 }
 
 function RohpunkteAlsNote(val, bol_15pkt){
 //--> Rechnet Prozentwerte in Noten um, universell für 15pkt und 6 Zensuren.
-	if (val || val==0){
+	if (val || val == 0){
 		var i;
 		if (!bol_15pkt){
 			for (i=1;i<6;i++){
@@ -247,7 +254,7 @@ function RohpunkteAlsNote(val, bol_15pkt){
 				}
 			}
 		}
-	}else{return "-"}
+	}else{return "-";}
 }
 
 function updateStatus(progress, statustext, statustitle, elements, error){
@@ -256,9 +263,9 @@ function updateStatus(progress, statustext, statustitle, elements, error){
 		// Elemente
 		if (!elements || elements == [] || typeof elements == "undefined") {elements = false;}
 
-		el_statusbar	= (elements) ? elements[0] : document.getElementById('syncStatus');
-		el_statustitle	= (elements) ? elements[1] : document.getElementById('syncText');
-		el_statustext	= (elements) ? elements[2] : document.getElementById('syncInnerText');
+		var el_statusbar	= (elements) ? elements[0] : document.getElementById('syncStatus');
+		var el_statustitle	= (elements) ? elements[1] : document.getElementById('syncText');
+		var el_statustext	= (elements) ? elements[2] : document.getElementById('syncInnerText');
 
 		// DOM-Werte setzen
 		el_statusbar.style.width = progress.toString()+"%";
@@ -295,7 +302,7 @@ function objLength(obj) {
 }
 
 function mergeObjects(old1, new1){
-	for (k in new1){
+	for (var k in new1){
 		// Verschachtelungen assignen, Werte zuordnen
 		if (typeof(new1[k]) == "object") {
 			Object.assign(old1[k], new1[k]);
@@ -316,12 +323,12 @@ function mergeDeep(target, ...sources) {
 		for (var key in source) {
 			if (isObject(source[key])) {
 				if (!target[key]) Object.assign(target, { [key]: {} });
-					mergeDeep(target[key], source[key]);
-				} else {
-					Object.assign(target, { [key]: source[key] });
-				}
+				mergeDeep(target[key], source[key]);
+			} else {
+				Object.assign(target, { [key]: source[key] });
 			}
 		}
+	}
 
 	return mergeDeep(target, ...sources);
 }
@@ -427,10 +434,11 @@ function compareStudents(a, b) {
 
 
 function datum(numeric, given){
+	var d;
 	if (!given) {
-		var d = new Date();
+		d = new Date();
 	}else{
-		var d = new Date(given);
+		d = new Date(given);
 	}
 	var monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 	var tag, monat, jahr;
@@ -455,9 +463,9 @@ function uniqueID() {
 	// -- plus extra-Counter für Batch
 	part_ts += GLOBALS.dbToGo;
 	// Add Device Details
-    var nav = window.navigator;
-    var screen = window.screen;
-    var part_guid = nav.mimeTypes.length;
+	var nav = window.navigator;
+	var screen = window.screen;
+	var part_guid = nav.mimeTypes.length;
 	part_guid += nav.plugins.length;
 	part_guid += screen.height || '';
 	part_guid += screen.width || '';
@@ -475,7 +483,7 @@ function stampImport(importData, stamp) {
 	if (typeof stamp == "undefined") {
 		stamp = timestamp();
 	}
-	for (key in importData){
+	for (var key in importData){
 		if (importData.hasOwnProperty(key)) {
 			// Settings / Leistungen
 			if (importData[key].typ == "leistung" || importData[key].typ == "settings") {
@@ -487,6 +495,7 @@ function stampImport(importData, stamp) {
 				importData[key].name.changed = stamp;
 				importData[key].gesamt.changed = stamp;
 				// -- fspz
+				var leistung;
 				for (leistung in importData[key].fspz){
 					importData[key].fspz[leistung].changed = stamp;
 				}
@@ -511,11 +520,12 @@ function stampImport(importData, stamp) {
 
 // Schnitt für einen Schüler berechnen
 function schnitt_gesamt(Student, Leistungen) {
-	var ds_art, neuerStudent;
+	var ds_art;
 	var art = ["mndl","fspz","schr"];
+	var i;
 
 	// Durchschnitt aller Bereiche
-	for (var i = 0; i < art.length; i++) {
+	for (i = 0; i < art.length; i++) {
 		ds_art = "o"+art[i];
 		if (ds_art == "ofspz") {
 			// Spezialfall Fspz und Verrechnung mit Mndl beachten
@@ -528,31 +538,31 @@ function schnitt_gesamt(Student, Leistungen) {
 
 	// Durchschnitt insgesamt
 	if (Student.gesamt['omndl'] && Student.gesamt['oschr']){
-		Student.gesamt.rechnerisch = Student.gesamt['omndl']*SETTINGS.gewichtung['mündlich'] + Student.gesamt['oschr']*SETTINGS.gewichtung['schriftlich']
+		Student.gesamt.rechnerisch = Student.gesamt['omndl']*SETTINGS.gewichtung['mündlich'] + Student.gesamt['oschr']*SETTINGS.gewichtung['schriftlich'];
 	}else{
 		Student.gesamt.rechnerisch = Student.gesamt['omndl'] || Student.gesamt['oschr'] || 0;
 	}
 
 	// Kompetenzen
 	var kompetenzen = [0,0,0,0,0];
-	var Infos, temp_leistung;
+	var Infos, temp_leistung, i2;
 	// -- Itteriere durch Leistungsart
-	for (var i = 0; i < Leistungen.length; i++) {
+	for (i2 = 0; i2 < Leistungen.length; i2++) {
 		// Itteriere durch Leistung und Auswahl von mitgeschriebenen Objekten erstellen
-		Infos = Leistungen[i];
-			temp_leistung = Student[Infos.subtyp][Infos.id];
-			// mitgeschrieben und mit Kategrorien ?
-			if (temp_leistung && temp_leistung.Mitschreiber && temp_leistung.Verteilung) {
-				var hundertProzent = Infos.Verteilungen[temp_leistung.Verteilung];
-				// Prozentsummen
-				kompetenzen[0] += temp_leistung.Kat1 / hundertProzent.Kat1;
-				kompetenzen[1] += temp_leistung.Kat2 / hundertProzent.Kat2;
-				kompetenzen[2] += temp_leistung.Kat3 / hundertProzent.Kat3;
-				kompetenzen[3] += temp_leistung.Kat4 / hundertProzent.Kat4;
-				// Counter
-				kompetenzen[4] += 1;
-			}
+		Infos = Leistungen[i2];
+		temp_leistung = Student[Infos.subtyp][Infos.id];
+		// mitgeschrieben und mit Kategrorien ?
+		if (temp_leistung && temp_leistung.Mitschreiber && temp_leistung.Verteilung) {
+			var hundertProzent = Infos.Verteilungen[temp_leistung.Verteilung];
+			// Prozentsummen
+			kompetenzen[0] += temp_leistung.Kat1 / hundertProzent.Kat1;
+			kompetenzen[1] += temp_leistung.Kat2 / hundertProzent.Kat2;
+			kompetenzen[2] += temp_leistung.Kat3 / hundertProzent.Kat3;
+			kompetenzen[3] += temp_leistung.Kat4 / hundertProzent.Kat4;
+			// Counter
+			kompetenzen[4] += 1;
 		}
+	}
 	Student.kompetenzen = [
 		Math.round((kompetenzen[0]/kompetenzen[4])*100)/100 || 0,
 		Math.round((kompetenzen[1]/kompetenzen[4])*100)/100 || 0,
@@ -566,7 +576,7 @@ function schnitt_gesamt(Student, Leistungen) {
 
 function schnitt(_obj, bol_fspz){
 	// Besonderheiten bei Trennung von Vok und Gra beachten !
-	var i, _row, r = 0;
+	var _row, r = 0;
 	var iAnz = 0;
 	var _Gra = {};
 	var _Vok = {};
@@ -624,7 +634,7 @@ function itemAbort(names, target_site) {
 }
 
 
-function slide(event) {
+function slide() {
 //-> Onclick dreht die Ansicht
 	scroll(0,0);
 	var addBtn = document.getElementById('btn_Add');
@@ -666,10 +676,10 @@ function slide2(slideName){
 	document.getElementsByClassName('marker')[0].className = "marker "+slideName;
 	var items = ["item1","item2"];
 	var slideElement = items.splice(items.indexOf(slideName),1)[0];
-		slideElement = document.getElementById(slideElement);
-		slideElement.classList.add('show');
+	slideElement = document.getElementById(slideElement);
+	slideElement.classList.add('show');
 	var hideElement = document.getElementById(items[0]);
-		hideElement.classList.remove('show');
+	hideElement.classList.remove('show');
 	addBtn.setAttribute('data-name', slideName+'Add');
 	sessionStorage.setItem('lastview', slideName);
 }
@@ -752,7 +762,7 @@ function popUpSwitch(thisElement, target_id) {
 // =================================================== //
 
 // Account anlegen
-function createAccount(accountname, lokaleKlassen) {
+function createAccount(accountname) {
 	return {
 		'id' : 1, 
 		'username' : accountname,
@@ -785,7 +795,7 @@ function formSettings(id, bezeichnung) {
 }
 
 // Schüler mit ersten Daten
-function formStudent(vName, nName, sex, bestehendesO){
+function formStudent(vName, nName, sex){
 	sex = (typeof sex == "undefined") ? sex : "-";
 	var id = uniqueID();
 	return {
@@ -815,7 +825,7 @@ function formStudent(vName, nName, sex, bestehendesO){
 			'changed' :0,
 		},
 		'kompetenzen' : [],
-	}
+	};
 }
 
 // Leistung mit ersten Daten
@@ -854,7 +864,7 @@ function waitForDB(callback){
 		callback();
 	}else{
 		setTimeout(function(){
-			waitForDB(callback)
+			waitForDB(callback);
 		}, 250);
 	}
 }
@@ -894,7 +904,7 @@ function klassenSyncHandler(location, newWindow){
 						if (newWindow) {
 							window.open(location, '_blank');
 						}else{
-							window.location.href = location
+							window.location.href = location;
 						}
 					}, 1200);
 				},500);
@@ -909,7 +919,7 @@ function klassenSyncHandler(location, newWindow){
 						if (newWindow) {
 							window.open(location, '_blank');
 						}else{
-							window.location.href = location
+							window.location.href = location;
 						}
 					}, 3000);
 				}else{
@@ -925,7 +935,7 @@ function klassenSyncHandler(location, newWindow){
 }
 
 
-function klassenDeleteHandler(id) {
+function klassenDeleteHandler() {
 //-> Löschen, Synchronisierung, Animation
 	popUp("item0Sync");
 
@@ -944,7 +954,7 @@ function klassenDeleteHandler(id) {
 			}else{
 				updateStatus(progress, msg, "Klasse nicht vom Server gelöscht", false, true);
 			}
-			setTimeout(function(){window.location.reload()}, 3000)
+			setTimeout(function(){window.location.reload();}, 3000);
 		});
 	});
 	return;
@@ -998,7 +1008,7 @@ function klassenImportHandler() {
 			
 		}, 1, "notlocal", "addKlasse", [target, {'bezeichnung': jsonBackup[1].name, 'id' : target, 'changed' : changed}], "account");	
 
-	}, jsonBackup, ["class", target])
+	}, jsonBackup, ["class", target]);
 
 	return;
 }
@@ -1009,14 +1019,14 @@ function handleDeleteLeistung(callback, lART, lID) {
 	db_dynamicUpdate(
 		function(r){ // neue Callback Function
 			db_deleteDoc(function(){
-				db_simpleUpdate(callback, 1, "blacklist", "push", lID.toString())
+				db_simpleUpdate(callback, 1, "blacklist", "push", lID.toString());
 			}, lID);
 		},
 		function(Student){ // Apply Function
 			delete Student[lART][lID];
 			return Student;
 		},
-	"student");
+		"student");
 }
 
 
@@ -1029,9 +1039,9 @@ function handleSchnitt(callback, sID) {
 				return schnitt_gesamt(Student, Leistungen);
 			}, "student", sID);
 	}, "leistung", function(){
-			console.log("INFO: keine Schnittberechnung wegen leerer DB-Abfrage");
-			callback();
-		}
+		console.log("INFO: keine Schnittberechnung wegen leerer DB-Abfrage");
+		callback();
+	}
 	);
 }
 
@@ -1041,12 +1051,12 @@ function handleSchnitt(callback, sID) {
 // ==============================================================
 
 function change_buttons() {
-	buttons = {
+	var buttons = {
 		"btn_Add" : "&#65291;",
 		"btn_Delete" : "&#10006;",
 		"export" : "&#9650;",
-	}
-	for (key in buttons) {
-		document.getElementById(key).innerHTML = buttons[key]
+	};
+	for (var key in buttons) {
+		document.getElementById(key).innerHTML = buttons[key];
 	}
 }

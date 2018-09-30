@@ -1,8 +1,14 @@
 "use strict";
+// esLint Globals:
+/* global $ SETTINGS GLOBALS SHIMindexedDB
+closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings
+db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
+sync_deleteKlasse sync_pushBack sync_getKlasse*/
+
 // Testen und anlegen einer DB
 function initDB(callback) {
 	if (!SHIMindexedDB) {
-	   window.alert("Dein Browser ist für die WebApp-Funktionen leider zu alt. Mit einem aktuellen Browser bist du sicherer im Internet unterwegs und kannst die TeacherTab nutzen !")
+		window.alert("Dein Browser ist für die WebApp-Funktionen leider zu alt. Mit einem aktuellen Browser bist du sicherer im Internet unterwegs und kannst die TeacherTab nutzen !");
 	}else{
 		console.log("IDB: supported !");
 		// >> first visit ?
@@ -30,7 +36,7 @@ function initDB(callback) {
 						localStorage.setItem("dbversion_"+GLOBALS.userID, GLOBALS.dbversion);
 						needUpgrade = true;
 						console.log("IDB: upgrade finished");
-					}
+					};
 					request.onsuccess = function(event){
 						if (needUpgrade) {
 							// Accountinformationen anlegen
@@ -40,22 +46,22 @@ function initDB(callback) {
 							var adding = objectStore.add(row);
 							adding.onsuccess = function(){
 								window.location.reload();
-							}
+							};
 						}
 						console.log("IDB: initiiert");
 
 						// ---> Garbage Collection
 						connection2.onversionchange = function(event){
 							connection2.close();
-						}
+						};
 
 					};
 					request.oncomplete = function(event){
 						if (!called) {
-							var called = true;
+							called = true;
 							callback();
 						}
-					}
+					};
 				}else{
 					// -- nein
 					localStorage.setItem("dbversion_"+GLOBALS.userID, GLOBALS.dbversion);
@@ -74,7 +80,7 @@ function initDB(callback) {
 				connection.close();
 			};
 
-		}
+		};
 	}
 }
 
@@ -97,7 +103,7 @@ function db_neueKlasse(callback, id, bezeichnung) {
 			
 			// 2. Open new
 			GLOBALS.dbversion = localStorage.getItem("dbversion_"+GLOBALS.userID);
-			GLOBALS.dbversion = parseInt(GLOBALS.dbversion) + 1
+			GLOBALS.dbversion = parseInt(GLOBALS.dbversion) + 1;
 			localStorage.setItem("dbversion_"+GLOBALS.userID, GLOBALS.dbversion);
 
 			var newdb = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
@@ -113,10 +119,10 @@ function db_neueKlasse(callback, id, bezeichnung) {
 				GLOBALS.klasse = id;
 				console.log("IDB:", bezeichnung, " (", id, ") created");
 				console.log("IDB: Index:", result_Index);
-			}
+			};
 			newdb.onsuccess = function(event){
 				console.log("db_neueKlasse onsuccess");//DEV
-				SettingsRequest(event, id, bezeichnung, callback)
+				SettingsRequest(event, id, bezeichnung, callback);
 			};
 			newdb.onversionchange = function (event) {
 				console.log("IDB: Schließe onversionchange von newdb");
@@ -130,7 +136,7 @@ function db_neueKlasse(callback, id, bezeichnung) {
 		}
 
 
-	}
+	};
 	
 	// ---> Garbage Collection
 	db.onversionchange = function(event) {
@@ -141,10 +147,10 @@ function db_neueKlasse(callback, id, bezeichnung) {
 
 // Neues Document in DB anlegen (typen-unabhängig)
 function db_addDocument(callback, newObject, oStore) {
-	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse}
+	if (typeof oStore == "undefined") {oStore = GLOBALS.klasse;}
 	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
-	db.onsuccess = function(event, rowlist){
+	db.onsuccess = function(event){
 		var connection = event.target.result;
 		var objectStore = connection.transaction(oStore, "readwrite").objectStore(oStore);
 
@@ -155,7 +161,7 @@ function db_addDocument(callback, newObject, oStore) {
 		putNext(0);
 		function putNext(iterator) {
 			if (iterator<rowlist.length) {
-				objectStore.put(rowlist[iterator]).onsuccess = function(){putNext(iterator+1)};
+				objectStore.put(rowlist[iterator]).onsuccess = function(){putNext(iterator+1);};
 			} else {   // complete
 				console.log("IDB: Datensatz eingefügt (", iterator, "mal)");
 				if (callback) {callback(connection);}
@@ -167,10 +173,10 @@ function db_addDocument(callback, newObject, oStore) {
 		connection.onversionchange = function(event) {
 			connection.close();
 		};
-	}
+	};
 	db.oncomplete = function(){
-		if (callback) {callback(event.target.result)}
-	}
+		if (callback) {callback(event.target.result);}
+	};
 	return;
 }
 
@@ -197,25 +203,25 @@ function db_dropKlasse(oStore, callback) {
 				db2.onsuccess = function(event){
 					var connection2 = event.target.result;
 
-						console.log("IDB:", oStore, "deleted");
+					console.log("IDB:", oStore, "deleted");
 
-						// Klasse aus Account entfernen
-						db_simpleUpdate(function(){
-							callback();
-						}, 1, "klassenliste", "delKlasse", oStore, "account");
+					// Klasse aus Account entfernen
+					db_simpleUpdate(function(){
+						callback();
+					}, 1, "klassenliste", "delKlasse", oStore, "account");
 
 					// ---> Garbage Collection
 					connection2.onversionchange = function(event) {
 						connection2.close();
 					};
 					
-				}
+				};
 				db2.onerror = errorHandler;
 				db2.onupgradeneeded = function(event){
 					var connection2 = event.target.result;
 					connection2.deleteObjectStore(oStore);
-				}
-			}
+				};
+			};
 		}else{
 			console.log("IDB:", oStore, "lokal nicht vorhanden...");
 			// Klasse aus Account entfernen
@@ -229,7 +235,7 @@ function db_dropKlasse(oStore, callback) {
 			connection.close();
 		};
 		
-	}
+	};
 	db.onerror = errorHandler;
 }
 
@@ -246,7 +252,7 @@ function db_deleteDoc(callback, id){
 		result.onsuccess = function(event){
 			console.log("IDB: Eintrag ID", id, "gelöscht");
 			if (callback) {callback(connection);}
-		}
+		};
 		connection.close();
 
 		// ---> Garbage Collection
@@ -255,7 +261,7 @@ function db_deleteDoc(callback, id){
 		};
 
 		return;
-	}
+	};
 }
 
 
@@ -268,7 +274,7 @@ function db_readGeneric(callback, id, oStore) {
 		var result;
 		var connection = event.target.result;
 		var objectStore = connection.transaction(oStore).objectStore(oStore);
-		var transaction = objectStore.openCursor()
+		var transaction = objectStore.openCursor();
 		transaction.onerror = errorHandler;
 		transaction.onsuccess = function(event){
 			var cursor = event.target.result;
@@ -284,8 +290,8 @@ function db_readGeneric(callback, id, oStore) {
 				connection.close();
 				callback(result);
 			}
-		}
-	}
+		};
+	};
 }
 
 
@@ -297,13 +303,14 @@ function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 	db.onsuccess = function(event){
 		var connection = event.target.result;
 		var objectStore = connection.transaction([oStore], 'readwrite').objectStore(oStore);
-		var transaction = objectStore.openCursor()
+		var transaction = objectStore.openCursor();
 		transaction.onerror = errorHandler;
 		transaction.onsuccess = function(event){
-			var id, cursor = event.target.result;
+			var cursor = event.target.result;
 			if (cursor) {
 				if ( eID == cursor.value.id ) {
 					var toUpdate = cursor.value;
+					var idx;
 
 					// zu Array hinzufügen
 					if (mode == "push") {
@@ -329,7 +336,7 @@ function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 					// aus Array entfernen
 					}else if (mode == "pop") {
 						if (Array.isArray(toUpdate[prop])) {
-							var idx = toUpdate[prop].indexOf(val);
+							idx = toUpdate[prop].indexOf(val);
 							if (idx > -1) {toUpdate[prop].splice(idx, 1);}
 						}else{
 							toUpdate[prop] = [];
@@ -349,7 +356,7 @@ function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 						// aus Klassenliste
 						delete toUpdate.klassenliste[val];
 						// aus Local
-						var idx = toUpdate.local.indexOf(val);
+						idx = toUpdate.local.indexOf(val);
 						if (idx > -1) {toUpdate.local.splice(idx, 1);}
 						// auf Blacklist
 						toUpdate.blacklist.push(val);
@@ -364,14 +371,14 @@ function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 			}else{
 				callback();
 			}
-		}
+		};
 
 		connection.close();
 		// ---> Garbage Collection
 		connection.onversionchange = function(event) {
 			connection.close();
 		};
-	}
+	};
 }
 
 
@@ -385,21 +392,22 @@ function db_replaceData(callback, newObject, oStore, multi) {
 	db.onsuccess = function(event){
 		var connection = event.target.result;
 		var objectStore = connection.transaction([oStore], 'readwrite').objectStore(oStore);
+		var updateRequest;
 
 		if (!multi) {
 			// einzelnes Object
-			var updateRequest = objectStore.put(newObject);
+			updateRequest = objectStore.put(newObject);
 			updateRequest.onsuccess = function(event){
 				console.log("IDB: item", newObject.id, "replaced");
 				callback();
-			}
+			};
 		}else{
 			// Object mit Objecten
 			var IDsToGo = Object.keys(newObject);
 			for (var i = IDsToGo.length - 1; i >= 0; i--) {
 				var id = parseInt(IDsToGo[i]);
 				var toGo = 1;
-				var updateRequest = objectStore.put(newObject[id]);
+				updateRequest = objectStore.put(newObject[id]);
 				updateRequest.onsuccess = function(event){
 					if (toGo == IDsToGo.length) {
 						console.log("IDB:", toGo, "items replaced");
@@ -407,7 +415,7 @@ function db_replaceData(callback, newObject, oStore, multi) {
 					}else{
 						toGo += 1;
 					}
-				}
+				};
 			}
 		}
 
@@ -417,7 +425,7 @@ function db_replaceData(callback, newObject, oStore, multi) {
 			connection.close();
 		};
 
-	}
+	};
 }
 
 
@@ -451,14 +459,14 @@ function db_readKlasse(callback, targetClass) {
 				// Close and Callback
 				event.target.transaction.db.close();
 				callback([targetClass, result]);
-			}
+			};
 
 		}else{
 			// Close and Callback
 			connection.close();
 			callback([targetClass]);
 		}
-	}
+	};
 
 	// ---> Garbage Collection
 	db.onversionchange = function(event) {
@@ -503,8 +511,8 @@ function db_readSingleData(callback, typ, id, emptyCall) {
 					if (emptyCall) {emptyCall();}
 				}
 			}
-		}
-	}
+		};
+	};
 }
 
 
@@ -538,8 +546,8 @@ function db_readMultiData(callback, typ, emptyCall) {
 					callback();
 				}
 			}
-		}
-	}
+		};
+	};
 }
 
 
@@ -553,7 +561,7 @@ function db_updateData(callback, newObjects, oStore, overwrite) {
 	db.onsuccess = function(event){
 		var connection = event.target.result;
 		var objectStore = connection.transaction(oStore, 'readwrite').objectStore(oStore);
-		var transaction = objectStore.openCursor()
+		var transaction = objectStore.openCursor();
 		transaction.onerror = errorHandler;
 		transaction.onsuccess = function(event){
 			var id, cursor = event.target.result;
@@ -564,14 +572,14 @@ function db_updateData(callback, newObjects, oStore, overwrite) {
 					//var toUpdate = (overwrite) ? newObjects[id] : mergeDeep.apply(cursor.value, spread(newObjects[id]));
 					var requestUpdate = cursor.update(toUpdate);
 					requestUpdate.onsuccess = function() {
-						console.log("indexDB: ID", id, "updated...")
+						console.log("indexDB: ID", id, "updated...");
 					};
 				}
 				cursor.continue();
 			}else{
 				callback();
 			}
-		}
+		};
 
 		connection.close();
 		// ---> Garbage Collection
@@ -579,7 +587,7 @@ function db_updateData(callback, newObjects, oStore, overwrite) {
 			connection.close();
 		};
 
-	}
+	};
 }
 
 
@@ -613,7 +621,7 @@ function db_dynamicUpdate(callback, toApply, typ, eID) {
 			}else{
 				callback();
 			}
-		}
+		};
 
 		connection.close();
 		// ---> Garbage Collection
@@ -621,7 +629,7 @@ function db_dynamicUpdate(callback, toApply, typ, eID) {
 			connection.close();
 		};
 
-	}
+	};
 }
 
 
@@ -647,32 +655,32 @@ function blockHandler(event) {
 function SettingsRequest(event, id, bezeichnung, callback){
 	console.log("SettingsRequest function");//DEV
 	var connectionSR = event.target.result;
-	var checkRequest = connectionSR.transaction(id).objectStore(id).get(1)
-		checkRequest.onerror = errorHandler;
-		checkRequest.onsuccess = function(event){
-			console.log("checkRequest onsuccess");//DEV
-			event.target.transaction.db.close();
+	var checkRequest = connectionSR.transaction(id).objectStore(id).get(1);
+	checkRequest.onerror = errorHandler;
+	checkRequest.onsuccess = function(event){
+		console.log("checkRequest onsuccess");//DEV
+		event.target.transaction.db.close();
 
-			if (!event.target.result){
-				// keine ID 1 vorhanden, SETTINGS schreiben:
-				console.log("IDB: adding Settings");
-				db_addDocument(false, formSettings(id, bezeichnung));
-			}
+		if (!event.target.result){
+			// keine ID 1 vorhanden, SETTINGS schreiben:
+			console.log("IDB: adding Settings");
+			db_addDocument(false, formSettings(id, bezeichnung));
+		}
 			
-			// Neue Klasse in Account-Array einfügen
-			var changed = timestamp();
-			console.log("IDB: adding Class to Account");
-			db_simpleUpdate(callback, 1, "klassenliste", "addKlasse", [id, {'bezeichnung': bezeichnung, 'id' : id, 'changed' : changed}], "account");
+		// Neue Klasse in Account-Array einfügen
+		var changed = timestamp();
+		console.log("IDB: adding Class to Account");
+		db_simpleUpdate(callback, 1, "klassenliste", "addKlasse", [id, {'bezeichnung': bezeichnung, 'id' : id, 'changed' : changed}], "account");
 		
-		}
-		checkRequest.oncomplete = function(event){
-			console.log("checkRequest oncomplete");//DEV
-			event.target.transaction.db.close();
-		}
+	};
+	checkRequest.oncomplete = function(event){
+		console.log("checkRequest oncomplete");//DEV
+		event.target.transaction.db.close();
+	};
 
 
-		// ---> Garbage Collection
-		checkRequest.onversionchange = function(event) {
-			event.target.transaction.db.close();
-		};
-};
+	// ---> Garbage Collection
+	checkRequest.onversionchange = function(event) {
+		event.target.transaction.db.close();
+	};
+}

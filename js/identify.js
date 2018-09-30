@@ -1,9 +1,12 @@
 "use strict";
+// esLint Globals:
+/*globals GLOBALS
+touchScroller touchSlider noTouchThisSlider
+*/
 // Design- und Funktionsanpassung für die verschiedenen Geräte
-
 var DEV_LOG1 = "";
 var CACHE = "tt_webapp_v1";
-var toCache = []
+var toCache = [];
 
 
 // Cache mit Device-Info erweitern
@@ -34,9 +37,9 @@ function extendCache(device_info) {
 			for (var i = toCache.length - 1; i >= 0; i--) {
 				console.log("SW: caching", toCache[i]);
 				cache.add( toCache[i] )
-				.catch(function (err) { console.log("SW: Fehler beim Cachen von", toCache[i], err) });
+					.catch(function (err) { console.log("SW: Fehler beim Cachen von", toCache[i], err); });
 			}
-		})
+		});
 	}
 }
 	
@@ -52,7 +55,6 @@ function handle_orientation_landscape(evt) {
 function passCss(absolutePath) {
 	var cssId = btoa(absolutePath);
 	if (!document.getElementById(cssId)) {
-		var head = document.getElementsByTagName('head')[0];
 		var link = document.createElement('link');
 		link.id = cssId;
 		link.rel = 'stylesheet';

@@ -1,4 +1,9 @@
 "use strict";
+// esLint Globals:
+/* global $ SETTINGS GLOBALS SHIMindexedDB
+datum uniqueClassID compareKlassen change_buttons closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings addListener klassenSyncHandler klassenDeleteHandler Schuljahre initDB popUpSwitch
+db_neueKlasse db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData db_readGeneric
+checkAuth testCreds sync_deleteKlasse sync_pushBack sync_getKlasse sync_getAccount*/
 $(document).ready(function() {
 
 	// Style and Listeners
@@ -115,21 +120,21 @@ function addToHomeScreen(thisElement) {
 
 	// Wait for the user to respond to the prompt
 	GLOBALS['deferredPrompt'].userChoice
-	.then(function(choiceResult){
-		if (choiceResult.outcome === 'accepted') {
-			console.log('SW: Prompt accepted');
-		} else {
-			console.log('SW: Prompt not accepted');
-		}
-		GLOBALS['deferredPrompt'] = null;
-		window.location.reload();
-	})
-	.catch(function(err){
-		console.log("SW:", err);
-		setTimeout(function() {
+		.then(function(choiceResult){
+			if (choiceResult.outcome === 'accepted') {
+				console.log('SW: Prompt accepted');
+			} else {
+				console.log('SW: Prompt not accepted');
+			}
+			GLOBALS['deferredPrompt'] = null;
 			window.location.reload();
-		}, 3000);
-	})
+		})
+		.catch(function(err){
+			console.log("SW:", err);
+			setTimeout(function() {
+				window.location.reload();
+			}, 3000);
+		});
 
 }
 
@@ -157,6 +162,7 @@ function settingsAllgemein(){
 }
 
 function setAuth(status) {
+	var errorMsg;
 	if (status != "200" && status != "ok") {
 		// erneut nach PW fragen
 		localStorage.removeItem('TeacherTab');
@@ -175,13 +181,13 @@ function setAuth(status) {
 		}else if (status == "500") {
 			msg += ":<br>Uuups ! Auf dem Server ist etwas schiefgegangen. Probier es bitte nochmal...";
 		}
-		var errorMsg = document.querySelector("#item0First .msg.error");
+		errorMsg = document.querySelector("#item0First .msg.error");
 		errorMsg.innerHTML = msg;
 		errorMsg.classList.remove("hide");
 
 	}else{
 		// ggf. vorherige Meldungen löschen
-		var errorMsg = document.querySelector("#item0First .msg.error");
+		errorMsg = document.querySelector("#item0First .msg.error");
 		errorMsg.innerHTML = "";
 		// OK: Speichern und neu laden
 		localStorage.setItem('passW', GLOBALS.passW);
@@ -194,7 +200,7 @@ function setAuth(status) {
 		},550);
 	}
 	checkAuth();
-	return
+	return;
 }
 
 
@@ -204,13 +210,11 @@ function setAuth(status) {
 
 function listIdx_Select(account) {
 	//DEVconsole.log(account);
-	var options = [];
 	var result = account.klassenliste;
 	var sel = document.getElementById("klasseSelect");
 	var clone = sel.cloneNode(true);
 	clone.innerHTML = '';
 	var optCount = 0;
-	var temp_arr = [];
 	var opt;
 
 	opt = new Option("- bitte wählen -");
@@ -220,8 +224,8 @@ function listIdx_Select(account) {
 	if (result) {
 		// sort Keys
 		var keylist = [];
-		for (var hash in result) {
-			keylist.push([hash, result[hash]]);
+		for (var key in result) {
+			keylist.push([key, result[key]]);
 		}
 		keylist.sort(compareKlassen);
 		// Schleife durch Optionen
@@ -238,7 +242,7 @@ function listIdx_Select(account) {
 
 	sel.parentNode.replaceChild(clone,sel);
 	document.getElementById("indexKlassen").getElementsByTagName("span")[0].innerHTML = "Insgesamt " + optCount + " Klassen in deinem Account";
-	var auth_status = document.getElementById('AuthStatus')
+	var auth_status = document.getElementById('AuthStatus');
 	var text = auth_status.getElementsByClassName('statusText')[0];
 	var info = auth_status.getElementsByClassName('statusInfo')[0];
 	if (account.valid) {
@@ -260,7 +264,7 @@ function listIdx_Select(account) {
 		*/
 		text.innerHTML = 'Basic Account';
 		text.classList.add("basic");
-		info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>'
+		info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>';
 	}
 }
 
@@ -304,6 +308,7 @@ function addKlasse(thisElement) {
 
 
 // DEPRECATED (noch SQL - als Anhalt für später behalten)
+/*
 function copyKlasse(thisElement, toCopy) {
 	var nameKlasse = document.getElementById('nameCopyKlasse');
 	var jahrKlasse = document.getElementById('jahrCopyKlasse');
@@ -319,10 +324,10 @@ function copyKlasse(thisElement, toCopy) {
 		if (newKlasse != toCopy){
 			db.transaction(
 				function(transaction){
-				transaction.executeSql(
-					'CREATE TABLE IF NOT EXISTS '+newKlasse+'(id INTEGER PRIMARY KEY AUTOINCREMENT, vName TEXT, nName TEXT, sex TEXT, mndl TEXT, fspz TEXT, schr TEXT, omndl TEXT, ofspz TEXT, oschr TEXT, gesamt TEXT, Kompetenzen TEXT, changed INTEGER);', [], function(t, results){
-					console.log('Table erstellt.');
-				});
+					transaction.executeSql(
+						'CREATE TABLE IF NOT EXISTS '+newKlasse+'(id INTEGER PRIMARY KEY AUTOINCREMENT, vName TEXT, nName TEXT, sex TEXT, mndl TEXT, fspz TEXT, schr TEXT, omndl TEXT, ofspz TEXT, oschr TEXT, gesamt TEXT, Kompetenzen TEXT, changed INTEGER);', [], function(t, results){
+							console.log('Table erstellt.');
+						});
 				}
 			);
 			// Leere Objekte für die ID 0
@@ -330,10 +335,10 @@ function copyKlasse(thisElement, toCopy) {
 			mndl = schr = fspz = encodeURIComponent(JSON.stringify({'alle':[],}));
 			db.transaction(
 				function(transaction){
-				transaction.executeSql(
-					'INSERT INTO '+newKlasse+' (id,mndl,fspz,schr,changed,vName,nName,sex,gesamt) SELECT ?,?,?,?,?,vName,nName,sex,gesamt FROM '+toCopy+' WHERE id = 0', [0, mndl, fspz, schr, 0], function(t, results){
-					console.log('id 0 kopiert');
-				});
+					transaction.executeSql(
+						'INSERT INTO '+newKlasse+' (id,mndl,fspz,schr,changed,vName,nName,sex,gesamt) SELECT ?,?,?,?,?,vName,nName,sex,gesamt FROM '+toCopy+' WHERE id = 0', [0, mndl, fspz, schr, 0], function(t, results){
+							console.log('id 0 kopiert');
+						});
 				}
 			);
 			// Leere Objekte für die Schüler
@@ -345,10 +350,10 @@ function copyKlasse(thisElement, toCopy) {
 			ofspz = encodeURIComponent(JSON.stringify({'Gesamt':0, 'Vokabeln':0, 'Grammatik':0}));
 			db.transaction(
 				function(transaction){
-				transaction.executeSql(
-					'INSERT INTO '+newKlasse+' (vName,nName,sex,mndl, fspz, schr, omndl, ofspz, oschr, gesamt, changed) SELECT vName,nName,sex,?,?,?,?,?,?,?,? FROM '+toCopy+' WHERE id != 0', [mndl, schr, fspz, omndl, ofspz, oschr, gesamt, now], function(t, results){
-					console.log('andere ids kopiert');
-				}, errorHandler);
+					transaction.executeSql(
+						'INSERT INTO '+newKlasse+' (vName,nName,sex,mndl, fspz, schr, omndl, ofspz, oschr, gesamt, changed) SELECT vName,nName,sex,?,?,?,?,?,?,?,? FROM '+toCopy+' WHERE id != 0', [mndl, schr, fspz, omndl, ofspz, oschr, gesamt, now], function(t, results){
+							console.log('andere ids kopiert');
+						}, errorHandler);
 				}
 			);
 		}else{
@@ -364,3 +369,4 @@ function copyKlasse(thisElement, toCopy) {
 		alert('Klassenname ungültig.');
 	}
 }
+*/

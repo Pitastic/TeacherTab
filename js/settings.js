@@ -1,4 +1,9 @@
 "use strict";
+// esLint Globals:
+/* global $ SETTINGS GLOBALS SHIMindexedDB
+closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings
+db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
+sync_deleteKlasse sync_pushBack sync_getKlasse*/
 $(document).ready(function() {
 	// Funktionen, die auf global SETTINGS warten müssen
 	db_readMultiData(function(r){
@@ -17,28 +22,28 @@ function settingDetails(results){
 	var SETTINGS = results;
 	//-- Notenverteilung
 	var vertNoten = SETTINGS.notenverteilung;
-	var inputs = document.getElementById('form_Notenverteilung').getElementsByTagName('input');
-	for (i = 0; i < inputs.length; i++) {
+	var inputs1 = document.getElementById('form_Notenverteilung').getElementsByTagName('input');
+	for (i = 0; i < inputs1.length; i++) {
 		if (i+1 == 6) {
-			inputs[i].value = 0;
+			inputs1[i].value = 0;
 		}else{
-			inputs[i].value = vertNoten[(i+1)];
+			inputs1[i].value = vertNoten[(i+1)];
 		}
 	}
 	//-- Kompetenz Namen
-	var kompNamen = SETTINGS.kompetenzen;
-	var inputs = document.getElementById('form_KompNamen').getElementsByTagName('input');
-	for (i = 0; i < inputs.length; i++) {
-		inputs[i].value = SETTINGS.kompetenzen['Kat'+(i+1)] || "";
+	//var kompNamen = SETTINGS.kompetenzen;
+	var inputs2 = document.getElementById('form_KompNamen').getElementsByTagName('input');
+	for (i = 0; i < inputs2.length; i++) {
+		inputs2[i].value = SETTINGS.kompetenzen['Kat'+(i+1)] || "";
 	}
 	//-- Gewichtung
 	var Gewichtung = SETTINGS.gewichtung;
 	i = 0;
-	labels = document.getElementById('form_Gewichtung').getElementsByTagName('label');
-	inputs = document.getElementById('form_Gewichtung').getElementsByTagName('input');
-	for (e in Gewichtung){
+	var labels = document.getElementById('form_Gewichtung').getElementsByTagName('label');
+	var inputs3 = document.getElementById('form_Gewichtung').getElementsByTagName('input');
+	for (var e in Gewichtung){
 		labels[i].childNodes[0].textContent = e+" ";
-		inputs[i].value = Gewichtung[e]*100;
+		inputs3[i].value = Gewichtung[e]*100;
 		i++;
 	}
 	//-- Fachspezifische Einstellungen
@@ -47,28 +52,28 @@ function settingDetails(results){
 	document.form_sex.stud_Sort.checked = SETTINGS.studSort;
 	var a_button = document.getElementById('alle_gruppieren').getElementsByTagName('a')[0];
 	a_button.addEventListener('click', function(){
-			db_readMultiData(function(result){
-				document.getElementById('Abbrechen').innerHTML = "Abbrechen";
-				document.getElementById('Save').onclick = function(){
-					// Gruppierung speichern
-					saveGruppen();
-				};
-				document.getElementById('item1setting').classList.remove('show');
-				popUp('item1setting_info');
-				gruppierenListe(result);
-			}, "student");
+		db_readMultiData(function(result){
+			document.getElementById('Abbrechen').innerHTML = "Abbrechen";
+			document.getElementById('Save').onclick = function(){
+				// Gruppierung speichern
+				saveGruppen();
+			};
+			document.getElementById('item1setting').classList.remove('show');
+			popUp('item1setting_info');
+			gruppierenListe(result);
+		}, "student");
 
-		})
+	});
 	//-- Vorjahresnoten
 	// DEV: Disabled
 	//document.form_vorjahr.setVorjahr.checked = SETTINGS.showVorjahr;
 	// Anzeigen
-	slide1('item1setting')
+	slide1('item1setting');
 }
 
 
 function SettingsSave(bol_save){
-	var content = document.getElementById('listSetting');
+	//var content = document.getElementById('listSetting');
 	var inputs, i;
 	var settings = SETTINGS;
 	if (bol_save){
@@ -105,7 +110,7 @@ function SettingsSave(bol_save){
 		db_replaceData(function(){
 			SETTINGS = settings;
 			handleSchnitt(function(){
-				slide1('item1setting', "uebersicht.htm")
+				slide1('item1setting', "uebersicht.htm");
 			});
 		}, settings, GLOBALS.klasse);
 	}
@@ -116,37 +121,38 @@ function gruppierenListe(results){
 	var r, c, liste, ul;
 	liste = document.getElementById('gruppierenListe');
 	ul = document.createElement('ul');
-	for (i in results){
+	for (var i in results){
 		if (i==0) {continue;}
-		row = results[i];
+		var row = results[i];
 		r = document.createElement('li');
-			if (row.sort && row.sort !== "-" && row.sort !== "null"){
-				c = document.createElement('div');
-					c.className = "s_flag";
-					c.innerHTML = row.sort;
-					r.appendChild(c);
-			}
-			r.setAttribute('data-rowid', row.id);
+		if (row.sort && row.sort !== "-" && row.sort !== "null"){
 			c = document.createElement('div');
-				c.className = "name";
-				c.innerHTML = row.name.nname+', '+row.name.vname;
+			c.className = "s_flag";
+			c.innerHTML = row.sort;
+			r.appendChild(c);
+		}
+		r.setAttribute('data-rowid', row.id);
+		c = document.createElement('div');
+		c.className = "name";
+		c.innerHTML = row.name.nname+', '+row.name.vname;
 		r.appendChild(c);
 		ul.appendChild(r);
 		// Eventlistener für dieses li
 		r.addEventListener('click', function() {
 			// Zeile hervorheben
 			if (this.classList.contains("selected")){
-				this.classList.remove('selected')
+				this.classList.remove('selected');
 			}else{
 				this.classList.add('selected');
 			}
 		});
-		}
+	}
 	liste.appendChild(ul);
 	slide1('item1setting_gruppen');
-	return true
+	return true;
 }
 
+/*
 function vorjahresPop(el) {
 	if (el.checked) {
 		var filter = GLOBALS.klasse.substring(1, GLOBALS.klasse.length-1);
@@ -171,6 +177,7 @@ function saveVorjahr(el, abort) {
 	popUpClose(el, false);
 	return;
 }
+*/
 
 function saveGruppen(){
 	// Gruppierung speichern
@@ -178,7 +185,7 @@ function saveGruppen(){
 	var gruppe = document.getElementById("gruppierer").value;
 	var liste = document.getElementsByClassName("selected");
 	var student, i;
-	newObjects = {};
+	var newObjects = {};
 	for (i=0;i<liste.length;i++){
 		student = liste[i].getAttribute("data-rowid");
 		newObjects[student] = {
@@ -190,8 +197,8 @@ function saveGruppen(){
 	}
 
 	db_updateData(function(){ // db_
-		slide1('item1setting_gruppen', "uebersicht.htm")
+		slide1('item1setting_gruppen', "uebersicht.htm");
 	}, newObjects);
 	
-	return true
+	return true;
 }

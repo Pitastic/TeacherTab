@@ -92,7 +92,7 @@ self.addEventListener('install', function(event) {
 			for (var i = needToCache.length - 1; i >= 0; i--) {
 				console.log("SW: ...caching ( von", needToCache.length, ")");
 				cache.add( needToCache[i] )
-				.catch(function(err) { console.log("SW: Fehler beim Cachen von", needToCache[i], err) });
+					.catch(function(err) { console.log("SW: Fehler beim Cachen von", needToCache[i], err); });
 			}
 		})
 	);
@@ -107,14 +107,14 @@ self.addEventListener('fetch', function(event) {
 			// Ressource anfragen
 			tryNetwork(event.request, 1000)
 			// Offline oder Timeout
-			.catch(function (request) {
+				.catch(function (request) {
 				// Ressource aus Cache raussuchen, weil offline/timeout
 				//DEV console.log("SW: Not in the Web, Lookup im Cache...");
-				return fromCache(event.request).catch( function(err){
+					return fromCache(event.request).catch( function(err){
 					//DEV console.log("SW: Not in Cache nor the Web:", err);
-					return false;
-				});
-			})
+						return false;
+					});
+				})
 		);
 	}
 });
@@ -123,13 +123,13 @@ self.addEventListener('activate', function(event) {
 	event.waitUntil(
 		caches.keys().then(function(cacheNames) {
 			return Promise.all(
-			cacheNames.filter(function(cacheName) {
+				cacheNames.filter(function(cacheName) {
 				// alte Caches löschen
-				return (cacheName != CACHE);
-			})
-			.map(function(cacheName) {
-				return caches.delete(cacheName);
-			})
+					return (cacheName != CACHE);
+				})
+					.map(function(cacheName) {
+						return caches.delete(cacheName);
+					})
 			);
 		})
 	);
@@ -155,21 +155,21 @@ function tryNetwork(request, timeout){
 			clearTimeout(timeoutId);
 			// ...update Cache
 			caches.open(CACHE)
-			.then(function(cache){
-				var cacheResponse = response.clone();
-				cache.put(request, cacheResponse);
-				//DEV console.log("SW: Fullfilling", request.url);
-				resolve(response); // ...response
-			})
-			.catch(function(err) {
-				console.log("SW: Cache-Error", response.clone().url, err, "fullfilling anyway...")
-				resolve(response); // ...response mit Cache-Fail
-			})
+				.then(function(cache){
+					var cacheResponse = response.clone();
+					cache.put(request, cacheResponse);
+					//DEV console.log("SW: Fullfilling", request.url);
+					resolve(response); // ...response
+				})
+				.catch(function(err) {
+					console.log("SW: Cache-Error", response.clone().url, err, "fullfilling anyway...");
+					resolve(response); // ...response mit Cache-Fail
+				});
 		})
-		.catch(function(){
-			console.log("SW: Fetch-Error:", request.url);
-			reject(request);
-		});
-	})
+			.catch(function(){
+				console.log("SW: Fetch-Error:", request.url);
+				reject(request);
+			});
+	});
 	return promise;
 }

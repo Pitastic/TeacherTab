@@ -1,4 +1,6 @@
 "use strict";
+// esLint Globals:
+/* global $ SETTINGS GLOBALS slide*/
 var slideBeginX;
 var slideBeginY;
 
@@ -31,7 +33,7 @@ function touchScroller(){
 }
 
 function touchSlider(){
-    // Schüler- und Leistungsübersicht
+	// Schüler- und Leistungsübersicht
 	var scrollables = document.getElementsByClassName('styleWrap scrollable');
 	for (var i=0; i<scrollables.length; i++){
 		scrollables[i].addEventListener("touchstart", touchStart, false);
@@ -66,7 +68,7 @@ function touchEnd(e){
 	var moveY = Math.abs(slideEndY - slideBeginY);
 	// min Distance
 	if ((moveX > 50) && (moveX > 2*moveY)){
-	    slide();
+		slide();
 	}
 	return false;
 }

@@ -1,9 +1,14 @@
 "use strict";
+// esLint Globals:
+/* global $ SETTINGS GLOBALS SHIMindexedDB CryptoJS objLength
+removeDups closeListener addListener slide2 change_buttons datum itemAbort formStudent formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings
+db_addDocument waitForDB db_neueKlasse db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
+sync_deleteKlasse sync_pushBack sync_getKlasse*/
 $(document).ready(function() {
 	// Funktionen, die auf global SETTINGS warten müssen
 	db_readMultiData(function(r){
 		SETTINGS = r[0];
-		db_readMultiData(listLeistung, "leistung", function(){listLeistung([])});
+		db_readMultiData(listLeistung, "leistung", function(){listLeistung([]);});
 		// List first View
 		db_readMultiData(listStudents, "student");
 	}, "settings");
@@ -15,7 +20,7 @@ $(document).ready(function() {
 		slide2(sessionStorage.getItem('lastview'));
 	},100);
 	// Extras für Smartphone-Nutzer
-	if (GLOBALS.isPhone){change_buttons()}
+	if (GLOBALS.isPhone){change_buttons();}
 });
 
 
@@ -41,44 +46,44 @@ function listStudents(results) {
 		oschr = row.gesamt.oschr;
 		r = document.createElement('li');
 		r.setAttribute('data-rowid', row.id);
-			if (row.name.sort && row.name.sort !== "-" && row.name.sort !== "null"){
-				c = document.createElement('div');
-					c.className = "s_flag";
-					c.innerHTML = row.name.sort;
-					r.appendChild(c);
-			}
+		if (row.name.sort && row.name.sort !== "-" && row.name.sort !== "null"){
 			c = document.createElement('div');
-				c.className = "name";
-				c.innerHTML = row.name.nname+', '+row.name.vname;
-				r.appendChild(c);
+			c.className = "s_flag";
+			c.innerHTML = row.name.sort;
+			r.appendChild(c);
+		}
+		c = document.createElement('div');
+		c.className = "name";
+		c.innerHTML = row.name.nname+', '+row.name.vname;
+		r.appendChild(c);
+		c = document.createElement('div');
+		c.className = "mdl";
+		c.innerHTML = (omndl) ? omndl.toPrecision(2) : "-";
+		r.appendChild(c);
+		c = document.createElement('div');
+		c.className = "fspz";
+		c.innerHTML = (ofspz) ? "("+ofspz.toPrecision(2)+")" : "(-)";
+		r.appendChild(c);
+		c = document.createElement('div');
+		c.className = "schr";
+		c.innerHTML = (oschr) ? oschr.toPrecision(2) : "-";
+		r.appendChild(c);
+		if (!row.gesamt.eingetragen){
 			c = document.createElement('div');
-				c.className = "mdl";
-				c.innerHTML = (omndl) ? omndl.toPrecision(2) : "-";
-				r.appendChild(c);
+			c.className = "gesamt";
+			c.innerHTML = (row.gesamt.rechnerisch) ? "&#216; "+row.gesamt.rechnerisch.toPrecision(3) : "&#216; - . --";
+			r.appendChild(c);
+		}else{
 			c = document.createElement('div');
-				c.className = "fspz";
-				c.innerHTML = (ofspz) ? "("+ofspz.toPrecision(2)+")" : "(-)";
-				r.appendChild(c);
-			c = document.createElement('div');
-				c.className = "schr";
-				c.innerHTML = (oschr) ? oschr.toPrecision(2) : "-";
-				r.appendChild(c);
-			if (!row.gesamt.eingetragen){
-				c = document.createElement('div');
-					c.className = "gesamt";
-					c.innerHTML = (row.gesamt.rechnerisch) ? "&#216; "+row.gesamt.rechnerisch.toPrecision(3) : "&#216; - . --";
-					r.appendChild(c);
-			}else{
-				c = document.createElement('div');
-					c.className = "gesamt eingetragen";
-					c.innerHTML = row.gesamt.eingetragen;
-					r.appendChild(c);
-			}
+			c.className = "gesamt eingetragen";
+			c.innerHTML = row.gesamt.eingetragen;
+			r.appendChild(c);
+		}
 			
-			c = document.createElement('div');
-				c.className = "tools right";
-				c.innerHTML = "&gt;";
-				r.appendChild(c);
+		c = document.createElement('div');
+		c.className = "tools right";
+		c.innerHTML = "&gt;";
+		r.appendChild(c);
 		ul.appendChild(r);
 	}
 	old.parentNode.replaceChild(ul,old);
@@ -115,44 +120,44 @@ function listLeistung(results){
 		ul = document.createElement('ul');
 		for (idx = 0; idx < results.length; idx++) {
 
-				if (results[idx].subtyp == arten[art]) {
-					// Leistung hat einen Eintrag > auflisten
-					hasEntries = true;
-					Leistung = results[idx];
+			if (results[idx].subtyp == arten[art]) {
+				// Leistung hat einen Eintrag > auflisten
+				hasEntries = true;
+				Leistung = results[idx];
 
-					r = document.createElement('li');
-					r.setAttribute('data-l_subtyp', Leistung.subtyp);
-					r.setAttribute('data-l_id', Leistung.id);
-						c = document.createElement('div');
-							c.className = "name";
-							c.innerHTML = Leistung.Bezeichnung;
-						r.appendChild(c);
-						c = document.createElement('div');
-							c.innerHTML = Leistung.Datum;
-						r.appendChild(c);
-						c = document.createElement('div');
-							c.innerHTML = "&#160;";
-							c.classList.add(Leistung.Eintragung.toLowerCase());
-						r.appendChild(c);
-						c = document.createElement('div');
-							c.innerHTML = Leistung.Gewichtung + "x";
-							c.className = "gewichtung";
-						r.appendChild(c);
-						c = document.createElement('div');
-							c.className = "tools right";
-							c.innerHTML = "&gt;";
-						r.appendChild(c);
-					ul.appendChild(r);
-				}
+				r = document.createElement('li');
+				r.setAttribute('data-l_subtyp', Leistung.subtyp);
+				r.setAttribute('data-l_id', Leistung.id);
+				c = document.createElement('div');
+				c.className = "name";
+				c.innerHTML = Leistung.Bezeichnung;
+				r.appendChild(c);
+				c = document.createElement('div');
+				c.innerHTML = Leistung.Datum;
+				r.appendChild(c);
+				c = document.createElement('div');
+				c.innerHTML = "&#160;";
+				c.classList.add(Leistung.Eintragung.toLowerCase());
+				r.appendChild(c);
+				c = document.createElement('div');
+				c.innerHTML = Leistung.Gewichtung + "x";
+				c.className = "gewichtung";
+				r.appendChild(c);
+				c = document.createElement('div');
+				c.className = "tools right";
+				c.innerHTML = "&gt;";
+				r.appendChild(c);
+				ul.appendChild(r);
+			}
 
 		} // ende des Leistungs-Loops
 
 		if (!hasEntries){
 			// Leistung hatte keine Einträge
 			r = document.createElement('li');
-				c = document.createElement('div');
-					c.className = "keine";
-					c.innerHTML = "- keine -";
+			c = document.createElement('div');
+			c.className = "keine";
+			c.innerHTML = "- keine -";
 			r.appendChild(c);
 			ul.appendChild(r);
 		}
@@ -226,7 +231,7 @@ function massenAdd(el){
 	var zeilen = []; var namen = []; var vnn;
 	zeilen = textblock.value.split(trennZeile);
 	GLOBALS.dbToGo = 0;
-	for (zeile in zeilen){
+	for (var zeile in zeilen){
 		console.log(zeilen[zeile]);
 		if (zeilen[zeile]) {
 			vnn = zeilen[zeile].split(trennNamen.value);
@@ -249,8 +254,6 @@ function massenAdd(el){
 
 // neue Leistung
 function addLeistung(thisElement){
-	// Zeitstempel
-	var d = new Date().getTime();
 	// Get Vars aus Input
 	var nBezeichnung = document.getElementById('notenBezeichnung');
 	var nDatum = document.getElementById('notenDatum').value;
@@ -268,7 +271,7 @@ function addLeistung(thisElement){
 			nBezeichnung.value = '';
 		}
 		setTimeout(function() {
-			popUpClose(thisElement, true)
+			popUpClose(thisElement, true);
 		}, 150);
 	}, Leistung);
 }

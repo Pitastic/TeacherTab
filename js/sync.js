@@ -1,4 +1,9 @@
 "use strict";
+// esLint Globals:
+/* global $ SETTINGS GLOBALS SHIMindexedDB CryptoJS objLength
+removeDups closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings
+waitForDB db_neueKlasse db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
+sync_deleteKlasse sync_pushBack sync_getKlasse*/
 function testCreds(callback) {
 // eingetragene Credentials testen
 	$.ajax({
@@ -62,7 +67,7 @@ function sync_getKlasse(callback, classObjectArray) {
 
 	var klassenHash = classObjectArray[0];
 	// Klasse vorhanden oder nur Hash übereben ?
-	klassenObject = (classObjectArray.length === 1) ? {} : classObjectArray[1];
+	var klassenObject = (classObjectArray.length === 1) ? {} : classObjectArray[1];
 
 	if (GLOBALS.AUTH) {
 		console.log("SYNC:", klassenHash);
@@ -92,7 +97,7 @@ function sync_getKlasse(callback, classObjectArray) {
 								// Push zurück zu Server
 								sync_pushBack(callback, merged, ["class", klassenHash]);
 							}, merged, klassenHash, true);
-						}, klassenHash, merged[1].name)
+						}, klassenHash, merged[1].name);
 					}else{
 						alert("Diese Klasse kann nicht geöffnet werden !\nSie ist weder auf dem Gerät, noch konnte sie vom Server geladen werden !\nDie Liste wird bereinigt...");
 						// Klasse aus Account entfernen
@@ -101,7 +106,7 @@ function sync_getKlasse(callback, classObjectArray) {
 						}, 1, "klassenliste", "delKlasse", klassenHash, "account");
 					}
 				}else{
-					return callback(data.msg)
+					return callback(data.msg);
 				}
 			},
 			error: function(data, status, jqXHR){
@@ -212,7 +217,7 @@ function sync_deleteKlasse(id, callback){
 		});
 	}else{
 		console.log("SYNC: Kein Account mit entsprechenden Berechtigungen eingerichtet");
-		callback("Lösche Klassendaten: Nur lokal (kein Account vorhanden) !")
+		callback("Lösche Klassendaten: Nur lokal (kein Account vorhanden) !");
 	}
 }
 
@@ -247,13 +252,13 @@ function mergeAccount(newData, localData) {
 			if (localHashes.indexOf(account.blacklist[i]) > -1){
 				// Immer Eintrag aus Verzeichnis löschen
 				delHash = account.blacklist[i];
-				delete account.klassenliste[delHash]
+				delete account.klassenliste[delHash];
 				// ...und wenn vorhanden auch oStore aus DB
 				GLOBALS.dbToGo += 1;
 				db_dropKlasse(delHash, function(){
 					GLOBALS.dbFinished += 1;
 					console.log("IDB: Deleted", GLOBALS.dbFinished, "( von", GLOBALS.dbToGo, ")");
-				})
+				});
 			}
 		}
 
@@ -324,7 +329,7 @@ function mergeKlasse(newData, localData) {
 
 		// -- Loop mittels Key-Liste
 		for (var row, i = keyList.length - 1; i >= 0; i--) {
-			row = keyList[i]
+			row = keyList[i];
 
 			if (isObject(newData[row]) && isObject(localData[row])) {
 
@@ -342,11 +347,11 @@ function mergeKlasse(newData, localData) {
 					//DEV console.log("MERGE: starte mit Object", Klasse[row]);
 					
 					// Name
-					delete Klasse[row].name
+					delete Klasse[row].name;
 					Klasse[row].name = (newData[row].name.changed > localData[row].name.changed) ? newData[row].name : localData[row].name;
 					
 					// Gesamt
-					delete Klasse[row].gesamt
+					delete Klasse[row].gesamt;
 					Klasse[row].gesamt = (newData[row].gesamt.changed > localData[row].gesamt.changed) ? newData[row].gesamt : localData[row].gesamt;
 					
 					// Leistungen mündlich

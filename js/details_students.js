@@ -1,4 +1,10 @@
 "use strict";
+// esLint Globals:
+/* global $ SETTINGS GLOBALS
+closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote
+db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
+sync_deleteKlasse sync_pushBack sync_getKlasse*/
+
 $(document).ready(function() {
 	var id = parseInt(sessionStorage.getItem('student'));
 	// Funktionen, die auf global SETTINGS warten müssen
@@ -13,8 +19,8 @@ $(document).ready(function() {
 				// Fülle first View
 				db_readSingleData(studentDetails, "student", id);
 		
-			})
-		}, "leistung")
+			});
+		}, "leistung");
 	
 	}, "settings");
 
@@ -53,7 +59,7 @@ $(document).ready(function() {
 				function(){
 					db_simpleUpdate(function(){
 						slide1('item1details', "uebersicht.htm");
-					}, 1, "blacklist", "push", id.toString())
+					}, 1, "blacklist", "push", id.toString());
 				}, id);
 		}
 	});
@@ -78,8 +84,7 @@ $(document).ready(function() {
 function firstListing(results, callback) {
 	if (typeof results === 'undefined') {results = [];}
 	// - Alle Leistungen vorbereiten und auflisten
-	var i, i2, span, div;
-	var ul, li, h3;
+	var span, ul, li, h3;
 	
 	// - Leistungsindex speichern
 	var mndl = {};
@@ -105,125 +110,125 @@ function firstListing(results, callback) {
 	var gew_schr = SETTINGS.gewichtung["schriftlich"]*100;
 	var gew_divs = document.getElementById('item1_gewichtung').getElementsByTagName('div');
 	gew_divs[0].style.width = gew_mndl+"%";
-		span = document.createElement('span');
-		span.innerHTML = "mündlich : "+gew_mndl+" %";
-		gew_divs[0].appendChild(span);
+	span = document.createElement('span');
+	span.innerHTML = "mündlich : "+gew_mndl+" %";
+	gew_divs[0].appendChild(span);
 	gew_divs[1].style.width = gew_fspz+"%";
-		span = document.createElement('span');
-		span.innerHTML = "("+gew_fspz+" %)";
-		gew_divs[1].appendChild(span);
+	span = document.createElement('span');
+	span.innerHTML = "("+gew_fspz+" %)";
+	gew_divs[1].appendChild(span);
 	gew_divs[2].style.width = gew_schr+"%";
-		span = document.createElement('span');
-		span.innerHTML = "schriftlich : "+gew_schr+" %";
-		gew_divs[2].appendChild(span);
+	span = document.createElement('span');
+	span.innerHTML = "schriftlich : "+gew_schr+" %";
+	gew_divs[2].appendChild(span);
 
 	// -- mündlich
 	var mndl_div = document.getElementById("item1_mndl");
 	ul = document.createElement('ul');
 	for (var _id in mndl) {
 		li= document.createElement('li');
-			li.id = _id;
-			li.setAttribute('data-column', 'mndl');
-			span = document.createElement('span');
-				span.innerHTML = mndl[_id].Bezeichnung;
-			li.appendChild(span);
-			span = document.createElement('span');
-				span.innerHTML = mndl[_id].Datum;
-			li.appendChild(span);
-			span = document.createElement('span'); // Gewichtung
-				span.innerHTML = mndl[_id].Gewichtung + "x";
-				span.className = 'gewichtung';
-			li.appendChild(span);
-			span = document.createElement('span'); // Lupe
-				span.className = 'lupe';
-			li.appendChild(span);
-			span = document.createElement('span');
-				span.className = "note";
-				span.innerHTML = "-";
-			li.appendChild(span);
+		li.id = _id;
+		li.setAttribute('data-column', 'mndl');
+		span = document.createElement('span');
+		span.innerHTML = mndl[_id].Bezeichnung;
+		li.appendChild(span);
+		span = document.createElement('span');
+		span.innerHTML = mndl[_id].Datum;
+		li.appendChild(span);
+		span = document.createElement('span'); // Gewichtung
+		span.innerHTML = mndl[_id].Gewichtung + "x";
+		span.className = 'gewichtung';
+		li.appendChild(span);
+		span = document.createElement('span'); // Lupe
+		span.className = 'lupe';
+		li.appendChild(span);
+		span = document.createElement('span');
+		span.className = "note";
+		span.innerHTML = "-";
+		li.appendChild(span);
 		ul.appendChild(li);
 		mndl_div.appendChild(ul);
 	}
 	var fspz_div = document.createElement("div");
-		fspz_div.className = "fspz_div";
+	fspz_div.className = "fspz_div";
 	var fspz_Vok = document.createElement("ul");
 	var fspz_Gra = document.createElement("ul");
 	// -- -- -- Vok oder Gra
 	if (!SETTINGS.fspzDiff){
 		// -- -- fspz zusammenfassen
-		for (var _id in fspz) {
+		for (var _id2 in fspz) {
 			li= document.createElement('li');
-				li.id = _id;
-				li.setAttribute('data-column', 'fspz');
+			li.id = _id2;
+			li.setAttribute('data-column', 'fspz');
 			span = document.createElement('span');
-				span.innerHTML = fspz[_id].Bezeichnung;
+			span.innerHTML = fspz[_id2].Bezeichnung;
 			li.appendChild(span);
 			span = document.createElement('span');
-				span.innerHTML = fspz[_id].Datum;
+			span.innerHTML = fspz[_id2].Datum;
 			li.appendChild(span);
 			span = document.createElement('span'); // Gewichtung
-				span.innerHTML = fspz[_id].Gewichtung + "x";
-				span.className = 'gewichtung';
+			span.innerHTML = fspz[_id2].Gewichtung + "x";
+			span.className = 'gewichtung';
 			li.appendChild(span);
 			span = document.createElement('span'); // Lupe
-				span.className = 'lupe';
+			span.className = 'lupe';
 			li.appendChild(span);
 			span = document.createElement('span');
-				span.className = "note";
-				span.innerHTML = "-";
+			span.className = "note";
+			span.innerHTML = "-";
 			li.appendChild(span);
 			fspz_Vok.appendChild(li);
 		}
 		h3 = document.createElement("h3");
-			h3.innerHTML = "Fachspezifisches";
-			h3.id = "ds_fspz";
-			span = document.createElement('span');
-				span.className = "Notendurchschnitt";
-			h3.appendChild(span);
+		h3.innerHTML = "Fachspezifisches";
+		h3.id = "ds_fspz";
+		span = document.createElement('span');
+		span.className = "Notendurchschnitt";
+		h3.appendChild(span);
 		fspz_div.appendChild(h3);
 		fspz_div.appendChild(fspz_Vok);
 	}else{
 		// -- -- fspz differenzieren
-		for (var _id in fspz) {
+		for (var _id3 in fspz) {
 			li= document.createElement('li');
-				li.id = _id;
-				li.setAttribute('data-column', 'fspz');
+			li.id = _id3;
+			li.setAttribute('data-column', 'fspz');
 			span = document.createElement('span');
 			li.appendChild(span);
 			span = document.createElement('span');
-				span.innerHTML = fspz[_id].Datum;
+			span.innerHTML = fspz[_id3].Datum;
 			li.appendChild(span);
 			span = document.createElement('span'); // Gewichtung
-				span.innerHTML = fspz[_id].Gewichtung + "x";
-				span.className = 'gewichtung';
+			span.innerHTML = fspz[_id3].Gewichtung + "x";
+			span.className = 'gewichtung';
 			li.appendChild(span);
 			span = document.createElement('span'); // Lupe
-				span.className = 'lupe';
+			span.className = 'lupe';
 			li.appendChild(span);
 			span = document.createElement('span');
-				span.className = "note";
-				span.innerHTML = "-";
+			span.className = "note";
+			span.innerHTML = "-";
 			li.appendChild(span);
-			if (fspz[_id].Bezeichnung.substring(0,3) == "Vok"){
+			if (fspz[_id3].Bezeichnung.substring(0,3) == "Vok"){
 				fspz_Vok.appendChild(li);
 			}else{
 				fspz_Gra.appendChild(li);
 			}
 		}
 		h3 = document.createElement("h3");
-			h3.innerHTML = "Vokabeln";
-			h3.id = "ds_fspz_vok";
-			span = document.createElement('span');
-				span.className = "Notendurchschnitt";
-			h3.appendChild(span);
+		h3.innerHTML = "Vokabeln";
+		h3.id = "ds_fspz_vok";
+		span = document.createElement('span');
+		span.className = "Notendurchschnitt";
+		h3.appendChild(span);
 		fspz_div.appendChild(h3);
 		fspz_div.appendChild(fspz_Vok);
 		h3 = document.createElement("h3");
-			h3.innerHTML = "Grammatik";
-			h3.id = "ds_fspz_gra";
-			span = document.createElement('span');
-				span.className = "Notendurchschnitt";
-			h3.appendChild(span);
+		h3.innerHTML = "Grammatik";
+		h3.id = "ds_fspz_gra";
+		span = document.createElement('span');
+		span.className = "Notendurchschnitt";
+		h3.appendChild(span);
 		fspz_div.appendChild(h3);
 		fspz_div.appendChild(fspz_Gra);
 	}
@@ -232,75 +237,75 @@ function firstListing(results, callback) {
 	// -- schriftlich
 	var schr_div = document.getElementById("item1_schr");
 	ul = document.createElement('ul');
-	for (var _id in schr) {
+	for (var _id4 in schr) {
 		li= document.createElement('li');
-			li.id = _id;
-			li.setAttribute('data-column', 'schr');
-			span = document.createElement('span');
-				span.innerHTML = schr[_id].Bezeichnung;
-			li.appendChild(span);
-			span = document.createElement('span');
-				span.innerHTML = schr[_id].Datum;
-			li.appendChild(span);
-			span = document.createElement('span'); // Gewichtung
-				span.innerHTML = schr[_id].Gewichtung + "x";
-				span.className = 'gewichtung';
-			li.appendChild(span);
-			span = document.createElement('span'); // Lupe
-				span.className = 'lupe';
-			li.appendChild(span);
-			span = document.createElement('span');
-				span.className = "note";
-				span.innerHTML = "-";
-			li.appendChild(span);
+		li.id = _id4;
+		li.setAttribute('data-column', 'schr');
+		span = document.createElement('span');
+		span.innerHTML = schr[_id4].Bezeichnung;
+		li.appendChild(span);
+		span = document.createElement('span');
+		span.innerHTML = schr[_id4].Datum;
+		li.appendChild(span);
+		span = document.createElement('span'); // Gewichtung
+		span.innerHTML = schr[_id4].Gewichtung + "x";
+		span.className = 'gewichtung';
+		li.appendChild(span);
+		span = document.createElement('span'); // Lupe
+		span.className = 'lupe';
+		li.appendChild(span);
+		span = document.createElement('span');
+		span.className = "note";
+		span.innerHTML = "-";
+		li.appendChild(span);
 		ul.appendChild(li);
 		schr_div.appendChild(ul);
 	}
 	// -- Kategorien
 	h3 = document.createElement("h3");
-		h3.innerHTML = "Kategorien";
+	h3.innerHTML = "Kategorien";
 	ul = document.createElement('div');
-		ul.id = "differenzierteLeistung";
+	ul.id = "differenzierteLeistung";
 		
-		li= document.createElement('div');
-		li.className = "Kategorien";
-			span = document.createElement('span');
-				span.classList.add('katSpans');
-			li.appendChild(span);
-			span = document.createElement('span');
-				span.innerHTML = SETTINGS.kompetenzen.Kat1;
-			li.appendChild(span);
-		ul.appendChild(li);
+	li= document.createElement('div');
+	li.className = "Kategorien";
+	span = document.createElement('span');
+	span.classList.add('katSpans');
+	li.appendChild(span);
+	span = document.createElement('span');
+	span.innerHTML = SETTINGS.kompetenzen.Kat1;
+	li.appendChild(span);
+	ul.appendChild(li);
 			
-		li= document.createElement('div');
-		li.className = "Kategorien";
-			span = document.createElement('span');
-				span.classList.add('katSpans');
-			li.appendChild(span);
-			span = document.createElement('span');
-				span.innerHTML = SETTINGS.kompetenzen.Kat2;
-			li.appendChild(span);
-		ul.appendChild(li);
+	li= document.createElement('div');
+	li.className = "Kategorien";
+	span = document.createElement('span');
+	span.classList.add('katSpans');
+	li.appendChild(span);
+	span = document.createElement('span');
+	span.innerHTML = SETTINGS.kompetenzen.Kat2;
+	li.appendChild(span);
+	ul.appendChild(li);
 		
-		li= document.createElement('div');
-		li.className = "Kategorien";
-			span = document.createElement('span');
-				span.classList.add('katSpans');
-			li.appendChild(span);
-			span = document.createElement('span');
-				span.innerHTML = SETTINGS.kompetenzen.Kat3;
-			li.appendChild(span);
-		ul.appendChild(li);
+	li= document.createElement('div');
+	li.className = "Kategorien";
+	span = document.createElement('span');
+	span.classList.add('katSpans');
+	li.appendChild(span);
+	span = document.createElement('span');
+	span.innerHTML = SETTINGS.kompetenzen.Kat3;
+	li.appendChild(span);
+	ul.appendChild(li);
 		
-		li= document.createElement('div');
-		li.className = "Kategorien";
-			span = document.createElement('span');
-				span.classList.add('katSpans');
-			li.appendChild(span);
-			span = document.createElement('span');
-				span.innerHTML = SETTINGS.kompetenzen.Kat4;
-			li.appendChild(span);
-		ul.appendChild(li);
+	li= document.createElement('div');
+	li.className = "Kategorien";
+	span = document.createElement('span');
+	span.classList.add('katSpans');
+	li.appendChild(span);
+	span = document.createElement('span');
+	span.innerHTML = SETTINGS.kompetenzen.Kat4;
+	li.appendChild(span);
+	ul.appendChild(li);
 		
 	schr_div.appendChild(h3);
 	schr_div.appendChild(ul);
@@ -337,29 +342,29 @@ function studentDetails(row){
 		}
 	}
 	// -- fachspezifisch
-	for (var l_id in fspz){
-		temp_el = document.getElementById(l_id) || null;
+	for (var l_id2 in fspz){
+		temp_el = document.getElementById(l_id2) || null;
 		if (temp_el) {
 			temp_el = temp_el.getElementsByTagName('span')[4];
-			if (fspz[l_id].Note && fspz[l_id].Prozent){
-				note = "("+fspz[l_id].Prozent+") "+fspz[l_id].Note;
+			if (fspz[l_id2].Note && fspz[l_id2].Prozent){
+				note = "("+fspz[l_id2].Prozent+") "+fspz[l_id2].Note;
 			}else{
-				note = fspz[l_id].Note;
+				note = fspz[l_id2].Note;
 			}
 			temp_el.innerHTML = note || "-";
 		}
 	}
 	// -- schriftlich
-	for (var l_id in schr){
-		temp_el = document.getElementById(l_id) || null;
+	for (var l_id3 in schr){
+		temp_el = document.getElementById(l_id3) || null;
 		if (temp_el) {
 			temp_el = temp_el.getElementsByTagName('span')[4];
-			if (schr[l_id].Note && schr[l_id].Prozent){
-				note = schr[l_id].Note+" ("+schr[l_id].Prozent+") ";
+			if (schr[l_id3].Note && schr[l_id3].Prozent){
+				note = schr[l_id3].Note+" ("+schr[l_id3].Prozent+") ";
 			}else{
-				note = schr[l_id].Note;
+				note = schr[l_id3].Note;
 			}
-				temp_el.innerHTML = note || "-";
+			temp_el.innerHTML = note || "-";
 		}
 	}
 	// Gesamt Noten (bestehende Ergebnisse aus der Datenbank)
@@ -399,8 +404,7 @@ function studentDetails(row){
 // Speichern und Verlassen
 function item1Save(id){
 //--> ggf. neue Schülerdaten aktualisieren und Note eintragen
-	var pop = document.getElementById('item0edit');
-	changed = timestamp();
+	var changed = timestamp();
 	var newStudent = {};
 	newStudent[id] = {
 		'name' : {
@@ -416,8 +420,8 @@ function item1Save(id){
 	};
 
 	db_updateData(
-		function(r){
+		function(){
 			// Animation
-			slide1('item1details', "uebersicht.htm")
+			slide1('item1details', "uebersicht.htm");
 		}, newStudent);
 }

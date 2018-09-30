@@ -1,4 +1,9 @@
 "use strict";
+// esLint Globals:
+/* global $ SETTINGS GLOBALS SHIMindexedDB
+closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings
+db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
+sync_deleteKlasse sync_pushBack sync_getKlasse*/
 $(document).ready(function() {
 
 	GLOBALS.mndl = [];
@@ -13,40 +18,41 @@ $(document).ready(function() {
 
 		// Ausgabe des Exports
 		switch(sessionStorage.getItem("export_type")){
-			case "csv":
-			case "json":
+		case "csv":
+		case "json":
 
-				document.getElementById("bezeichnung").innerHTML = SETTINGS.name;
+			document.getElementById("bezeichnung").innerHTML = SETTINGS.name;
 				
-				db_readKlasse(function(r){
+			db_readKlasse(function(r){
 
-					var jsonData = btoa(JSON.stringify(r[1]));
+				var jsonData = btoa(JSON.stringify(r[1]));
 
-					var a = document.createElement('a');
-					a.href = 'data:application/json;charset=utf-8;base64,' + jsonData;
-					a.download = GLOBALS.klasse+'.txt';
+				var a = document.createElement('a');
+				a.href = 'data:application/json;charset=utf-8;base64,' + jsonData;
+				a.download = GLOBALS.klasse+'.txt';
 
-					// Append - Click - Remove
-					document.body.appendChild(a);
-					a.click();
-					document.body.removeChild(a);
+				// Append - Click - Remove
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
 
-				});
-				break;
+			});
+			break;
 
-			case "copy":
+		case "copy":
+			break;
 
-			default:
-				// Immer HTML wenn nicht anders gefordert
+		default:
+			// Immer HTML wenn nicht anders gefordert
+			db_readMultiData(function(rows){
+				writeAllgemeines(rows);
+
 				db_readMultiData(function(rows){
-					writeAllgemeines(rows);
+					writeGesamtuebersicht(rows);
+					writeLeistungen(rows);
+				}, "student");
 
-					db_readMultiData(function(rows){
-						writeGesamtuebersicht(rows);
-						writeLeistungen(rows);
-					}, "student");
-
-				}, "leistung");
+			}, "leistung");
 
 		}
 
@@ -61,8 +67,8 @@ $(document).ready(function() {
 function appendRow(className, Content, TableRow) {
 	var tr = (TableRow) ? TableRow : document.createElement('tr');
 	var td = document.createElement('td');
-		td.className = className;
-		td.innerHTML = Content;
+	td.className = className;
+	td.innerHTML = Content;
 	tr.appendChild(td);
 	return tr;
 }
@@ -81,19 +87,19 @@ function writeAllgemeines(results){
 	document.getElementById('insert_set_mndl').innerHTML = SETTINGS.gewichtung.mündlich+" %";
 	document.getElementById('insert_set_fspz').innerHTML = SETTINGS.gewichtung['davon fachspezifisch']+" %";
 	document.getElementById('insert_set_schr').innerHTML = SETTINGS.gewichtung.schriftlich+" %";
-	for (var i = 6 - 1; i >= 1; i--) {
-		document.getElementById('insert_set_note'+i).innerHTML = SETTINGS.notenverteilung[i]+" %";
+	for (var i2 = 6 - 1; i2 >= 1; i2--) {
+		document.getElementById('insert_set_note'+i2).innerHTML = SETTINGS.notenverteilung[i2]+" %";
 	}
 
 	// Leistungsinformationen
 	// (Alle Leistungsarten in einem Loop)
 	var arten = ['mndl', 'fspz', 'schr'];
-	for (art = 0; art < arten.length; art++){
+	for (var art = 0; art < arten.length; art++){
 
 		var thead = document.createElement('thead');
 		var tr = appendRow(arten[art]+"_namen", "Schülernamen");
 		
-		for (idx = 0; idx < results.length; idx++) {
+		for (var idx = 0; idx < results.length; idx++) {
 
 			if (results[idx].subtyp == arten[art]) {
 				// Leistung hat einen Eintrag > auflisten
@@ -116,20 +122,20 @@ function writeAllgemeines(results){
 		document.getElementById('legende_kompetenzen').innerHTML = legende_kompetenzen;
 
 		var id_array = GLOBALS[arten[art]];
-		var tbody2 = document.createElement('tbody');
+		var tr2;
 
 		if (id_array.length) {
-			var tr2 = appendRow("nummer", "Nr. 1");
-			for (var i = 0; i < id_array.length; i++) {
-				var Leistung = id_array[i];
+			tr2 = appendRow("nummer", "Nr. 1");
+			for (var i3 = 0; i3 < id_array.length; i3++) {
+				var Leistung = id_array[i3];
 				tr2 = appendRow("", Leistung.Datum, tr2);
 				tr2 = appendRow("", Leistung.Bezeichnung, tr2);
 				tr2 = appendRow("", Leistung.Gewichtung, tr2);
 				tr2 = appendRow("", Leistung.Eintragung, tr2);
 
+				var vert_string = "";
 				if (Leistung.Eintragung == "Rohpunkte") {
-					var vert_string = "";
-					for (vert in Leistung.Verteilungen) {
+					for (var vert in Leistung.Verteilungen) {
 						vert_string += vert+": " +
 							Leistung.Verteilungen[vert].Kat1 + " / " +
 							Leistung.Verteilungen[vert].Kat2 + " / " +
@@ -139,10 +145,10 @@ function writeAllgemeines(results){
 						vert_string += "<br>";
 					}
 				}else if (Leistung.Eintragung == "Punkte") {
-					var vert_string = Leistung.Verteilungen.Standard.Gesamt + " Punkte";
+					vert_string = Leistung.Verteilungen.Standard.Gesamt + " Punkte";
 
 				}else{
-					var vert_string = "-";
+					vert_string = "-";
 
 				}
 
@@ -151,7 +157,7 @@ function writeAllgemeines(results){
 
 
 		}else{
-			var tr2 = appendRow("nummer", "-");
+			tr2 = appendRow("nummer", "-");
 			tr2 = appendRow("", "-", tr2);
 			tr2 = appendRow("", "-", tr2);
 			tr2 = appendRow("", "-", tr2);
@@ -216,7 +222,7 @@ function writeLeistungen(rows) {
 	var arten = ['mndl', 'fspz', 'schr'];
 	var l_id;
 
-	for (art = 0; art < arten.length; art++){
+	for (var art = 0; art < arten.length; art++){
 		var tbody = document.createElement('tbody');
 		var l_typ = arten[art];
 
@@ -245,12 +251,12 @@ function writeLeistungen(rows) {
 }
 
 function zensur(zeilen_objekt, spezKey, digit){
-	result = "";
+	var result = "";
 	result = JSON.parse(decodeURIComponent(zeilen_objekt));
 	if (spezKey){
 		result = result[spezKey];
 	}
-	return Math.round(result*digit)/digit || "-"
+	return Math.round(result*digit)/digit || "-";
 }
 
 // DEPRECATED: Nur als altem DB Format übernommen
@@ -327,16 +333,16 @@ function createCSV(results) {
 	var eintragung;
 	var Leistung;
 	buffer += "%0A";
-	for (var i=0; i<columns.length;i++){
+	for (var i1=0; i1<columns.length;i1++){
 		eintragung = null;
 		row = results.rows.item(0);
-		var oHeader = JSON.parse(decodeURIComponent(row[columns[i]]));
+		var oHeader = JSON.parse(decodeURIComponent(row[columns[i1]]));
 		for (var i2=0;i2<oHeader.alle.length;i2++){
 			buffer_row = "";
 			var _id = oHeader.alle[i2];
 			// Header-Daten
 			eintragung = oHeader[_id].Eintragung;
-			buffer_row += oHeader[_id].Bezeichnung+";("+[columns[i]]+");;Art :;"+eintragung+";\n"+oHeader[_id].Datum+";%0A";
+			buffer_row += oHeader[_id].Bezeichnung+";("+[columns[i1]]+");;Art :;"+eintragung+";\n"+oHeader[_id].Datum+";%0A";
 			if (eintragung == "Rohpunkte"){
 				buffer_row += ";;Kat. 1;Kat. 2;Kat. 3;Kat. 4;Gesamt;Prozent;Note;%0A";
 				for (var v in oHeader[_id].Verteilungen){
@@ -384,7 +390,7 @@ function createCSV(results) {
 		});
 		link.setAttribute("href", window.URL.createObjectURL(blob));
 		link.setAttribute("download", fileName);
-	 } else {
+	} else {
 		// Weiterleitung mit GET-Übergabe
 		link.setAttribute("href", link.getAttribute('href')+"?csv="+escape(buffer));
 	}
