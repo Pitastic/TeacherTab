@@ -1,3 +1,4 @@
+"use strict";
 // =================================================== //
 // ================ Globale Variablen ================ //
 // =================================================== //
@@ -28,10 +29,10 @@ var GLOBALS = {
 
 var SETTINGS;
 
-window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
 window.SHIMindexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
-window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
-window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
+//window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+/*window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange*/
 
 
 $(document).ready(function() {
@@ -108,7 +109,7 @@ function Schuljahre() {
 	var copyBox = document.getElementById("jahrCopyKlasse");
 	var thisYear = new Date().getFullYear()-1;
 	var nextYear = (thisYear+1).toString().substring(2,4);
-	var opt;
+	var opt, opt2;
 	opt = new Option(thisYear+" / "+nextYear+" (2. Hj.)");
 		opt2 = new Option(thisYear+" / "+nextYear+" (2. Hj.)");
 		selectBox.appendChild(opt);
@@ -307,7 +308,7 @@ function mergeObjects(old1, new1){
 
 // Objekte rekursiv zusammenführen:
 // von: https://stackoverflow.com/a/34749873
-function mergeDeep_old(target, ...sources) {
+function mergeDeep(target, ...sources) {
 	if (!sources.length) return target;
 	var source = sources.shift();
 
@@ -343,7 +344,6 @@ function mergeDeep_noJS_support(target, sources) {
 	
 	return mergeDeep.apply(target, spread(sources));
 }
-*/
 
 function spread() {
 	var args = [];
@@ -360,6 +360,7 @@ function spread() {
 	});
 	return args;
 }
+*/
 
 
 function checkAuth() {

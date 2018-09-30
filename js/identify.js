@@ -1,3 +1,4 @@
+"use strict";
 // Design- und Funktionsanpassung für die verschiedenen Geräte
 
 var DEV_LOG1 = "";
@@ -137,7 +138,7 @@ window.onload = function(evt){
 
 	DEV_LOG1 += "> STYLE: Pixel-Width "+window.innerWidth;
 
-	devlog_container = document.getElementById("dev_info1");
+	var devlog_container = document.getElementById("dev_info1");
 	console.log(DEV_LOG1);
 	if (devlog_container) { devlog_container.innerHTML = DEV_LOG1; }
 	

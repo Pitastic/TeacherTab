@@ -1,3 +1,4 @@
+"use strict";
 $(document).ready(function() {
 	// Funktionen, die auf global SETTINGS warten müssen
 	db_readMultiData(function(r){

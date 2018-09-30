@@ -1,3 +1,4 @@
+"use strict";
 $(document).ready(function() {
 	var id = parseInt(sessionStorage.getItem('student'));
 	// Funktionen, die auf global SETTINGS warten müssen

@@ -1,3 +1,4 @@
+"use strict";
 $(document).ready(function() {
 
 	// Style and Listeners
