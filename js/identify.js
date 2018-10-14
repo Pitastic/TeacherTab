@@ -5,15 +5,18 @@
 // Design- und Funktionsanpassung für die verschiedenen Geräte
 var DEV_LOG1 = "";
 var CACHE = "tt_webapp_v1";
-var toCache = [];
-var DEVICE = [];
+var DEVICE;
 
 // TODO: nur checks machen, wenn nichts im SessionStore steht
+// TODO: Cleanup nach IDB test
+
 
 
 // Feature detection
+
+// -- IndexedDB
 function checkIDBShim() {
-//> Fron: https://bl.ocks.org/nolanlawson/8a2ead46a184c9fae231
+//> From: https://bl.ocks.org/nolanlawson/8a2ead46a184c9fae231
 	var req = indexedDB.open('test', 1);
 
 	req.onupgradeneeded = function (e) {
@@ -28,7 +31,7 @@ function checkIDBShim() {
 
 	req.onerror = function () {
 		console.log("IDB-TESTING: Error opening IndexedDB");
-		DEVICE.push("noidx");
+		DEVICE['noidx'] = true;
 	};
 
 	req.onsuccess = function (e) {
@@ -38,7 +41,7 @@ function checkIDBShim() {
 			tx = db.transaction(['one', 'two'], 'readwrite');
 		} catch (err) {
 			console.log("IDB-TESTING: Error opening two stores at once (buggy implementation)");
-			DEVICE.push("noidx");
+			DEVICE['noidx'] = true;
 			return;
 		}
 
@@ -57,32 +60,38 @@ function checkIDBShim() {
 	};
 }
 
+// -- ES 6
+function checkES6() {
+	if (false) {DEVICE['nojs'] = true;}
+}
+
+
 // Cache mit Device-Info erweitern
 
-function extendCache(DEVICE) {
+function extendCache() {
 	// Device abhängig
-	if (DEVICE.indexOf('phone') >= 0) {
-		//toCache.push("");
-	} else if (DEVICE.indexOf('tablet') >= 0) {
-		//toCache.push("");
-	} else if (DEVICE.indexOf('desktop') >= 0) {
-		//toCache.push("");
+	if (DEVICE['phone']){
+		//DEVICE['toCache'].push("");
+	} else if (DEVICE['tablet']){
+		//DEVICE['toCache'].push("");
+	} else if (DEVICE['desktop']){
+		//DEVICE['toCache'].push("");
 	}	
 
 	// Polyfills
-	if (DEVICE.indexOf('noidx') >= 0) {
+	if (DEVICE['noidx']){
 		// omg - run for babel and idx
-		toCache.push("/js/frameworks/babel_polyfill.min.js");
-		toCache.push("/js/frameworks/indexeddbshim.min.js");
-	} else if (DEVICE.indexOf('nojs') >= 0) {
+		DEVICE['toCache'].push("/js/frameworks/babel_polyfill.min.js");
+		DEVICE['toCache'].push("/js/frameworks/indexeddbshim.min.js");
+	} else if (DEVICE['nojs']){
 		// nur babel
-		toCache.push("/js/frameworks/babel_polyfill.min.js");
+		DEVICE['toCache'].push("/js/frameworks/babel_polyfill.min.js");
 	}
 
-	if (toCache.length > 0) {
+	if (DEVICE['toCache'].length > 0) {
 		console.log("SW: extending Cache", toCache);
 		caches.open(CACHE).then(function(cache) {
-			for (var i = toCache.length - 1; i >= 0; i--) {
+			for (var i = DEVICE['toCache'].length - 1; i >= 0; i--) {
 				console.log("SW: caching", toCache[i]);
 				cache.add( toCache[i] )
 					.catch(function (err) { console.log("SW: Fehler beim Cachen von", toCache[i], err); });
@@ -91,15 +100,36 @@ function extendCache(DEVICE) {
 	}
 }
 	
-	
+
+// DOM Manipulations
+
+// -- dynamic Orienatation
 function handle_orientation_landscape(evt) {
 	console.log("STYLE: Handle Orientation, isLandscape:", evt.matches);
 	var viewport = "initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
 	var dwidth = "width=device-width";
-	document.getElementById('dynamicViewport').setAttribute('content', viewport+" "+dwidth);		
+	if (evt.matches) {
+		// Landscape :
+		document.getElementById('dynamicViewport').setAttribute('content', viewport);
+	}else{
+		// Portrait :
+		document.getElementById('dynamicViewport').setAttribute('content', viewport+" "+dwidth);
+	}
 }
 
+// -- Buttons
+function change_Buttons() {
+	var buttons = {
+		"btn_Add" : "&#65291;",
+		"btn_Delete" : "&#10006;",
+		"export" : "&#9650;",
+	};
+	for (var key in buttons) {
+		document.getElementById(key).innerHTML = buttons[key];
+	}
+}
 
+// -- Add CSS
 function passCss(absolutePath) {
 	var cssId = btoa(absolutePath);
 	if (!document.getElementById(cssId)) {
@@ -110,10 +140,10 @@ function passCss(absolutePath) {
 		link.href = absolutePath;
 		document.head.appendChild(link);
 	}
-	toCache.push(absolutePath);
+	DEVICE['toCache'].push(absolutePath);
 }
 
-
+// -- Add JS
 function passJs(absolutePath) {
 	var jsId = btoa(absolutePath);
 	if (!document.getElementById(jsId)) {
@@ -123,41 +153,34 @@ function passJs(absolutePath) {
 		document.head.appendChild(script);
 		return script;
 	}
-	toCache.push(absolutePath);
-}
-
-function checkForSHIM() {
-	// Check indexedDB (noidx ?)
-	checkIDBShim();
-	// Check ES2016 (nojs ?)
+	DEVICE['toCache'].push(absolutePath);
 }
 
 
-window.onload = function(evt){
+// Apply Settings
+function prepareDevice() {
 
-	// Queries
-	var isDesktop = "only screen and (hover: hover)";
-	var isTouch = "only screen and (pointer:coarse)";
-	var isSmartphone = "only screen and (max-device-width: 480px)";
-	var isLandscape = "(orientation: landscape)";
+	// Save to Session
+	sessionStorage.setItem("DEVICE", JSON.stringify(DEVICE));
 
-	// MatchMedias
-	var checkOrientation = window.matchMedia( isLandscape );
-	var checkTouch = window.matchMedia( isTouch );
-	var checkDesktop = window.matchMedia( isDesktop );
+	// IDB Shim (hinterlegen bis Shim geladen)
+	if (DEVICE['noidx']) {
+		GLOBALS.dbShim = true;
+		passJs("/js/frameworks/babel_polyfill.min.js");
+		passJs("/js/frameworks/indexeddbshim.min.js");
+	}
 
+	// JS Shim
+	if (DEVICE['noidx']) { passJs("/js/frameworks/babel_polyfill.min.js"); }
 
-	// Gerätespezifische Tests
-	if ( checkDesktop.matches && !checkTouch.matches ) {
-		// Hat eine Maus und kein Touch == Desktop
-		DEV_LOG1 += "> STYLE: Desktop\n";
-
-
-	}else if (checkTouch.matches) {
-		// Hat Touch == Tablet oder Smartphone oder ähnlich
-		DEV_LOG1 += "> STYLE: Touchscreen\n";
-
+	// Touch und Orientation
+	if (DEVICE['touch']) {
+	
 		// Orientation / Seitenverhältnisse
+
+		var isLandscape = "(orientation: landscape)";
+		var checkOrientation = window.matchMedia( isLandscape );
+		
 		handle_orientation_landscape(checkOrientation);
 		checkOrientation.addListener(handle_orientation_landscape);
 
@@ -169,33 +192,96 @@ window.onload = function(evt){
 			noTouchThisSlider(); // touch-friendly-Buttons
 		};
 
-		var checkDeviceMobile = window.matchMedia( isSmartphone );
-
-		if (checkDeviceMobile.matches) {
-			// Lade CSS und Buttons für Smartphone
-			GLOBALS.isPhone = true;
-			passCss("/css/phone.css");
-			DEV_LOG1 += " - Smartphone\n";
-		}else{
-			// Lade CSS und Buttons für Tablet
-			DEV_LOG1 += " - Tablet\n";
-		}
-
-	}else{
-		// nicht unterstützt (z.B. FireFox auf Desktop/Tablet/Smartphone)
-		DEV_LOG1 += "> STYLE: unsupported\n";
 	}
 
+	// Scripts und CSS
+	switch (DEVICE['type']) {
+		case "mobile":
+			// Lade CSS und Buttons für Smartphone
+			passCss("/css/phone.css");
+			change_buttons();
+			break;
 
-	DEV_LOG1 += "> STYLE: Pixel-Width "+window.innerWidth;
+		case "tablet":
+			// Lade CSS und Buttons für Tablet
+			break;
 
-	var devlog_container = document.getElementById("dev_info1");
-	console.log(DEV_LOG1);
-	if (devlog_container) { devlog_container.innerHTML = DEV_LOG1; }
+		default: // Desktop
+			break;
+	}
 
-	// Shims und Caches hinterlegen
-	checkForSHIM();
-
+	// Cache
 	/*TODO: vorerst wird alles (zuviel gecached... issue #49) */
 	//extendCache();
+}
+
+
+window.onload = function(evt){
+
+	// Run tests if DEVICE unknown
+	var fromStore = sessionStorage.getItem("DEVICE");
+
+	if (fromStore) {
+
+		// no tests
+		DEVICE = JSON.parse(fromStore);
+		extendCache();
+		prepareDevice();
+
+	}else{
+
+		DEVICE = {};
+		DEVICE['toCache'] = [];
+
+		// Queries
+		var isDesktop = "only screen and (hover: hover)";
+		var isTouch = "only screen and (pointer:coarse)";
+		var isSmartphone = "only screen and (max-device-width: 480px)";
+
+		// MatchMedias
+		var checkTouch = window.matchMedia( isTouch );
+		var checkDesktop = window.matchMedia( isDesktop );
+		var checkDeviceMobile = window.matchMedia( isSmartphone );
+
+
+		// Gerätespezifische Tests
+		if ( checkDesktop.matches && !checkTouch.matches ) {
+			// Hat eine Maus und kein Touch == Desktop
+			DEV_LOG1 += "> STYLE: Desktop\n";
+			DEVICE['type'] = "desktop";
+
+
+		}else if (checkTouch.matches) {
+			// Hat Touch == Tablet oder Smartphone oder ähnlich
+			DEV_LOG1 += "> STYLE: Touchscreen\n";
+			DEVICE['touch'] = true;
+
+			if (checkDeviceMobile.matches) {
+				DEV_LOG1 += " - Smartphone\n";
+				DEVICE['type'] = "mobile";
+			}else{
+				DEV_LOG1 += " - Tablet\n";
+				DEVICE['type'] = "tablet";
+			}
+
+		}else{
+			// nicht unterstützt (z.B. FireFox auf Desktop/Tablet/Smartphone)
+			DEV_LOG1 += "> STYLE: unsupported\n";
+			DEVICE['type'] = "unknown";
+		}
+
+
+		DEV_LOG1 += "> STYLE: Pixel-Width "+window.innerWidth;
+
+		var devlog_container = document.getElementById("dev_info1");
+		console.log(DEV_LOG1);
+		if (devlog_container) { devlog_container.innerHTML = DEV_LOG1; }
+
+		// Shims und Caches hinterlegen
+		checkIDBShim();
+		checkES6();
+
+		// Einstellungen laden
+		prepareDevice();
+	}
 };

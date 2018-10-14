@@ -59,9 +59,6 @@ $(document).ready(function() {
 		}
 	});
 
-	// -- Extras für Smartphone-Nutzer
-	if (GLOBALS.isPhone){change_buttons();}
-
 
 	// Setting up...
 	document.getElementById("indexKlassen").getElementsByTagName("span")[1].innerHTML = "Version: "+GLOBALS.appversion;

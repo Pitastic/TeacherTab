@@ -21,13 +21,11 @@ var GLOBALS = {
 	'dbToGo'			: null,
 	'dbFinished'		: null,
 	'noSyncCols'		: null,
-	'dbShim'			: (DEVICE.indexOf('noidx') >= 0),
 	
 	'klasse'			: null,
 	'klassenbezeichnung': null,
 	
 	'knownDevice'		: null,
-	'isPhone'			: null,
 	'perfStart'			: null,
 	'perfEnd'			: null,
 	'deferredPrompt'	: null,
@@ -36,25 +34,24 @@ var GLOBALS = {
 var SETTINGS;
 
 window.SHIMindexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
-//window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
-/*window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
-window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange*/
 
 
 $(document).ready(function() {
 	// Init Vars
 	GLOBALS.noSyncCols = ["vorjahr"];
-	GLOBALS.isPhone = (screen.width > 767) ? false : true;
-	
-	// Device ist KEIN Phone
-	if (!GLOBALS.isPhone) {
-		window.addEventListener('orientationchange', changeOrientation);
-	}
 
-	// Shims
+	/*
+	// Shim needed ?
 	if (GLOBALS.dbShim) {
 		shimIndexedDB.__useShim();
 	}
+	
+	// Device ist KEIN Phone
+	//GLOBALS.isPhone = sessionStorage.getItem('isPhone');
+	if (!GLOBALS.isPhone) {
+		window.addEventListener('orientationchange', changeOrientation);
+	}
+	*/
 
 	// Not the First Time ?
 	if (localStorage.getItem('TeacherTab')){
@@ -101,20 +98,6 @@ function closeListener() {
 // =================================================== //
 // ================ Hilfs-Functionen  ================ //
 // =================================================== //
-
-function changeOrientation(){
-	switch(window.orientation){
-	case 180:
-	case 0:
-		// Portrait :
-		document.getElementById('dynamicViewport').setAttribute('content', "width=device-width");
-		break;
-	default:
-		// Landscape :
-		document.getElementById('dynamicViewport').setAttribute('content', "");
-		break;
-	}
-}
 
 function Schuljahre() {
 	var selectBox = document.getElementById("jahrKlasse");
@@ -1050,20 +1033,4 @@ function handleSchnitt(callback, sID) {
 		callback();
 	}
 	);
-}
-
-
-// ==============================================================
-// ================== Smartphone Anpassungen ====================
-// ==============================================================
-
-function change_buttons() {
-	var buttons = {
-		"btn_Add" : "&#65291;",
-		"btn_Delete" : "&#10006;",
-		"export" : "&#9650;",
-	};
-	for (var key in buttons) {
-		document.getElementById(key).innerHTML = buttons[key];
-	}
 }

@@ -19,8 +19,6 @@ $(document).ready(function() {
 	setTimeout(function(){
 		slide2(sessionStorage.getItem('lastview'));
 	},100);
-	// Extras für Smartphone-Nutzer
-	if (GLOBALS.isPhone){change_buttons();}
 });
 
 
