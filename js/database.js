@@ -5,51 +5,6 @@ closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareS
 db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
 sync_deleteKlasse sync_pushBack sync_getKlasse*/
 
-function testAppleBrokenIndexedDB() {
-//> Fron: https://bl.ocks.org/nolanlawson/8a2ead46a184c9fae231
-	var req = indexedDB.open('test', 1);
-
-	req.onupgradeneeded = function (e) {
-		var db = e.target.result;
-		db.createObjectStore('one', {
-			keyPath: 'key'
-		});
-		db.createObjectStore('two', {
-			keyPath: 'key'
-		});
-	};
-
-	req.onerror = function () {
-		console.log("IDB-TESTING: Error opening IndexedDB");
-	};
-
-	req.onsuccess = function (e) {
-		var db = e.target.result;
-		var tx;
-		try {
-			tx = db.transaction(['one', 'two'], 'readwrite');
-		} catch (err) {
-			console.log("IDB-TESTING: Error opening the second store (buggy implementation)");
-			return;
-		}
-
-		tx.oncomplete = function (e) {
-			db.close();
-			console.log("IDB-TESTING: Passed !");
-		};
-
-		var req = tx.objectStore('two').put({
-			'key': new Date().valueOf()
-		});
-		req.onsuccess = function (e) {
-			console.log("IDB-TESTING: Passed 2 !");
-		};
-		req.onerror = function () {
-			console.log("IDB-TESTING: Error 2 !");
-		};
-	};
-}
-
 // Testen und anlegen einer DB
 function initDB(callback) {
 	if (!SHIMindexedDB) {

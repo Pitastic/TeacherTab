@@ -21,6 +21,7 @@ var GLOBALS = {
 	'dbToGo'			: null,
 	'dbFinished'		: null,
 	'noSyncCols'		: null,
+	'dbShim'			: (DEVICE.indexOf('noidx') >= 0),
 	
 	'klasse'			: null,
 	'klassenbezeichnung': null,
@@ -49,6 +50,12 @@ $(document).ready(function() {
 	if (!GLOBALS.isPhone) {
 		window.addEventListener('orientationchange', changeOrientation);
 	}
+
+	// Shims
+	if (GLOBALS.dbShim) {
+		shimIndexedDB.__useShim();
+	}
+
 	// Not the First Time ?
 	if (localStorage.getItem('TeacherTab')){
 		// DB Support und Init

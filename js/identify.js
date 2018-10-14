@@ -1,32 +1,80 @@
 "use strict";
 // esLint Globals:
-/*globals GLOBALS
-touchScroller touchSlider noTouchThisSlider
-*/
+/* globals GLOBALS touchScroller touchSlider noTouchThisSlider */
+
 // Design- und Funktionsanpassung für die verschiedenen Geräte
 var DEV_LOG1 = "";
 var CACHE = "tt_webapp_v1";
 var toCache = [];
+var DEVICE = [];
 
+// TODO: nur checks machen, wenn nichts im SessionStore steht
+
+
+// Feature detection
+function checkIDBShim() {
+//> Fron: https://bl.ocks.org/nolanlawson/8a2ead46a184c9fae231
+	var req = indexedDB.open('test', 1);
+
+	req.onupgradeneeded = function (e) {
+		var db = e.target.result;
+		db.createObjectStore('one', {
+			keyPath: 'key'
+		});
+		db.createObjectStore('two', {
+			keyPath: 'key'
+		});
+	};
+
+	req.onerror = function () {
+		console.log("IDB-TESTING: Error opening IndexedDB");
+		DEVICE.push("noidx");
+	};
+
+	req.onsuccess = function (e) {
+		var db = e.target.result;
+		var tx;
+		try {
+			tx = db.transaction(['one', 'two'], 'readwrite');
+		} catch (err) {
+			console.log("IDB-TESTING: Error opening two stores at once (buggy implementation)");
+			DEVICE.push("noidx");
+			return;
+		}
+
+		tx.oncomplete = function (e) {
+			db.close();
+			console.log("IDB-TESTING: Passed !");
+		};
+
+		var req = tx.objectStore('two').put({
+			'key': new Date().valueOf()
+		});
+		req.onsuccess = function (e) {
+		};
+		req.onerror = function () {
+		};
+	};
+}
 
 // Cache mit Device-Info erweitern
 
-function extendCache(device_info) {
+function extendCache(DEVICE) {
 	// Device abhängig
-	if (device_info.indexOf('phone') >= 0) {
+	if (DEVICE.indexOf('phone') >= 0) {
 		//toCache.push("");
-	} else if (device_info.indexOf('tablet') >= 0) {
+	} else if (DEVICE.indexOf('tablet') >= 0) {
 		//toCache.push("");
-	} else if (device_info.indexOf('desktop') >= 0) {
+	} else if (DEVICE.indexOf('desktop') >= 0) {
 		//toCache.push("");
 	}	
 
 	// Polyfills
-	if (device_info.indexOf('noidx') >= 0) {
+	if (DEVICE.indexOf('noidx') >= 0) {
 		// omg - run for babel and idx
 		toCache.push("/js/frameworks/babel_polyfill.min.js");
 		toCache.push("/js/frameworks/indexeddbshim.min.js");
-	} else if (device_info.indexOf('nojs') >= 0) {
+	} else if (DEVICE.indexOf('nojs') >= 0) {
 		// nur babel
 		toCache.push("/js/frameworks/babel_polyfill.min.js");
 	}
@@ -79,10 +127,11 @@ function passJs(absolutePath) {
 }
 
 function checkForSHIM() {
-	// Check indexedDB Polyfill
-
-	// Check JS Polyfill
+	// Check indexedDB (noidx ?)
+	checkIDBShim();
+	// Check ES2016 (nojs ?)
 }
+
 
 window.onload = function(evt){
 
@@ -143,7 +192,10 @@ window.onload = function(evt){
 	var devlog_container = document.getElementById("dev_info1");
 	console.log(DEV_LOG1);
 	if (devlog_container) { devlog_container.innerHTML = DEV_LOG1; }
-	
+
+	// Shims und Caches hinterlegen
+	checkForSHIM();
+
 	/*TODO: vorerst wird alles (zuviel gecached... issue #49) */
-	//extendCache(["noidx", "nojs"]);
+	//extendCache();
 };
