@@ -1,6 +1,6 @@
 "use strict";
 // esLint Globals:
-/* globals GLOBALS touchScroller touchSlider noTouchThisSlider */
+/* globals touchScroller touchSlider noTouchThisSlider */
 
 // Design- und Funktionsanpassung für die verschiedenen Geräte
 var DEV_LOG1 = "";
@@ -38,7 +38,24 @@ function checkIDBShim(callback) {
 		var db = e.target.result;
 		var tx;
 		try {
+
 			tx = db.transaction(['one', 'two'], 'readwrite');
+
+			tx.oncomplete = function (e) {
+				console.log("IDENTIFY: (idb) Passed !");
+				DEVICE['noidx'] = false;
+				db.close();
+				callback();
+			};
+
+			var req = tx.objectStore('two').put({
+				'key': new Date().valueOf()
+			});
+			req.onsuccess = function (e) {
+			};
+			req.onerror = function (e) {
+			};
+
 		} catch (err) {
 			console.log("IDENTIFY: (idb) Error opening two stores at once (buggy implementation)");
 			DEVICE['noidx'] = true;
@@ -46,20 +63,6 @@ function checkIDBShim(callback) {
 			callback();
 		}
 
-		tx.oncomplete = function (e) {
-			console.log("IDENTIFY: (idb) Passed !");
-			DEVICE['noidx'] = false;
-			db.close();
-			callback();
-		};
-
-		var req = tx.objectStore('two').put({
-			'key': new Date().valueOf()
-		});
-		req.onsuccess = function (e) {
-		};
-		req.onerror = function (e) {
-		};
 	};
 }
 
@@ -86,6 +89,9 @@ function extendCache() {
 	}	
 
 	// Polyfills
+	/*
+	// Alle passJS / passCSS wurden schon an die Cache Liste angehängt !
+	//
 	if (DEVICE['noidx']){
 		// omg - run for babel and idx
 		DEVICE['toCache'].push("/js/frameworks/babel_polyfill.min.js");
@@ -94,16 +100,20 @@ function extendCache() {
 		// nur babel
 		DEVICE['toCache'].push("/js/frameworks/babel_polyfill.min.js");
 	}
+	*/
 
 	if (DEVICE['toCache'].length > 0) {
-		console.log("IDENTIFY: (sw) extending Cache", toCache);
+		console.log("IDENTIFY: (sw) extending Cache", DEVICE['toCache']);
+		console.log("IDENTIFY: (sw) ...not implemented !");
+		/*
 		caches.open(CACHE).then(function(cache) {
 			for (var i = DEVICE['toCache'].length - 1; i >= 0; i--) {
-				console.log("IDENTIFY: (sw) caching", toCache[i]);
-				cache.add( toCache[i] )
-					.catch(function (err) { console.log("IDENTIFY: (sw) Fehler beim Cachen von", toCache[i], err); });
+				console.log("IDENTIFY: (sw) caching", DEVICE['toCache'][i]);
+				cache.add( DEVICE['toCache'][i] )
+					.catch(function (err) { console.log("IDENTIFY: (sw) Fehler beim Cachen von", DEVICE['toCache'][i], err); });
 			}
 		});
+		*/
 	}
 }
 	
@@ -126,14 +136,17 @@ function handle_orientation_landscape(evt) {
 
 // -- Buttons
 function change_Buttons() {
-	var buttons = {
-		"btn_Add" : "&#65291;",
-		"btn_Delete" : "&#10006;",
-		"export" : "&#9650;",
-	};
-	for (var key in buttons) {
-		document.getElementById(key).innerHTML = buttons[key];
-	}
+	// Buttons wurden hier noch nicht geladen
+	window.onload(function(){
+		var buttons = {
+			"btn_Add" : "&#65291;",
+			"btn_Delete" : "&#10006;",
+			"export" : "&#9650;",
+		};
+		for (var key in buttons) {
+			document.getElementById(key).innerHTML = buttons[key];
+		}
+	});
 }
 
 // -- Add CSS
@@ -151,14 +164,22 @@ function passCss(absolutePath) {
 }
 
 // -- Add JS
-function passJs(absolutePath) {
+function passJs(absolutePath, entrypoint, wait) {
 	var jsId = btoa(absolutePath);
 	if (!document.getElementById(jsId)) {
 		var script = document.createElement('script');
 		script.type = "text/javascript";
 		script.src = absolutePath;
 		document.head.appendChild(script);
-		return script;
+		if (entrypoint && !wait) {
+			script.onload = function(){
+				entrypoint();
+			};
+		} else if (entrypoint && wait) {
+			window.onload = function(){
+				entrypoint();
+			};
+		}
 	}
 	DEVICE['toCache'].push(absolutePath);
 }
@@ -172,10 +193,13 @@ function prepareDevice() {
 	localStorage.setItem("DEVICE", JSON.stringify(DEVICE));
 
 	// IDB Shim (hinterlegen bis Shim geladen)
+	// -- in jedem Fall indexedDB durch SHIMindexedDB ersetzen
 	if (DEVICE['noidx']) {
-		GLOBALS.dbShim = true;
 		passJs("/js/frameworks/babel_polyfill.min.js");
-		passJs("/js/frameworks/indexeddbshim.min.js");
+		passJs("/js/frameworks/indexeddbshim.min.js", function(){
+			window.shimIndexedDB.__useShim();
+			window.shimIndexedDB.__debug(true);
+		});
 	}
 
 	// JS Shim
@@ -194,7 +218,8 @@ function prepareDevice() {
 
 		// add Touchscreen Handlers
 		var touchHandlers = passJs("/js/touch.js");
-		touchHandlers.onload = function () {
+		//touchHandlers.onload = function () {
+		window.onload = function () {
 			touchScroller();
 			touchSlider();
 			noTouchThisSlider(); // touch-friendly-Buttons

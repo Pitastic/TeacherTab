@@ -40,12 +40,7 @@ $(document).ready(function() {
 	// Init Vars
 	GLOBALS.noSyncCols = ["vorjahr"];
 
-	/*
-	// Shim needed ?
-	if (GLOBALS.dbShim) {
-		shimIndexedDB.__useShim();
-	}
-	
+	/*	
 	// Device ist KEIN Phone
 	//GLOBALS.isPhone = sessionStorage.getItem('isPhone');
 	if (!GLOBALS.isPhone) {
