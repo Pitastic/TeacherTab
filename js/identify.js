@@ -196,16 +196,17 @@ function prepareDevice() {
 	// -- in jedem Fall indexedDB durch SHIMindexedDB ersetzen
 	if (DEVICE['noidx']) {
 		/*
-		passJs("/js/frameworks/babel_polyfill.min.js");
-		passJs("/js/frameworks/indexeddbshim.min.js", function(){
-			window.shimIndexedDB.__useShim();
-			window.shimIndexedDB.__debug(true);
+		passJs("/js/frameworks/babel_polyfill.min.js",function(){
+			passJs("/js/frameworks/indexeddbshim.min.js", function(){
+				window.shimIndexedDB.__useShim();
+				window.shimIndexedDB.__debug(true);
+			});
 		});
 		*/
 	}
 
 	// JS Shim
-	if (DEVICE['nojs']) { passJs("/js/frameworks/babel_polyfill.min.js"); }
+	if (DEVICE['nojs'] && !DEVICE['noidx']) { passJs("/js/frameworks/babel_polyfill.min.js"); }
 
 	// Touch und Orientation
 	if (DEVICE['touch']) {

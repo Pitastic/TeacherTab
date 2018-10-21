@@ -33,9 +33,6 @@ var GLOBALS = {
 
 var SETTINGS;
 
-window.SHIMindexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
-
-
 $(document).ready(function() {
 	// Init Vars
 	GLOBALS.noSyncCols = ["vorjahr"];
