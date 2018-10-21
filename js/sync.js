@@ -36,12 +36,12 @@ function sync_getAccount(callback, localAccount) {
 			success: function(data, status, jqXHR){
 				// GET
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
-				console.log("SYNC: data", data); //DEV
+				//DEV console.log("SYNC: data", data);
 				// Merge
 				var merged = mergeAccount(newData, localAccount);
 				merged['valid'] = data.valid;
 				merged['validDate'] = data.validDate;
-				console.log("SYNC: Merged", merged); //DEV
+				//DEV console.log("SYNC: Merged", merged);
 				// Save and Push back
 				db_replaceData(function(){
 					sync_pushBack(callback, merged, "account");
@@ -88,11 +88,11 @@ function sync_getKlasse(callback, classObjectArray) {
 					//DEV console.log("SYNC recieved:", newData);
 					var merged = mergeKlasse(newData, klassenObject);
 					if (merged) {
-						console.log("SYNC merged to:", merged);//DEV
+						//DEV console.log("SYNC merged to:", merged);
 						// (Create)
 						db_neueKlasse(function(){
 							// Save lokal
-							console.log("SYNC: Save lokal");//DEV
+							//DEV console.log("SYNC: Save lokal");
 							db_replaceData(function(){
 								// Push zurück zu Server
 								sync_pushBack(callback, merged, ["class", klassenHash]);
