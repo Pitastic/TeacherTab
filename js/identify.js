@@ -7,15 +7,15 @@ var DEV_LOG1 = "";
 var CACHE = "tt_webapp_v1";
 var DEVICE;
 
-// TODO: nur checks machen, wenn nichts im SessionStore steht
 // TODO: Cleanup nach IDB test
+// TODO: ES6 Tests
 
 
 
 // Feature detection
 
 // -- IndexedDB
-function checkIDBShim() {
+function checkIDBShim(callback) {
 //> From: https://bl.ocks.org/nolanlawson/8a2ead46a184c9fae231
 	var req = indexedDB.open('test', 1);
 
@@ -30,7 +30,7 @@ function checkIDBShim() {
 	};
 
 	req.onerror = function () {
-		console.log("IDB-TESTING: Error opening IndexedDB");
+		console.log("IDENTIFY: (idb) Error opening IndexedDB");
 		DEVICE['noidx'] = true;
 	};
 
@@ -40,14 +40,17 @@ function checkIDBShim() {
 		try {
 			tx = db.transaction(['one', 'two'], 'readwrite');
 		} catch (err) {
-			console.log("IDB-TESTING: Error opening two stores at once (buggy implementation)");
+			console.log("IDENTIFY: (idb) Error opening two stores at once (buggy implementation)");
 			DEVICE['noidx'] = true;
-			return;
+			db.close();
+			callback();
 		}
 
 		tx.oncomplete = function (e) {
+			console.log("IDENTIFY: (idb) Passed !");
+			DEVICE['noidx'] = false;
 			db.close();
-			console.log("IDB-TESTING: Passed !");
+			callback();
 		};
 
 		var req = tx.objectStore('two').put({
@@ -55,14 +58,18 @@ function checkIDBShim() {
 		});
 		req.onsuccess = function (e) {
 		};
-		req.onerror = function () {
+		req.onerror = function (e) {
 		};
 	};
 }
 
 // -- ES 6
 function checkES6() {
-	if (false) {DEVICE['nojs'] = true;}
+	if (false) {
+		DEVICE['nojs'] = true;
+	}else{	
+		DEVICE['nojs'] = false;
+	}
 }
 
 
@@ -89,12 +96,12 @@ function extendCache() {
 	}
 
 	if (DEVICE['toCache'].length > 0) {
-		console.log("SW: extending Cache", toCache);
+		console.log("IDENTIFY: (sw) extending Cache", toCache);
 		caches.open(CACHE).then(function(cache) {
 			for (var i = DEVICE['toCache'].length - 1; i >= 0; i--) {
-				console.log("SW: caching", toCache[i]);
+				console.log("IDENTIFY: (sw) caching", toCache[i]);
 				cache.add( toCache[i] )
-					.catch(function (err) { console.log("SW: Fehler beim Cachen von", toCache[i], err); });
+					.catch(function (err) { console.log("IDENTIFY: (sw) Fehler beim Cachen von", toCache[i], err); });
 			}
 		});
 	}
@@ -105,7 +112,7 @@ function extendCache() {
 
 // -- dynamic Orienatation
 function handle_orientation_landscape(evt) {
-	console.log("STYLE: Handle Orientation, isLandscape:", evt.matches);
+	console.log("IDENTIFY: (style) Handle Orientation, isLandscape:", evt.matches);
 	var viewport = "initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
 	var dwidth = "width=device-width";
 	if (evt.matches) {
@@ -161,7 +168,8 @@ function passJs(absolutePath) {
 function prepareDevice() {
 
 	// Save to Session
-	sessionStorage.setItem("DEVICE", JSON.stringify(DEVICE));
+	console.log("IDENTIFY: (prepare) Device is:", DEVICE);
+	localStorage.setItem("DEVICE", JSON.stringify(DEVICE));
 
 	// IDB Shim (hinterlegen bis Shim geladen)
 	if (DEVICE['noidx']) {
@@ -171,7 +179,7 @@ function prepareDevice() {
 	}
 
 	// JS Shim
-	if (DEVICE['noidx']) { passJs("/js/frameworks/babel_polyfill.min.js"); }
+	if (DEVICE['nojs']) { passJs("/js/frameworks/babel_polyfill.min.js"); }
 
 	// Touch und Orientation
 	if (DEVICE['touch']) {
@@ -216,72 +224,73 @@ function prepareDevice() {
 }
 
 
-window.onload = function(evt){
 
-	// Run tests if DEVICE unknown
-	var fromStore = sessionStorage.getItem("DEVICE");
+// Run tests if DEVICE unknown
+var fromStore = localStorage.getItem("DEVICE");
 
-	if (fromStore) {
+if (fromStore) {
 
-		// no tests
-		DEVICE = JSON.parse(fromStore);
-		extendCache();
-		prepareDevice();
+	// no tests
+	DEVICE = JSON.parse(fromStore);
+	extendCache();
+	prepareDevice();
 
-	}else{
+}else{
 
-		DEVICE = {};
-		DEVICE['toCache'] = [];
+	DEVICE = {};
+	DEVICE['toCache'] = [];
 
-		// Queries
-		var isDesktop = "only screen and (hover: hover)";
-		var isTouch = "only screen and (pointer:coarse)";
-		var isSmartphone = "only screen and (max-device-width: 480px)";
+	// Queries
+	var isDesktop = "only screen and (hover: hover)";
+	var isTouch = "only screen and (pointer:coarse)";
+	var isSmartphone = "only screen and (max-device-width: 480px)";
 
-		// MatchMedias
-		var checkTouch = window.matchMedia( isTouch );
-		var checkDesktop = window.matchMedia( isDesktop );
-		var checkDeviceMobile = window.matchMedia( isSmartphone );
-
-
-		// Gerätespezifische Tests
-		if ( checkDesktop.matches && !checkTouch.matches ) {
-			// Hat eine Maus und kein Touch == Desktop
-			DEV_LOG1 += "> STYLE: Desktop\n";
-			DEVICE['type'] = "desktop";
+	// MatchMedias
+	var checkTouch = window.matchMedia( isTouch );
+	var checkDesktop = window.matchMedia( isDesktop );
+	var checkDeviceMobile = window.matchMedia( isSmartphone );
 
 
-		}else if (checkTouch.matches) {
-			// Hat Touch == Tablet oder Smartphone oder ähnlich
-			DEV_LOG1 += "> STYLE: Touchscreen\n";
-			DEVICE['touch'] = true;
+	// Gerätespezifische Tests
+	if ( checkDesktop.matches && !checkTouch.matches ) {
+		// Hat eine Maus und kein Touch == Desktop
+		DEV_LOG1 += "> STYLE: Desktop\n";
+		DEVICE['type'] = "desktop";
 
-			if (checkDeviceMobile.matches) {
-				DEV_LOG1 += " - Smartphone\n";
-				DEVICE['type'] = "mobile";
-			}else{
-				DEV_LOG1 += " - Tablet\n";
-				DEVICE['type'] = "tablet";
-			}
 
+	}else if (checkTouch.matches) {
+		// Hat Touch == Tablet oder Smartphone oder ähnlich
+		DEV_LOG1 += "> STYLE: Touchscreen\n";
+		DEVICE['touch'] = true;
+
+		if (checkDeviceMobile.matches) {
+			DEV_LOG1 += " - Smartphone\n";
+			DEVICE['type'] = "mobile";
 		}else{
-			// nicht unterstützt (z.B. FireFox auf Desktop/Tablet/Smartphone)
-			DEV_LOG1 += "> STYLE: unsupported\n";
-			DEVICE['type'] = "unknown";
+			DEV_LOG1 += " - Tablet\n";
+			DEVICE['type'] = "tablet";
 		}
 
+	}else{
+		// nicht unterstützt (z.B. FireFox auf Desktop/Tablet/Smartphone)
+		DEV_LOG1 += "> STYLE: unsupported\n";
+		DEVICE['type'] = "unknown";
+	}
 
-		DEV_LOG1 += "> STYLE: Pixel-Width "+window.innerWidth;
 
-		var devlog_container = document.getElementById("dev_info1");
-		console.log(DEV_LOG1);
-		if (devlog_container) { devlog_container.innerHTML = DEV_LOG1; }
+	DEV_LOG1 += "> STYLE: Pixel-Width "+window.innerWidth;
 
-		// Shims und Caches hinterlegen
-		checkIDBShim();
+	var devlog_container = document.getElementById("dev_info1");
+	console.log("IDENTIFY:", DEV_LOG1);
+	if (devlog_container) { devlog_container.innerHTML = DEV_LOG1; }
+
+	// Shims und Caches hinterlegen
+	checkIDBShim(function(){
+		console.log("IDENTIFY: (idb) starte Callback");
 		checkES6();
 
 		// Einstellungen laden
 		prepareDevice();
-	}
-};
+		}
+	);
+}
