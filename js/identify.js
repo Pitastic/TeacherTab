@@ -59,6 +59,7 @@ function checkIDBShim(callback) {
 		} catch (err) {
 			console.log("IDENTIFY: (idb) Error opening two stores at once (buggy implementation)");
 			DEVICE['noidx'] = true;
+			DEVICE['ios9'] = true;
 			db.close();
 			callback();
 		}
@@ -193,16 +194,20 @@ function prepareDevice() {
 	localStorage.setItem("DEVICE", JSON.stringify(DEVICE));
 
 	// IDB Shim (hinterlegen bis Shim geladen)
-	// -- in jedem Fall indexedDB durch SHIMindexedDB ersetzen
 	if (DEVICE['noidx']) {
-		/*
-		passJs("/js/frameworks/babel_polyfill.min.js",function(){
-			passJs("/js/frameworks/indexeddbshim.min.js", function(){
+		if (DEVICE['ios9']) {
+			passJs("/js/frameworks/indexeddbshim-ios9.min.js", function(){
 				window.shimIndexedDB.__useShim();
 				window.shimIndexedDB.__debug(true);
 			});
-		});
-		*/
+		}else{
+			passJs("/js/frameworks/babel_polyfill.min.js",function(){
+				passJs("/js/frameworks/indexeddbshim.min.js", function(){
+					window.shimIndexedDB.__useShim();
+					window.shimIndexedDB.__debug(true);
+				});
+			});
+		}
 	}
 
 	// JS Shim

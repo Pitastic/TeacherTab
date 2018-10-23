@@ -18,11 +18,13 @@ function initDB(callback) {
 		vCheck.onerror = errorHandler;
 		vCheck.onsuccess = function(event){
 			var connection = event.target.result;
+			//DEV console.log("IDB: GLOBALS.dbversion =", GLOBALS.dbversion);
 			if (!GLOBALS.dbversion){
 				// -- vielleicht
 				GLOBALS.dbversion = parseInt(connection.version);
 				if (GLOBALS.dbversion <= 1){
 					// -- definitiv
+					//DEV console.log("IDB: First.start");
 					var called = false;
 					var needUpgrade = false;
 					connection.close();
@@ -40,6 +42,7 @@ function initDB(callback) {
 						console.log("IDB: upgrade finished");
 					};
 					request.onsuccess = function(event){
+						//DEV console.log("IDB: First.onsuccess");
 						if (needUpgrade) {
 							// Accountinformationen anlegen
 							var connection2 = event.target.result;
