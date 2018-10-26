@@ -194,9 +194,14 @@ function prepareDevice() {
 	localStorage.setItem("DEVICE", JSON.stringify(DEVICE));
 
 	// IDB Shim (hinterlegen bis Shim geladen)
+	// DEV ---
+	DEVICE['noidx'] = true;
+	DEVICE['ios9'] = true;
+	// DEV ---
 	if (DEVICE['noidx']) {
 		if (DEVICE['ios9']) {
-			passJs("/js/frameworks/indexeddbshim-ios9.min.js", function(){
+			passJs("/js/frameworks/indexeddbshim-gh.min.js", function () {
+			//passJs("/js/frameworks/indexeddbshim-ios9.min.js", function(){
 				window.shimIndexedDB.__useShim();
 				window.shimIndexedDB.__debug(true);
 			});
