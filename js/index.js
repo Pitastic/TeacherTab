@@ -4,7 +4,9 @@
 datum uniqueClassID compareKlassen change_buttons closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings addListener klassenSyncHandler klassenDeleteHandler Schuljahre initDB popUpSwitch
 db_neueKlasse db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData db_readGeneric
 checkAuth testCreds sync_deleteKlasse sync_pushBack sync_getKlasse sync_getAccount*/
-$(document).ready(function() {
+
+//$(document).ready(function() {
+window.addEventListener('load', function () {
 
 	// Style and Listeners
 	addListener();

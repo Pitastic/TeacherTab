@@ -4,7 +4,9 @@
 removeDups closeListener addListener slide2 change_buttons datum itemAbort formStudent formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings
 db_addDocument waitForDB db_neueKlasse db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
 sync_deleteKlasse sync_pushBack sync_getKlasse*/
-$(document).ready(function() {
+
+//$(document).ready(function() {
+window.addEventListener('load', function () {
 	// Funktionen, die auf global SETTINGS warten müssen
 	db_readMultiData(function(r){
 		SETTINGS = r[0];
