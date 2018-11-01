@@ -58,8 +58,7 @@ function checkIDBShim(callback) {
 
 		} catch (err) {
 			console.log("IDENTIFY: (idb) Error opening two stores at once (buggy implementation)");
-			DEVICE['noidx'] = true;
-			DEVICE['ios9'] = true;
+			DEVICE['noidx'] = 'ios9';
 			db.close();
 			callback();
 		}
@@ -171,15 +170,16 @@ function passJs(absolutePath, entrypoint, wait) {
 		var script = document.createElement('script');
 		script.type = "text/javascript";
 		script.src = absolutePath;
+		script.id = jsId;
 		document.head.appendChild(script);
 		if (entrypoint && !wait) {
 			script.onload = function(){
 				entrypoint();
 			};
 		} else if (entrypoint && wait) {
-			window.onload = function(){
+			window.addEventListener('onload', function(){
 				entrypoint();
-			};
+			});
 		}
 	}
 	DEVICE['toCache'].push(absolutePath);
@@ -195,24 +195,23 @@ function prepareDevice() {
 
 	// IDB Shim (hinterlegen bis Shim geladen)
 	// DEV ---
-	DEVICE['noidx'] = true;
-	DEVICE['ios9'] = true;
+	DEVICE['noidx'] = 'ios9';
 	// DEV ---
-	if (DEVICE['noidx']) {
-		if (DEVICE['ios9']) {
-			passJs("/js/frameworks/indexeddbshim-gh.min.js", function () {
-			//passJs("/js/frameworks/indexeddbshim-ios9.min.js", function(){
+
+	if (DEVICE['noidx'] == 'ios9') {
+		passJs("/js/frameworks/indexeddbshim-ios9.min.js", function(){
+			console.log("IDENTIFY: idb-ios9-shim loaded");
+			window.shimIndexedDB.__useShim();
+			window.shimIndexedDB.__debug(true);
+		});
+	}else if (DEVICE['noidx']){
+		passJs("/js/frameworks/babel_polyfill.min.js",function(){
+			passJs("/js/frameworks/indexeddbshim.min.js", function(){
+				console.log("IDENTIFY: idbshim loaded");
 				window.shimIndexedDB.__useShim();
 				window.shimIndexedDB.__debug(true);
 			});
-		}else{
-			passJs("/js/frameworks/babel_polyfill.min.js",function(){
-				passJs("/js/frameworks/indexeddbshim.min.js", function(){
-					window.shimIndexedDB.__useShim();
-					window.shimIndexedDB.__debug(true);
-				});
-			});
-		}
+		});
 	}
 
 	// JS Shim
@@ -230,8 +229,6 @@ function prepareDevice() {
 		checkOrientation.addListener(handle_orientation_landscape);
 
 		// add Touchscreen Handlers
-		var touchHandlers = passJs("/js/touch.js");
-		//touchHandlers.onload = function () {
 		window.onload = function () {
 			touchScroller();
 			touchSlider();
@@ -242,18 +239,18 @@ function prepareDevice() {
 
 	// Scripts und CSS
 	switch (DEVICE['type']) {
-		case "mobile":
-			// Lade CSS und Buttons für Smartphone
-			passCss("/css/phone.css");
-			change_buttons();
-			break;
+	case "mobile":
+		// Lade CSS und Buttons für Smartphone
+		passCss("/css/phone.css");
+		change_Buttons();
+		break;
 
-		case "tablet":
-			// Lade CSS und Buttons für Tablet
-			break;
+	case "tablet":
+		// Lade CSS und Buttons für Tablet
+		break;
 
-		default: // Desktop
-			break;
+	default: // Desktop
+		break;
 	}
 
 	// Cache
@@ -329,6 +326,6 @@ if (fromStore) {
 
 		// Einstellungen laden
 		prepareDevice();
-		}
+	}
 	);
 }
