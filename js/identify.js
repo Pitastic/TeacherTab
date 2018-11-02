@@ -229,11 +229,18 @@ function prepareDevice() {
 		checkOrientation.addListener(handle_orientation_landscape);
 
 		// add Touchscreen Handlers
+		passJs("/js/touch.js", function(){
+			touchScroller();
+			touchSlider();
+			noTouchThisSlider(); // touch-friendly-Buttons
+		});
+		/*
 		window.onload = function () {
 			touchScroller();
 			touchSlider();
 			noTouchThisSlider(); // touch-friendly-Buttons
 		};
+		*/
 
 	}
 
