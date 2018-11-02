@@ -5,7 +5,7 @@ closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareS
 db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
 sync_deleteKlasse sync_pushBack sync_getKlasse*/
 
-window.SHIMindexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+window.SHIMindexedDB = window.SHIMindexedDB || window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB; // Testen und anlegen einer DB
 
 // Testen und anlegen einer DB
 function initDB(callback) {
@@ -462,7 +462,9 @@ function db_readKlasse(callback, targetClass) {
 				}
 				
 				// Close and Callback
-				event.target.transaction.db.close();
+				if (event.target.transaction) {
+					event.target.transaction.db.close();
+				}
 				callback([targetClass, result]);
 			};
 
@@ -663,8 +665,10 @@ function SettingsRequest(event, id, bezeichnung, callback){
 	var checkRequest = connectionSR.transaction(id).objectStore(id).get(1);
 	checkRequest.onerror = errorHandler;
 	checkRequest.onsuccess = function(event){
-		console.log("checkRequest onsuccess");//DEV
-		event.target.transaction.db.close();
+		//DEV console.log("checkRequest onsuccess");
+        if (event.target.transaction) {
+          event.target.transaction.db.close();
+        }
 
 		if (!event.target.result){
 			// keine ID 1 vorhanden, SETTINGS schreiben:
@@ -679,8 +683,10 @@ function SettingsRequest(event, id, bezeichnung, callback){
 		
 	};
 	checkRequest.oncomplete = function(event){
-		console.log("checkRequest oncomplete");//DEV
-		event.target.transaction.db.close();
+		//DEV console.log("checkRequest oncomplete");
+        if (event.target.transaction) {
+          event.target.transaction.db.close();
+        }
 	};
 
 

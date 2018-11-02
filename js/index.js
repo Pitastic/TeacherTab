@@ -5,7 +5,6 @@ datum uniqueClassID compareKlassen change_buttons closeListener formLeistung sli
 db_neueKlasse db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData db_readGeneric
 checkAuth testCreds sync_deleteKlasse sync_pushBack sync_getKlasse sync_getAccount*/
 
-//$(document).ready(function() {
 window.addEventListener('load', function () {
 
 	// Style and Listeners

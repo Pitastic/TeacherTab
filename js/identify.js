@@ -194,15 +194,12 @@ function prepareDevice() {
 	localStorage.setItem("DEVICE", JSON.stringify(DEVICE));
 
 	// IDB Shim (hinterlegen bis Shim geladen)
-	// DEV ---
-	DEVICE['noidx'] = 'ios9';
-	// DEV ---
-
 	if (DEVICE['noidx'] == 'ios9') {
-		passJs("/js/frameworks/indexeddbshim-ios9.min.js", function(){
+		passJs("/js/frameworks/indexeddbshim-ios9.js", function(){
 			console.log("IDENTIFY: idb-ios9-shim loaded");
 			window.shimIndexedDB.__useShim();
 			window.shimIndexedDB.__debug(true);
+			window.SHIMindexedDB = window.shimIndexedDB;
 		});
 	}else if (DEVICE['noidx']){
 		passJs("/js/frameworks/babel_polyfill.min.js",function(){
@@ -210,6 +207,7 @@ function prepareDevice() {
 				console.log("IDENTIFY: idbshim loaded");
 				window.shimIndexedDB.__useShim();
 				window.shimIndexedDB.__debug(true);
+				window.SHIMindexedDB = window.shimIndexedDB;
 			});
 		});
 	}
@@ -234,13 +232,6 @@ function prepareDevice() {
 			touchSlider();
 			noTouchThisSlider(); // touch-friendly-Buttons
 		});
-		/*
-		window.onload = function () {
-			touchScroller();
-			touchSlider();
-			noTouchThisSlider(); // touch-friendly-Buttons
-		};
-		*/
 
 	}
 

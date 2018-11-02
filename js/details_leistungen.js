@@ -5,7 +5,6 @@ closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareS
 db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
 sync_deleteKlasse sync_pushBack sync_getKlasse*/
 
-//$(document).ready(function() {
 window.addEventListener('load', function () {
 
 	// Event-Listener

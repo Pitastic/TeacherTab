@@ -37,14 +37,6 @@ $(document).ready(function() {
 	// Init Vars
 	GLOBALS.noSyncCols = ["vorjahr"];
 
-	/*	
-	// Device ist KEIN Phone
-	//GLOBALS.isPhone = sessionStorage.getItem('isPhone');
-	if (!GLOBALS.isPhone) {
-		window.addEventListener('orientationchange', changeOrientation);
-	}
-	*/
-
 	// Not the First Time ?
 	if (localStorage.getItem('TeacherTab')){
 		// DB Support und Init
