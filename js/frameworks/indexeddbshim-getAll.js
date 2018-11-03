@@ -1,3 +1,6 @@
+// --- getAll Shim !
+// Zum Anhängen an Shim-Module beim packen
+
 "use strict";
 
 // http://stackoverflow.com/a/33268326/786644 - works in browser, worker, and Node.js
