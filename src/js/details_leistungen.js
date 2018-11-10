@@ -808,18 +808,17 @@ function item2Save(bol_kat, Bezeichnung, bol_refresh){
 
 		// Animationen
 		document.getElementById('item2details').classList.remove('show');
-		//document.getElementById('arbeit_info').classList.add('hide');
 
-		handleSchnitt(function(){
-			if (bol_refresh){
-				slide1('item2details', "details_leistungen.htm");
-			}else if (sessionStorage.getItem('jump_id')) {
-				sessionStorage.removeItem('jump_id');
-				slide1('item2details', "details_students.htm");
-			}else{
-				slide1('item2details', "uebersicht.htm");
-			}
-		});
+		//handleSchnitt(function(){
+		if (bol_refresh){
+			slide1('item2details', "details_leistungen.htm");
+		}else if (sessionStorage.getItem('jump_id')) {
+			sessionStorage.removeItem('jump_id');
+			slide1('item2details', "details_students.htm");
+		}else{
+			slide1('item2details', "uebersicht.htm");
+		}
+		//});
 
 	}, newObs);
 }

@@ -195,7 +195,7 @@ function prepareDevice() {
 
 	// IDB Shim (hinterlegen bis Shim geladen)
 	if (DEVICE['noidx'] == 'ios9') {
-		passJs("/js/frameworks/indexeddbshim-ios9.pack.js", function(){
+		passJs("/js/frameworks/indexeddbshim-ios9.js", function(){
 			console.log("IDENTIFY: idb-ios9-shim loaded");
 			// in SHIM: use und define;
 		});

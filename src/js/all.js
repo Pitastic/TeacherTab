@@ -859,7 +859,7 @@ function klassenSyncHandler(location, newWindow){
 		
 		progress += 50; // Statusbar
 		updateStatus(progress, "Serverdaten anfordern", "Synchronisiere...");
-		console.log("DEV: kurz vor sync_getKlasse");
+		//DEV console.log("DEV: kurz vor sync_getKlasse");
 		
 		sync_getKlasse(function(mergedKlasse) {
 
