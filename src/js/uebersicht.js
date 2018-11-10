@@ -206,13 +206,13 @@ function listLeistung(results){
 
 // neuer Schüler (einzeln)
 function addStudent(el){
-	var vName = this.vName.value;
-	var nName = this.nName.value;
+	var vName = document.getElementById('vName').value;
+	var nName = document.getElementById('nName').value;
 	
 	db_addDocument(function(e){
 		popUpClose(el);
-		this.vName.value = '';
-		this.nName.value = '';
+		document.getElementById('vName').value = '';
+		document.getElementById('nName').value = '';
 		db_readMultiData(listStudents, "student");
 	}, formStudent(vName, nName));
 
