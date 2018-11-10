@@ -33,7 +33,8 @@ var GLOBALS = {
 
 var SETTINGS;
 
-$(document).ready(function() {
+//$(document).ready(function() {
+window.addEventListener('load', function () {
 	// Init Vars
 	GLOBALS.noSyncCols = ["vorjahr"];
 

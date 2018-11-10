@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version: 1.0.16
+# Version: 1.0.20
 
 CACHE:
 
@@ -66,16 +66,16 @@ CACHE:
 ./js/sync.js
 ./js/touch.js
 ./js/uebersicht.js
-./js/crypto-js-v3.1.2/rollups/aes.js
-./js/crypto-js-v3.1.2/rollups/sha1.js
-./js/jsflot/jquery.flot.min.js
-./js/jsflot/jquery.flot.pie.min.js
-./js/jsflot/jquery.flot.categories.min.js
-./js/jsflot/jquery.flot.valuelabels.js
-./js/frameworks/jquery-3.3.1.min.js
-./js/frameworks/indexeddbshim.min.js
+./js/frameworks/crypto-js/aes.js
+./js/frameworks/crypto-js/sha1.js
+./js/frameworks/jsflot/jquery.flot.min.js
+./js/frameworks/jsflot/jquery.flot.pie.min.js
+./js/frameworks/jsflot/jquery.flot.categories.min.js
+./js/frameworks/jsflot/jquery.flot.valuelabels.js
+./js/frameworks/jquery.min.js
 ./js/frameworks/babel_polyfill.min.js
-
+./js/frameworks/indexeddbshim.min.js
+./js/frameworks/indexeddbshim-ios9.pack.js
 
 NETWORK:
 *
