@@ -137,7 +137,7 @@ function handle_orientation_landscape(evt) {
 // -- Buttons
 function change_Buttons() {
 	// Buttons wurden hier noch nicht geladen
-	window.onload(function(){
+	window.addEventListener('onload', function(){
 		var buttons = {
 			"btn_Add" : "&#65291;",
 			"btn_Delete" : "&#10006;",
