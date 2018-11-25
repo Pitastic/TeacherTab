@@ -43,16 +43,16 @@ Panels allgemein
 .styleWrap {
 	margin: 1em 0.5em;
 }
-.indexBox, .Werbung {
-	text-align: center;
-	padding: 0.5em 0.25em;
-}
-	.indexBox span {
-		display: block;
-		font-size: 0.75em;
+	#item0 .styleWrap {
+		margin: 0.75em;
+		padding: 1em !important;
 	}
-	#syncOpen {margin: auto auto 1em;}	
 
+.indexBox span {
+	display: block;
+	font-size: 0.75em;
+	margin: 35px -10px 0 -10px !important;
+}
 .content {
 	padding-bottom: 5em;
 }
@@ -95,16 +95,23 @@ select {
 	display: block;
 	margin: 1em auto;
 	padding: 5px; padding-right: 20px;
-	font-size: 0.8em;
 	overflow: hidden;
+	/*
 	width: 90%;
+	font-size: 0.8em;
+	*/
 }
+
 .indexBox .button {
 	display: block;
-	width: 50%;
-	margin: auto; margin-bottom: 1em;
 	text-align: center;
+	width: 100% !important;
+	margin-left: 0; margin-right: 0;
+	padding-left: 0; padding-right: 0;
 }
+
+#syncOpen {margin: auto auto 1em;}	
+
 #btn_Delete {
 	padding: 1em 1.25em;
 	margin-top: -0.5em; margin-bottom: -0.5em;
@@ -146,4 +153,15 @@ select {
 	padding-left: 0; padding-right: 0;
 	width: 20%;
 	margin: 0 1%;
+}
+
+/*
+===============================================================================
+einzelne, spezielle Elemente
+===============================================================================
+*/
+
+#AuthStatus .statusText {
+	margin-left: -1em;
+	margin-right: -1em;
 }
