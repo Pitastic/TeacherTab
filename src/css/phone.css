@@ -24,13 +24,36 @@ h2 {display: none;}
 Header und Footer Leiste
 ===============================================================================
 */
+#header, nav{
+	position: fixed;
+	left: 0; right: 0;
+	z-index: 10;
+	text-align: center;
+	height: auto;
+	background: url(../img/back_tisch.jpg) center center;
+	border-style: solid;
+	border-color: #2c2c2c;
+}
+
+#header{
+	top: 0;
+	padding: 25px 0;
+	box-shadow: inset 0 -13px 20px -5px #eeeeee, 0 0 10px 1px #2c2c2c;
+	border-bottom-width: 1px;
+}
+	#header h1{
+		float: none;
+		padding: 0; margin: 0;
+		font-size: 25px;
+		line-height: 25px;
+	}
 
 /* nav */
 nav {
 	padding: 1em 0;
-	position: fixed;
-	bottom: 0; left: 0; right: 0;
-	background-color: rgba(0,0,0,0.7);
+	bottom: 0;
+	box-shadow: inset 0 13px 20px -5px #eeeeee, 0 0 10px 1px #2c2c2c;
+	border-top-width: 1px;
 }
 	.centerWrap-child {
 		text-align: center;
@@ -47,6 +70,9 @@ Panels allgemein
 		margin: 0.75em;
 		padding: 1em !important;
 	}
+	#item0 .styleWrap:last-child {
+		margin-bottom: 100px !important;
+	}
 
 .indexBox span {
 	display: block;
@@ -54,7 +80,12 @@ Panels allgemein
 	margin: 35px -10px 0 -10px !important;
 }
 .content {
+	top: 0;
 	padding-bottom: 5em;
+}
+
+.uebersicht {
+	top: 75px;
 }
 
 

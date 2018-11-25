@@ -346,13 +346,11 @@ Index - Startseite
 
 	#item0 .styleWrap:nth-child(3) {
 		padding: 0;
-		top: 270px; left: 0; right: 52%;
-		height: 230px;
+		left: 0; right: 52%;
 	}
 	#item0 .styleWrap:nth-child(4) {
 		padding: 0;
-		top: 270px; left: 52%; right: 30px;
-		height: 230px;
+		left: 52%; right: 30px;
 	}
 
 		#item0 .styleWrap:nth-child(3) .indexBox, #item0 .styleWrap:nth-child(4) .indexBox {
