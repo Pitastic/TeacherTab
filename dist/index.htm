@@ -65,7 +65,7 @@
 
 		<div class="styleWrap">
 			<div id="indexKlassen" class="indexBox">
-				Liste aller verfügbaren Klassen
+				<p>Liste aller verfügbaren Klassen</p>
 				<form>
 				<select id="klasseSelect" onchange="klassenAuswahl(this)">
 				<option>Lade...</option>
@@ -83,6 +83,7 @@
 				<div class="cell">
 					<a class="button stay" href="#" title="Grundeinstellungen" onclick="popUp('item0First')">Grundeinstellungen</a>
 					<a class="button HELP stay" href="https://my.teachertab.de" title="Hilfe" target="_blank">My.TeacherTab.de</a>
+					<a href="#" class="stay" id="btn_refresh" onclick="window.location.reload();"><img src="/img/reload_button.gif"></a>
 				</div class="cell">
 			</div>
 		</div>
@@ -317,7 +318,6 @@
 		<div class="clearer"></div>
 	</div>
 	</div>
-	<div id="btn_refresh" class="button"><a href="#" class="stay" onclick="window.location.reload();"><img src="/img/reload_button.gif"></a></div>
 </nav>
 
 <div id="footer"></div>
