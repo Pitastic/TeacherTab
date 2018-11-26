@@ -162,9 +162,8 @@ select {
 }
 
 #btn_refresh {
-    position: fixed;
-	margin: 0; padding: 0;
-    right: 30px; top: 45px;
+	display: block;
+	margin: auto;
     width: 35px; height: 35px;
 	border-radius: 25px;
 	}
@@ -175,7 +174,7 @@ select {
         width: 25px; height: 25px;
     }
     #btn_refresh img {
-        margin-left: 0;
+		margin: 7px 0 0 0;        
         width: 20px;
         height: 20px;
     }

@@ -347,10 +347,12 @@ Index - Startseite
 	#item0 .styleWrap:nth-child(3) {
 		padding: 0;
 		left: 0; right: 52%;
+		top: 275px;
 	}
 	#item0 .styleWrap:nth-child(4) {
 		padding: 0;
 		left: 52%; right: 30px;
+		top: 275px;
 	}
 
 		#item0 .styleWrap:nth-child(3) .indexBox, #item0 .styleWrap:nth-child(4) .indexBox {
@@ -397,10 +399,12 @@ Index - Startseite
 		text-align: center;
 		line-height: 1.3em;
 	}
-		#item0 .styleWrap p {
-			margin-top: 20px;
-			text-align: justify;
-		}
+	/*
+	#item0 .styleWrap p {
+		margin-top: 20px;
+		text-align: justify;
+	}
+	*/
 	.indexBox form {
 		margin-top: 30px;
 	}

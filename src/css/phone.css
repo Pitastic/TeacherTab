@@ -1,7 +1,7 @@
 /* Background */
 html, body {
 	background: url(/img/back_tisch.jpg) top left repeat;
-	background-size: 767px 250px;
+	background-size: 640px auto;
 	line-height: 1.25em;
 	}
 
@@ -30,7 +30,8 @@ Header und Footer Leiste
 	z-index: 10;
 	text-align: center;
 	height: auto;
-	background: url(../img/back_tisch.jpg) center center;
+	background-size: 390px auto;
+	background: url(../img/back_tisch.jpg) top center;
 	border-style: solid;
 	border-color: #2c2c2c;
 }
@@ -38,7 +39,7 @@ Header und Footer Leiste
 #header{
 	top: 0;
 	padding: 25px 0;
-	box-shadow: inset 0 -13px 20px -5px #eeeeee, 0 0 10px 1px #2c2c2c;
+	box-shadow: inset 0 -15px 30px -15px #eeeeee, 0 0 10px 1px #2c2c2c;
 	border-bottom-width: 1px;
 }
 	#header h1{
@@ -52,7 +53,7 @@ Header und Footer Leiste
 nav {
 	padding: 1em 0;
 	bottom: 0;
-	box-shadow: inset 0 13px 20px -5px #eeeeee, 0 0 10px 1px #2c2c2c;
+	box-shadow: inset 0 8px 30px -8px #eeeeee, 0 0 10px 1px #2c2c2c;
 	border-top-width: 1px;
 }
 	.centerWrap-child {
@@ -64,28 +65,33 @@ Panels allgemein
 ===============================================================================
 */
 .styleWrap {
-	margin: 1em 0.5em;
+	margin: 0 1em !important; padding: 1em 0 !important;
+	background: none;
+	border: 1px solid rgb(230,230,230);
+	border-width: 0 0 1px 0;
 }
-	#item0 .styleWrap {
-		margin: 0.75em;
-		padding: 1em !important;
-	}
-	#item0 .styleWrap:last-child {
-		margin-bottom: 100px !important;
+	#item0 .styleWrap:nth-child(4) {
+		overflow: visible;
+		border: none;
 	}
 
 .indexBox span {
 	display: block;
 	font-size: 0.75em;
-	margin: 35px -10px 0 -10px !important;
+	margin: 0 !important;
 }
 .content {
 	top: 0;
-	padding-bottom: 5em;
+	margin: 0 0.5em;
+	padding-bottom: 150px;
+	border-style: solid;
+	border-color: rgb(230,230,230);
+	border-width: 0 2px 0 2px;
+	background: rgba(226,226,226,0.7);
 }
 
 .uebersicht {
-	top: 75px;
+	top: 75px; /* padding + lineheight in header*/
 }
 
 
@@ -191,7 +197,8 @@ select {
 einzelne, spezielle Elemente
 ===============================================================================
 */
-
+#indexKlassen p{display: none;}
+#AuthStatus h4 {display: none;}
 #AuthStatus .statusText {
 	margin-left: -1em;
 	margin-right: -1em;
