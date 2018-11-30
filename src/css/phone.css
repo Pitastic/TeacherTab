@@ -65,21 +65,33 @@ Panels allgemein
 ===============================================================================
 */
 .styleWrap {
+    position: static !important;
 	margin: 0 1em !important; padding: 1em 0 !important;
-	background: none;
-	border: 1px solid rgb(230,230,230);
-	border-width: 0 0 1px 0;
 }
-	#item0 .styleWrap:nth-child(4) {
+
+    #item0 .styleWrap {overflow: visible !important;}
+
+.indexBox {
+    position: static;
+    padding: 20px 10px;
+	border-width: 0 0 1px 0;
+    background: none;
+    min-height: 100px;
+}
+	#item0 .indexBox:nth-child(3) {
 		overflow: visible;
 		border: none;
 	}
 
 .indexBox span {
+    position: static;
 	display: block;
 	font-size: 0.75em;
-	margin: 0 !important;
+	margin-top: 1em;
 }
+    .indexBox span:last-child::before {content: "( ";}
+    .indexBox span:last-child::after {content: " )";}
+
 .content {
 	top: 0;
 	margin: 0 0.5em;
