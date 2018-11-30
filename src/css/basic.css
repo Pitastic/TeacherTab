@@ -59,6 +59,9 @@ html, body {
     font-weight: bold !important;
 }
 
+.table {display: table; width: 100%; height: 100%;}
+.cell {display: table-cell; vertical-align: middle;}
+
 
 /* ============== Blendelemente =============== */
 .hide {
@@ -72,7 +75,8 @@ html, body {
 }
 
 
-.styleWrap {
+.styleWrap, .indexBox {
+    padding: 20px;
     border: 2px solid rgb(230,230,230);
     border-radius: 3px;
     background: rgba(226,226,226,0.7);
