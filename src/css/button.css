@@ -287,7 +287,7 @@ select {
 	nav a, nav .button {
 		display: initial;
 		margin: 15px 20px; margin-bottom: 10px;
-		float: right;
+		float: left;
 	}
 	nav .button.selector {
 		float: left;
