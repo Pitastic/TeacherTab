@@ -117,7 +117,7 @@ PopUp Fenster
 */
 .popUp {
 	left: 5%; right: 5%;
-	padding: 10px 5px;
+	padding: 3.5em 5px;
 	background: transparent;
 	box-shadow: none;
 	border: none !important;
@@ -133,9 +133,9 @@ PopUp Fenster
 	color: #FFF;
 }
 	.close a {
-		top: -40px; bottom: initial;
+		top: 0; bottom: initial;
 		right: 5px; left: 5px;
-		padding: 0.5em 0;
+		padding: 0.75em 0;
 		width: auto; height: inherit;
 		line-height: normal;
 		font-size: inherit;
@@ -143,20 +143,18 @@ PopUp Fenster
 		color: rgb(255, 0, 0);
 		border: 2px solid rgb(255, 0, 0);
 		border-width: 1px 1px 1px 1px;
+		border-radius: 2em;
 		box-shadow: none;
 	}
 	.popUp div:last-child{
-		position: absolute;
-		bottom: 4em;
-		left: 5px; right: 5px;
-		border: 2px solid rgb(0,255,0);
-		border-radius: 2em;
 	    text-align: center;
+		margin-top: 1.5em;
 	}
 
 .showPop {
-	top: 0;
-	bottom: 0;
+	top: -2.5em;
+	bottom: 1em;
+	overflow-x: auto;
 }
 
 /*
@@ -196,17 +194,11 @@ nav .button {
 	font-weight: bold;
     color: #fff !important;
     text-shadow: 0 0 2px #000;
-	/* 
-	border: 1px solid silver !important;
-	border-radius: 0;
-	border-width: 0 1px 0 0 !important;
-	*/
 }
 	nav .button:active {
 		background: rgba(0,0,0,0.25) !important;
     	border-radius: 20px !important;
 	}
-	/* nav .button:last-of-type {border-width: 0 !important;} */
 
 
 #syncOpen {margin: auto auto 1em;}	
@@ -230,11 +222,12 @@ nav .button {
 	/* background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%); */
 }
 .popUp .button {
-	padding-left: 0; padding-right: 0;
-	margin: 0;
-	width: auto;
+	padding-left: 3%; padding-right: 3%;
+	margin: 0 2%;
 	background: transparent !important;
-	border: none !important;
+	border: 2px solid rgb(0,255,0);
+	border-radius: 2em;
+	color: rgb(0,255,0);
 }
 
 /*
