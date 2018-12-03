@@ -48,16 +48,16 @@ Panels allgemein
 	left: 50%;
 }
 
+#item0 .styleWrap, #item1 .styleWrap, #item2 .styleWrap, #item1details .styleWrap, #item2details .styleWrap, #item1setting .styleWrap {
+	position: absolute;
+	top: 0; bottom: 110px; right: 30px; left: 30px;
+}
 
 /*
 ===============================================================================
 Index - Startseite
 ===============================================================================
 */
-#item0 .styleWrap, #item1 .styleWrap, #item2 .styleWrap, #item1details .styleWrap, #item2details .styleWrap, #item1setting .styleWrap {
-	position: absolute;
-	top: 0; bottom: 110px; right: 30px; left: 30px;
-}
 .indexBox{
     position: relative;
     top: auto !important; bottom: auto !important; left: auto !important; right: auto !important;

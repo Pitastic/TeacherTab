@@ -57,7 +57,14 @@ nav {
 	/* box-shadow: inset 0 8px 30px -8px #eeeeee, 0 0 10px 1px #2c2c2c; */
 	box-shadow: inset 0 20px 20px -20px #eeeeee, 0 0 10px 1px #2c2c2c;
 	border-top-width: 1px;
+	height: auto;
+	width: 100%;
+	text-align: center;
 }
+	nav .clearer {
+		display: block;
+		clear: both;
+	}
 	.centerWrap-child {
 		width: 100%;
 		text-align: center;
