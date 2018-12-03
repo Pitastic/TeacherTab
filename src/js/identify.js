@@ -164,8 +164,8 @@ function change_Buttons() {
 	// Buttons wurden hier noch nicht geladen
 	window.addEventListener('load', function () {
 		var buttons = {
-			"btn_Add": "&#65291;",
-			"btn_Delete": "&#10006;",
+			"btn_Add": "&star;",
+			"btn_Delete": "&bigotimes;",
 			"export": "&#8675;",
 			"import": "&#8673;",
 		};
