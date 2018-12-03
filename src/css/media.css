@@ -1,0 +1,138 @@
+@media (orientation:portrait) {
+
+/*
+===============================================================================
+Header und Footer Leiste
+===============================================================================
+*/
+#header {
+	left: 30px;
+}
+.notenHeader {
+	position: absolute;
+	top: 52px; bottom: initial;
+	right: 0; left: 0px;
+	text-align: center;
+}
+nav {
+	height: auto;
+	width: 100%;
+	text-align: center;
+	bottom: 0px;
+}
+nav .clearer {
+	display: block;
+	clear: both;
+}
+
+
+/*
+===============================================================================
+Panels allgemein
+===============================================================================
+*/
+.content {
+	margin: 0;
+}
+.centerWrap-child {
+	display: inline-block;
+	position: relative;
+	text-align: left;
+}
+.centerWrap-child .styleWrap {
+	padding: 0;
+	border: 2px solid rgb(230,230,230);
+	border-bottom: 0;
+	border-radius: 3px 3px 0 0;
+	position: relative;
+	left: 50%;
+}
+
+
+/*
+===============================================================================
+Index - Startseite
+===============================================================================
+*/
+#item0 .styleWrap, #item1 .styleWrap, #item2 .styleWrap, #item1details .styleWrap, #item2details .styleWrap, #item1setting .styleWrap {
+	position: absolute;
+	top: 0; bottom: 110px; right: 30px; left: 30px;
+}
+.indexBox{
+    position: relative;
+    top: auto !important; bottom: auto !important; left: auto !important; right: auto !important;
+    margin-top: 3%;
+    padding-top: 2%; padding-bottom: 2%;
+    height: 27.33333%;
+    min-height: auto !important;
+    max-height: initial !important;
+}
+.indexBox:first-child{margin-top: 0;}
+
+
+/*
+===============================================================================
+Details Leistungen (item2details)
+===============================================================================
+*/
+.styleWrap.arbeit_info {
+	margin-right: 66%;
+	width: auto;
+}
+.styleWrap.arbeit_leistung {
+	margin-left: 33%;
+}
+#arbeit_info {
+	left: 30px
+}
+#diag_Mitschreiber {
+	height: 140px;
+}
+#arbeit_info .bottom {
+	padding-top: 20px;
+}
+	#arbeit_info .bottom {
+		margin-top: 20px;
+		}
+#diag_AnzahlNoten {
+	width:500px;
+}
+#arbeit_leistung ul li {
+	text-align: left;
+}
+	#arbeit_leistung div.Name {
+		float: none;
+		margin: 0; margin-bottom: 5px;
+		padding: 3px;
+		display: block;
+		width: inherit;
+	}
+	div.Kategorien {
+		padding: 0.75% !important;
+		margin: 0 1% !important;
+		width: 16%;
+	}
+		div.Kategorien:nth-child(2) {
+			margin-left: 0 !important;
+		}
+		div.Kategorien:nth-child(6) {
+			margin-right: 0 !important;
+			position: absolute;
+			right: 1%;
+		}
+	#arbeit_leistung div.Note {
+		margin: 0; padding: 0;
+		margin-top: -40px;
+		margin-right: 1%;
+	}
+		#arbeit_leistung div.Note.standalone {
+				margin-top: -37px; /*nur einzeilig -3px padding v. .Name*/
+		}
+	#arbeit_leistung div.Gesamtpunkte {
+		float: right;
+		margin-top: -37px; /*nur einzeilig -3px padding v. .Name*/
+		margin-right: 80px;
+	}
+
+
+}

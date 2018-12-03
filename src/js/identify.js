@@ -6,6 +6,12 @@
 var DEV_LOG1 = "";
 var CACHE = "tt_webapp_v1";
 var DEVICE;
+var STYLES = [
+	"/css/basic.css",
+	"/css/main.css",
+	"/css/popup.css",
+	"/css/button.css",
+];
 
 
 var GLOBALS = {
@@ -220,6 +226,16 @@ function prepareDevice() {
 	console.log("IDENTIFY: (prepare) Device is:", DEVICE);
 	localStorage.setItem("DEVICE", JSON.stringify(DEVICE));
 
+	// Load standard styles
+	// -- add Medias
+	if (DEVICE['type'] != "mobile") {
+		STYLES.push("/css/media.css");
+	}
+	// -- pass to DOM
+	for (var index = 0; index < STYLES.length; index++) {
+		passCss( STYLES[index] );
+	}
+
 	// IDB Shim (hinterlegen bis Shim geladen)
 	if (DEVICE['noidx'] == 'ios9') {
 		passJs("/js/frameworks/indexeddbshim-ios9.pack.js", function () {
@@ -262,18 +278,18 @@ function prepareDevice() {
 
 	// Scripts und CSS
 	switch (DEVICE['type']) {
-		case "mobile":
-			// Lade CSS und Buttons für Smartphone
-			passCss("/css/phone.css");
-			change_Buttons();
-			break;
+	case "mobile":
+		// Lade CSS und Buttons für Smartphone
+		passCss("/css/phone.css");
+		change_Buttons();
+		break;
 
-		case "tablet":
-			// Lade CSS und Buttons für Tablet
-			break;
+	case "tablet":
+		// Lade CSS und Buttons für Tablet
+		break;
 
-		default: // Desktop
-			break;
+	default: // Desktop
+		break;
 	}
 
 	// Cache
