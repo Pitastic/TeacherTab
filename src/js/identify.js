@@ -233,7 +233,7 @@ function prepareDevice() {
 	}
 	// -- pass to DOM
 	for (var index = 0; index < STYLES.length; index++) {
-		passCss( STYLES[index] );
+		passCss(STYLES[index]);
 	}
 
 	// IDB Shim (hinterlegen bis Shim geladen)
@@ -256,16 +256,22 @@ function prepareDevice() {
 	// JS Shim
 	if (DEVICE['nojs'] && !DEVICE['noidx']) { passJs("/js/frameworks/babel_polyfill.min.js"); }
 
-	// Touch und Orientation
-	if (DEVICE['touch']) {
-
-		// Orientation / Seitenverhältnisse
+	// Orientation / Seitenverhältnisse
+	if (DEVICE['type'] == 'tablet') {
 
 		var isLandscape = "(orientation: landscape)";
 		var checkOrientation = window.matchMedia(isLandscape);
 
 		handle_orientation_landscape(checkOrientation);
 		checkOrientation.addListener(handle_orientation_landscape);
+
+	} else if (DEVICE['type'] == 'mobile') {
+		handle_orientation_landscape(false);
+	}
+
+
+	// Touch Listener
+	if (DEVICE['touch']) {
 
 		// add Touchscreen Handlers
 		passJs("/js/touch.js", function () {
@@ -278,18 +284,18 @@ function prepareDevice() {
 
 	// Scripts und CSS
 	switch (DEVICE['type']) {
-	case "mobile":
-		// Lade CSS und Buttons für Smartphone
-		passCss("/css/phone.css");
-		change_Buttons();
-		break;
+		case "mobile":
+			// Lade CSS und Buttons für Smartphone
+			passCss("/css/phone.css");
+			change_Buttons();
+			break;
 
-	case "tablet":
-		// Lade CSS und Buttons für Tablet
-		break;
+		case "tablet":
+			// Lade CSS und Buttons für Tablet
+			break;
 
-	default: // Desktop
-		break;
+		default: // Desktop
+			break;
 	}
 
 	// Cache
