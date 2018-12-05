@@ -170,14 +170,18 @@ function change_Buttons() {
 	// Buttons wurden hier noch nicht geladen
 	window.addEventListener('load', function () {
 		var buttons = {
+			"btn_Back": "",
 			"btn_Add": "&star;",
 			"btn_Delete": "&bigotimes;",
 			"export": "&#8675;",
 			"import": "&#8673;",
+			"btn_Settings": "&#9881;"
 		};
 		for (var key in buttons) {
 			var oldButton = document.getElementById(key);
-			oldButton.innerHTML = buttons[key] + "<br>" + oldButton.innerText;
+			if (oldButton) {
+				oldButton.innerHTML = (buttons[key]) ? buttons[key] + "<br>" + oldButton.innerText : "";
+			}
 		}
 	});
 }

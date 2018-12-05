@@ -232,9 +232,31 @@ nav .button {
 		background: rgba(0,0,0,0.25) !important;
     	border-radius: 20px !important;
 	}
+	nav .selector, #btn_Back {
+		position: static;
+		padding: 0 !important;
+		width: 24%;
+		margin-bottom: -1em !important;
+	}
+		nav .selector .marker {
+			position: static;
+			display: block;
+			background-image: url(/img/slider.png);
+			background-color: transparent;
+			border: none;
+		}
+		.selector .marker:active, .selector .marker:focus {background-image: url(/img/slider.png);}
 
 
 #syncOpen {margin: auto auto 1em;}	
+
+#btn_Back {
+	background-image: url(/img/reload_button.gif) !important;
+	background-repeat: no-repeat !important;
+	background-position: center center !important;
+	background-size: contain !important;
+	height: 4.5em;
+}
 
 #btn_Delete {
 	/* background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%); */
@@ -247,9 +269,6 @@ nav .button {
 }
 #import {
 	/* background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%); */
-}
-#btn_Back {
-	/* background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%); */
 }
 #btn_Settings {
 	/* background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%); */

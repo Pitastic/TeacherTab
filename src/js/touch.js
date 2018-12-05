@@ -6,8 +6,8 @@ var slideBeginY;
 
 function touchScroller() {
 	// Prevent Bumping/Scrolling
-	var outerScroll = document.getElementsByClassName('content');
-	if (outerScroll[0].className.split(" ").indexOf("scrollable") != -1) {
+	var outerScroll = document.getElementsByClassName('content')[0];
+	if (outerScroll.className.split(" ").indexOf("scrollable") != -1) {
 		outerScroll = document.getElementById("item0");
 	}
 	outerScroll.addEventListener("touchmove", function (e) { e.preventDefault(); });
