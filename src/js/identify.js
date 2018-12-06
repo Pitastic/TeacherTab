@@ -170,7 +170,7 @@ function change_Buttons() {
 	// Buttons wurden hier noch nicht geladen
 	window.addEventListener('load', function () {
 		var buttons = {
-			"btn_Back": "",
+			"btn_Back": "&#10687",
 			"btn_Add": "&star;",
 			"btn_Delete": "&bigotimes;",
 			"export": "&#8675;",
@@ -288,18 +288,18 @@ function prepareDevice() {
 
 	// Scripts und CSS
 	switch (DEVICE['type']) {
-		case "mobile":
-			// Lade CSS und Buttons für Smartphone
-			passCss("/css/phone.css");
-			change_Buttons();
-			break;
+	case "mobile":
+		// Lade CSS und Buttons für Smartphone
+		passCss("/css/phone.css");
+		change_Buttons();
+		break;
 
-		case "tablet":
-			// Lade CSS und Buttons für Tablet
-			break;
+	case "tablet":
+		// Lade CSS und Buttons für Tablet
+		break;
 
-		default: // Desktop
-			break;
+	default: // Desktop
+		break;
 	}
 
 	// Cache

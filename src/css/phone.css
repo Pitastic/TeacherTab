@@ -232,7 +232,8 @@ nav .button {
 		background: rgba(0,0,0,0.25) !important;
     	border-radius: 20px !important;
 	}
-	nav .selector, #btn_Back {
+	/* nav .selector, #btn_Back { */
+	nav .selector {
 		position: static;
 		padding: 0 !important;
 		width: 24%;
@@ -249,15 +250,15 @@ nav .button {
 
 
 #syncOpen {margin: auto auto 1em;}	
-
+/* 
 #btn_Back {
-	background-image: url(/img/reload_button.gif) !important;
+	background-image: url(/img/poweroff.png) !important;
 	background-repeat: no-repeat !important;
 	background-position: center center !important;
 	background-size: contain !important;
 	height: 4.5em;
 }
-
+ */
 #btn_Delete {
 	/* background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%); */
 }
