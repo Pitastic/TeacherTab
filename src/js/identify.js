@@ -173,6 +173,8 @@ function change_Buttons() {
 			"btn_Back": "&#10687",
 			"btn_Add": "&star;",
 			"btn_Delete": "&bigotimes;",
+			"Abbrechen": "&bigotimes;",
+			"Save": "&#128190;",
 			"export": "&#8675;",
 			"import": "&#8673;",
 			"btn_Settings": "&#9881;"
@@ -288,18 +290,18 @@ function prepareDevice() {
 
 	// Scripts und CSS
 	switch (DEVICE['type']) {
-	case "mobile":
-		// Lade CSS und Buttons für Smartphone
-		passCss("/css/phone.css");
-		change_Buttons();
-		break;
+		case "mobile":
+			// Lade CSS und Buttons für Smartphone
+			passCss("/css/phone.css");
+			change_Buttons();
+			break;
 
-	case "tablet":
-		// Lade CSS und Buttons für Tablet
-		break;
+		case "tablet":
+			// Lade CSS und Buttons für Tablet
+			break;
 
-	default: // Desktop
-		break;
+		default: // Desktop
+			break;
 	}
 
 	// Cache

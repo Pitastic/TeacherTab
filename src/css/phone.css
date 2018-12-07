@@ -283,6 +283,28 @@ nav .button {
 	color: rgb(0,255,0);
 }
 
+
+/*
+===============================================================================
+Settings
+===============================================================================
+*/
+#form_Notenverteilung label {
+	display: inline-block;
+	margin-left: 0;
+}
+#form_KompNamen label, #form_Gewichtung label {
+	display: block;
+	width: 100%;
+	margin-left: 0;
+}
+#form_KompNamen input, #form_Notenverteilung input {width: auto;}
+#form_Gewichtung input {
+    width: 33%;
+    display: inline-block;
+	margin: auto;
+}
+
 /*
 ===============================================================================
 einzelne, spezielle Elemente
