@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version: 1.0.20
+# Version: 1.0.22
 
 CACHE:
 
@@ -14,6 +14,7 @@ CACHE:
 ./css/button.css
 ./css/export.css
 ./css/main.css
+./css/media.css
 ./css/phone.css
 ./css/plot.css
 ./css/popup.css
