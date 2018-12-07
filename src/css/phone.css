@@ -154,7 +154,7 @@ PopUp Fenster
 	}
 		.popUp select {
 			width: 100%;
-			margin: 0.5em 0;
+			margin: 0.5em 0 !important;
 		}
 		.popUp label {
 			font-weight: normal;
@@ -250,15 +250,16 @@ nav .button {
 
 
 #syncOpen {margin: auto auto 1em;}	
-/* 
+
 #btn_Back {
 	background-image: url(/img/poweroff.png) !important;
 	background-repeat: no-repeat !important;
 	background-position: center center !important;
 	background-size: contain !important;
-	height: 4.5em;
+	height: 1em;
+	margin-bottom: -0.5em !important;
 }
- */
+ 
 #btn_Delete {
 	/* background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%); */
 }
@@ -303,6 +304,19 @@ Settings
     width: 33%;
     display: inline-block;
 	margin: auto;
+}
+
+/*
+===============================================================================
+Uebersicht
+===============================================================================
+*/
+#item1Add textarea, #item0Import textarea {
+	height: 200px;
+}
+.trennzeichen {
+	text-align: center !important;
+	float: none !important;
 }
 
 /*

@@ -55,10 +55,10 @@
 			<h3 class="schr">(schr)</h3>
 		</div>
 
-		<div class="content emptyList">
+		<div class="content emptyList scrollable">
 
 			<h2>Schüler</h2>
-			<div class="styleWrap scrollable">
+			<div class="styleWrap">
 
 				<div id="listStudents">
 					<ul></ul>
@@ -72,10 +72,10 @@
 
 	<!-- Übersicht Leistungen -->
 	<div id="item2" class="uebersicht flip">
-		<div class="content">
+		<div class="content scrollable">
 			<h2>Leistungen</h2>
 			<p>
-				<div class="styleWrap scrollable">
+				<div class="styleWrap">
 					<div id="listLeistung">
 
 						<h4>Mündliche Noten</h4>
@@ -110,14 +110,16 @@
 						<li><textarea placeholder="Namen (mehrfach) : Nachname (Trenner) Vorname"></textarea></li>
 					</ul>
 				</form>
+				<div class="trennzeichen">
+					<input id="trennN" class="hide" type="text" placeholder="_ ; - ,"></input>
+					<select id="trennZ" class="hide">
+						<option value=1>jede Zeile</option>
+						<option value=2>jede zweite Zeile</option>
+					</select>
+				</div>
 			</div>
 			<div class="close"><a class="stay" href="#">x</a></div>
 			<div>
-				<input id="trennN" class="hide" type="text" placeholder="_ ; - ,"></input>
-				<select id="trennZ" class="hide">
-					<option value=1>jede Zeile</option>
-					<option value=2>jede zweite Zeile</option>
-				</select>
 				<a id="switchM" class="button stay" href="#" onclick="switchImport()">Mehrfach</a>
 				<a id="switchE" class="button stay hide" href="#" onclick="switchImport()">Einfach</a>
 				<a id="saveI" class="button OK hide stay" href="#" onclick="massenAdd(this)">Import</a>

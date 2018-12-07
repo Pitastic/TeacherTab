@@ -170,7 +170,7 @@ function change_Buttons() {
 	// Buttons wurden hier noch nicht geladen
 	window.addEventListener('load', function () {
 		var buttons = {
-			"btn_Back": "&#10687",
+			"btn_Back": "",
 			"btn_Add": "&star;",
 			"btn_Delete": "&bigotimes;",
 			"Abbrechen": "&bigotimes;",

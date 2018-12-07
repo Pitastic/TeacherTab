@@ -5,13 +5,6 @@ var slideBeginX;
 var slideBeginY;
 
 function touchScroller() {
-	// Prevent Bumping/Scrolling
-	var outerScroll = document.getElementsByClassName('content')[0];
-	if (outerScroll.className.split(" ").indexOf("scrollable") != -1) {
-		outerScroll = document.getElementById("item0");
-	}
-	outerScroll.addEventListener("touchmove", function (e) { e.preventDefault(); });
-
 	// ausgesuchte scrollable machen
 	var scrollables = document.getElementsByClassName('scrollable');
 	for (var i = 0; i < scrollables.length; i++) {
@@ -26,9 +19,9 @@ function touchScroller() {
 			var down = (newMoveY < this.slideBeginY);
 			this.slideBeginY = newMoveY;
 			if ((up && this.allowUp) || (down && this.allowDown)) {
-				event.stopPropagation();
+				event.stopPropagation(); // scroll without bump
 			} else {
-				event.preventDefault();
+				event.preventDefault(); // do not scroll at all
 			}
 		});
 	}
