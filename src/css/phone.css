@@ -76,7 +76,9 @@ Panels allgemein
 */
 .styleWrap {
     position: static !important;
-	margin: 0 1em !important; padding: 0 0 !important;
+	margin: 0 !important; padding: 1em !important;
+	border: none;
+	background: none;
 }
 
     #item0 .styleWrap {overflow: visible !important;}
@@ -260,21 +262,24 @@ nav .button {
 	margin-bottom: -0.5em !important;
 }
  
+/*
 #btn_Delete {
-	/* background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%); */
+	background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%);
 }
 #btn_Add {
-	/* background: linear-gradient(to bottom, #52FF63 0%,#52BB63 47%,#52FF63 100%); */
+	background: linear-gradient(to bottom, #52FF63 0%,#52BB63 47%,#52FF63 100%);
 }
 #export {
-	/* background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%); */
+	background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%);
 }
 #import {
-	/* background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%); */
+	background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%);
 }
 #btn_Settings {
-	/* background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%); */
+	background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%);
 }
+*/
+
 .popUp .button {
 	padding-left: 3%; padding-right: 3%;
 	margin: 0 2%;
@@ -284,6 +289,17 @@ nav .button {
 	color: rgb(0,255,0);
 }
 
+/*
+===============================================================================
+Index
+===============================================================================
+*/
+#indexKlassen p{display: none;}
+#AuthStatus h4 {display: none;}
+#AuthStatus .statusText {
+	margin-left: -1em;
+	margin-right: -1em;
+}
 
 /*
 ===============================================================================
@@ -318,6 +334,46 @@ Uebersicht
 	text-align: center !important;
 	float: none !important;
 }
+#rangeWert{
+	display: block;
+	text-align: center;
+}
+
+#listLeistung ul li, #listStudents ul li {padding: 1em;}
+#listLeistung ul li {text-align: left;}
+
+#listStudents ul li div {
+	padding: 0;
+	margin: 0; margin-right: 5%;
+	width: 20%;
+}
+#listLeistung ul li div {
+	padding: 0;
+	margin: auto;
+}
+	#listLeistung ul li .name, #listStudents ul li .name {
+		position: static;
+		display: block;
+		width: auto;
+		padding: 0;
+		padding-bottom: 1em;
+		text-align: left;
+	}
+		#listLeistung ul li .name {font-style: italic;}
+
+	#listLeistung li div:nth-child(3) {
+		width: 25%;
+	}
+	#listLeistung ul li .gewichtung {
+		width: 10%;
+		margin-right: 0;
+	}
+	#listLeistung ul li .tools.right, #listStudents ul li .tools.right {display: none;}
+
+	#listLeistung ul li div:nth-child(2) {
+		text-align: left;
+		width: 50%;
+	}
 
 /*
 ===============================================================================
@@ -325,12 +381,6 @@ einzelne, spezielle Elemente
 ===============================================================================
 */
 #fadeBlack.show {background-color: rgba(0,0,0,.8);}
-#indexKlassen p{display: none;}
-#AuthStatus h4 {display: none;}
-#AuthStatus .statusText {
-	margin-left: -1em;
-	margin-right: -1em;
-}
 
 @media (max-height: 360px) and (min-width: 400px) and (orientation: landscape){
 
