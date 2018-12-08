@@ -115,6 +115,9 @@ Panels allgemein
 	border-width: 0 2px 0 2px;
 	background: rgba(226,226,226,0.7);
 }
+	#item1details .content {
+		top: 2.5em;
+	}
 
 .uebersicht {
 	top: 2.6em; /* padding + lineheight + border in header*/
@@ -351,7 +354,7 @@ Uebersicht
 	padding: 0;
 	margin: auto;
 }
-	#listLeistung ul li .name, #listStudents ul li .name {
+	#listLeistung ul li .name, #listStudents ul li .name, #item1details li span:first-child {
 		position: static;
 		display: block;
 		width: auto;
@@ -359,12 +362,12 @@ Uebersicht
 		padding-bottom: 1em;
 		text-align: left;
 	}
-		#listLeistung ul li .name {font-style: italic;}
+		#listLeistung ul li .name, #item1details li span:first-child {font-style: italic;}
 
-	#listLeistung li div:nth-child(3) {
+	#listLeistung li div:nth-child(3), #item1details li div:nth-child(3) {
 		width: 25%;
 	}
-	#listLeistung ul li .gewichtung {
+	#listLeistung ul li .gewichtung, #item1details li .gewichtung {
 		width: 10%;
 		margin-right: 0;
 	}
@@ -373,6 +376,27 @@ Uebersicht
 	#listLeistung ul li div:nth-child(2) {
 		text-align: left;
 		width: 50%;
+	}
+
+
+/*
+===============================================================================
+Studentdetails
+===============================================================================
+*/
+#ds_gesamt_eingetragen {
+	top: calc(2em - 2px);
+	right: 2em;
+	z-index: inherit;
+}
+#item1_gewichtung {height: 4em;}
+#item1_gewichtung div {height: 2.5em;}
+
+#item1details ul li {padding: 0.75em;}
+	#item1details ul li .lupe {margin-top: -32px}
+	#item1details ul li span:nth-child(2) {
+		text-align: left;
+		width: 66%;
 	}
 
 /*

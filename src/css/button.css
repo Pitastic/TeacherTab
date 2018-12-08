@@ -1,6 +1,6 @@
 /* Buttons ALLGEMEIN */
 /* - Alle klickbaren Elemente (Buttons, Li, Select)- */
-.button, input[type="button"], .uebersicht li, #KeyBar li, #btn_refresh, select, .marker {
+.button, input[type="button"], .uebersicht li, #KeyBar li, #btn_refresh, select, .marker, #item1details li {
     cursor: pointer;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     background-color: white;
@@ -14,7 +14,7 @@
     background-image: -o-linear-gradient(top, #ffffff 0%,#f6f6f6 47%,#ededed 100%); /* Opera 11.10+ */
     background-image: linear-gradient(to bottom, #ffffff 0%,#f6f6f6 47%,#ededed 100%); /* W3C */
 }
-    .button:active, input[type="button"]:active, .uebersicht li:active, #KeyBar li:active, select:active {
+    .button:active, input[type="button"]:active, .uebersicht li:active, #KeyBar li:active, select:active, #item1details li:active {
         background-image: -moz-linear-gradient(top, #ededed 0%, #f6f6f6 47%, #ffffff 100%) !important; /* FF3.6+ */
         background-image: -webkit-linear-gradient(top, #ededed 0%,#f6f6f6 47%,#ffffff 100%) !important; /* Chrome10+,Safari5.1+ */
         background-image: -o-linear-gradient(top, #ededed 0%,#f6f6f6 47%,#ffffff 100%) !important; /* Opera 11.10+ */

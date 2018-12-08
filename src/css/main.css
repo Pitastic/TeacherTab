@@ -519,7 +519,7 @@ Details Schüler (item1details)
 }
 #item1_gewichtung div {
 	float: left;
-	margin-left: -2px;
+	margin-left: -1px;
 	padding: 0.75em 0;
 	border-radius: 4px;
 	border: 1px solid darkslategrey;
@@ -541,7 +541,7 @@ Details Schüler (item1details)
 			font-size: 0.8em;
 		}
 			#item1_gewichtung div:nth-child(1) div span {
-				padding-left: 0;
+				padding: 0;
 			}
 	#item1_gewichtung div:nth-child(2){
 		background-color: #FF9E53;
@@ -551,7 +551,7 @@ Details Schüler (item1details)
 	}
 	#item1_gewichtung span {
 		display: block;
-		padding-left: 10px;
+		padding: 0 10px;
 		font-size: 0.75em;
 	}
 
