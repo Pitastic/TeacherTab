@@ -704,7 +704,11 @@ function popUpClose(thisElement, bol_refresh, keepBlack) {
 function popUpSwitch(thisElement, target_id) {
 	thisElement.parentNode.parentNode.classList.remove('showPop');
 	if (target_id) {
-		document.getElementById(target_id).classList.add('showPop');
+		document.getElementById('fadeBlack').classList.remove('hide');
+		setTimeout(function () {
+			document.getElementById(target_id).classList.add('showPop');
+			document.getElementById('fadeBlack').classList.add('show');
+		}, 50);
 	}
 }
 
