@@ -645,7 +645,10 @@ Details Leistungen (item2details)
 #arbeit_info {
 	border-radius: 4px 0 0 4px;
 	}
-	
+	#arbeit_info menu, #arbeit_info .bottom{
+		border-bottom: 1px solid gray;
+		border-right: 1px solid gray;
+	}
 	#arbeit_info .button.OK {
 	display: inline-block;
 	padding: 10px 30px;
@@ -666,12 +669,9 @@ Details Leistungen (item2details)
 			text-align: left;
 		}
 		#arbeit_info .bottom {
-			margin-bottom: 20px;
+			margin: 0;
+			margin-top: 20px;
 		}
-		#arbeit_info .button {
-			margin-left: 0;
-			margin-right: 0;
-			}
 		#arbeit_info .bottom .button {
 			margin-top: 10px;
 			}

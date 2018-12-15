@@ -52,9 +52,9 @@
 
 	<!-- Details Leistung -->
 	<div id="item2details" class="uebersicht right hide">
-		<div class="content">
+		<div class="content scrollable">
 			<h2>-</h2>
-			<div class="styleWrap arbeit_leistung scrollable">
+			<div class="styleWrap arbeit_leistung">
 				<div id="arbeit_leistung" class="">
 					<ul>
 						<li>
@@ -80,7 +80,7 @@
 					</ul>
 				</div>
 			</div>
-			<div class="styleWrap arbeit_info scrollable">
+			<div class="styleWrap arbeit_info">
 				<menu id="arbeit_info">
 					<div>
 					</div>
@@ -238,7 +238,7 @@
 					</li>
 				</ul>
 				<ul>
-					<li>Verteilung der Zensuren
+					<li class="diagramm">Verteilung der Zensuren
 						<div id="diag_AnzahlNoten"></div>
 					</li>
 				</ul>
@@ -255,7 +255,7 @@
 		<div class="centerWrap-child">
 			<div id="seitenleiste">
 				<a id="Abbrechen" class="button ABORT stay" onclick="item2Abort()" href="#">Abbrechen</a>
-				<a class="button stay" href="javascript:void(0);" onclick="popUp('item2Set')">Settings</a>
+				<a id="btn_Settings" class="button stay" href="javascript:void(0);" onclick="popUp('item2Set')">Settings</a>
 				<a id="Save" class="button OK stay" href="#">Speichern</a>
 				<div class="clearer"></div>
 			</div>

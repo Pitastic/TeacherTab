@@ -54,10 +54,8 @@ Header und Footer Leiste
 nav {
 	padding: 0;
 	bottom: 0;
-	/* box-shadow: inset 0 8px 30px -8px #eeeeee, 0 0 10px 1px #2c2c2c; */
 	box-shadow: inset 0 20px 20px -20px #eeeeee, 0 0 10px 1px #2c2c2c;
 	border-top-width: 1px;
-	height: auto;
 	width: 100%;
 	text-align: center;
 }
@@ -84,13 +82,13 @@ Panels allgemein
     #item0 .styleWrap {overflow: visible !important;}
 
 .indexBox {
-    position: static;
-    padding: 20px 10px;
-	border-width: 0 0 1px 0;
+	position: static;
+	padding: 20px 10px;
+	border-width: 0 0 2px 0;
 	border-radius: 0;
 	box-shadow: 0px 3px 2px -3px black;
 	background: none;
-    min-height: 100px;
+	min-height: 100px;
 }
 	#item0 .indexBox:nth-child(3) {
 		overflow: visible;
@@ -398,6 +396,67 @@ Studentdetails
 		text-align: left;
 		width: 66%;
 	}
+
+/*
+===============================================================================
+Leistungsdetails
+===============================================================================
+*/
+.styleWrap.arbeit_leistung{
+	padding: 1em 0 !important;
+	padding-top: 62px !important; /* Summe der Paddings, Border und LineHeight */
+	margin: 0 1em !important;
+    margin-bottom: 0 !important;
+    margin-top: 1em !important;
+	border: 2px solid rgb(230, 230, 230);
+	border-width: 0 0 2px 0;
+	border-radius: 0;
+	box-shadow: 0px 3px 2px -3px black;
+}
+	#arbeit_leistung {
+		position: static;
+	}
+
+.styleWrap.arbeit_info{
+	padding-top: 0 !important;
+	padding-bottom: 2em !important;
+	width: auto !important;
+}
+	#NotenListe_Arbeit {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		border: 1px solid black !important;
+		border-width: 0 0 1px 0 !important;
+		border-radius: 0 !important;
+		box-shadow: none !important;
+		/* von: #item2deatils li.selected (main.css) */
+		background-image: -moz-linear-gradient(0deg, #464646 0%,#646464 100%);
+		background-image: -webkit-linear-gradient(0deg, #464646 0%,#646464 100%);
+		background-image: linear-gradient(0deg, #464646 0%,#646464 100%);
+	}
+		#NotenListe_Arbeit > *{
+			display: inline-block;
+			margin: 0;
+			padding: 0;
+		}
+		#NotenListe_Arbeit select, #NotenListe_Arbeit li, #NotenListe_Arbeit .button {
+			display: inline-block !important;
+			margin-top: 0 !important; margin-bottom: 0 !important;
+			padding-top: 10px !important; padding-bottom: 10px !important;
+			line-height: 20px !important;
+		}
+		#NotenListe_Arbeit > p {display: none;}
+		#NotenListe_Arbeit > label {float: right;}
+		#NotenListe_Arbeit > div {float: left;}
+		#NotenListe_Arbeit a.button.OK {margin-left: 1em;}
+		#NotenListe_Arbeit ul {float: left; margin-bottom: 0;}
+		#NotenListe_Arbeit li {padding-top: 0 !important; padding-bottom: 0 !important;}
+		#keyMax {line-height: 20px; padding: 10px 0 !important;}
+
+#item2Stats li.edit {text-align: center;}
+#item2Stats li.diagramm {overflow-x: scroll;}
 
 /*
 ===============================================================================

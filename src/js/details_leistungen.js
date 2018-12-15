@@ -125,7 +125,7 @@ function leistungsDetails_noten(Leistung, Students){
 	new_el.appendChild(keyboard.parentNode.removeChild(keyboard));
 	keyboard.classList.add('show');
 	var selKeys = keyboard.getElementsByTagName('select')[0];
-	new_el.appendChild(document.createElement('hr'));
+	//new_el.appendChild(document.createElement('hr'));
 	// Statistiken
 	var statBtn = document.createElement('a');
 	statBtn.innerHTML = "Statistik";
@@ -253,7 +253,7 @@ function leistungsDetails_punkte(Leistung, Students){
 	keyboard.appendChild(keyboardMax);
 	var selKeys = keyboard.getElementsByTagName('select')[0];
 	selKeys.innerHTML = "-";
-	new_el.appendChild(document.createElement('hr'));
+	//new_el.appendChild(document.createElement('hr'));
 	// Statistiken
 	var statBtn = document.createElement('a');
 	statBtn.innerHTML = "Statistik";
@@ -414,7 +414,7 @@ function leistungsDetails_rohpunkte(Leistung, Students){
 	});
 	divVerteilung.appendChild(editButtonA);
 	new_el.appendChild(divVerteilung);
-	new_el.appendChild(document.createElement('hr'));
+	//new_el.appendChild(document.createElement('hr'));
 	// Statistiken
 	var statBtn = document.createElement('a');
 	statBtn.innerHTML = "Statistik";
