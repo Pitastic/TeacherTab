@@ -427,6 +427,42 @@ Leistungsdetails
 		box-shadow: 0px -3px 2px -3px black;
 	}
 
+
+	.rohpunkte #arbeit_leistung ul li div {padding: 0 !important; margin: 0 !important;}
+	.rohpunkte #arbeit_leistung ul li .Name {
+		display: block;
+		float: none;
+		margin-bottom: 0.5em !important;
+		padding-bottom: 0.3em !important;
+		width: auto;
+		border-bottom: 1px solid silver;
+	}
+	.rohpunkte #arbeit_leistung ul li .Kategorien {
+		margin-right: 4% !important;
+		width: 22% !important;
+		border: none;
+		color: rgb(90,90,90);
+	}
+	.rohpunkte #arbeit_leistung ul li .Kategorien:nth-child(5) {margin-right: 0 !important;}
+	.rohpunkte #arbeit_leistung ul li .Kategorien:nth-child(6) {
+		float: right;
+		margin-right: 26% !important;
+	}
+	.rohpunkte #arbeit_leistung ul li .Note {
+		margin: 0 !important;
+		width: 22%;
+	}
+		.rohpunkte #arbeit_leistung ul li .Kategorien:nth-child(6), .rohpunkte #arbeit_leistung ul li .Note {
+			position: absolute;
+			top: 6px;
+			right: 3px;
+			color: black;
+		}
+
+		.rohpunkte #arbeit_leistung ul li .Note * {width: auto;}
+
+
+
 .styleWrap.arbeit_info{
 	padding-top: 0 !important;
 	padding-bottom: 2em !important;
@@ -479,7 +515,7 @@ Leistungsdetails
 	right: 1em;
 	left: 1em;
 }
-#item2_info_Verteilung select {width: 90%;}
+	#item2_info_Verteilung select {width: 90%;}
 /*
 ===============================================================================
 einzelne, spezielle Elemente
