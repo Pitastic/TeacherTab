@@ -115,6 +115,7 @@ function leistungsDetails(Leistung){
 function leistungsDetails_noten(Leistung, Students){
 	var target_el = document.getElementById("item2details");
 	// Leistungsart sichern
+	target_el.classList.add("noten");
 	target_el.setAttribute('data-l_art', Leistung.subtyp);
 	target_el.setAttribute('data-l_id', Leistung.id);
 	target_el.setAttribute('data-l_name', Leistung.Bezeichnung);
@@ -215,6 +216,7 @@ function leistungsDetails_noten(Leistung, Students){
 function leistungsDetails_punkte(Leistung, Students){
 	var target_el = document.getElementById("item2details");
 	// Leistungsart sichern
+	target_el.classList.add("punkte");
 	target_el.setAttribute('data-l_art', Leistung.subtyp);
 	target_el.setAttribute('data-l_id', Leistung.id);
 	target_el.setAttribute('data-l_name', Leistung.Bezeichnung);
@@ -350,6 +352,7 @@ function leistungsDetails_punkte(Leistung, Students){
 function leistungsDetails_rohpunkte(Leistung, Students){
 	var target_el = document.getElementById("item2details");
 	// Leistungscolumn sichern
+	target_el.classList.add("rohpunkte");
 	target_el.setAttribute('data-l_art', Leistung.subtyp);
 	target_el.setAttribute('data-l_id', Leistung.id);
 	target_el.setAttribute('data-l_name', Leistung.Bezeichnung);

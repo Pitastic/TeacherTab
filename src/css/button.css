@@ -151,6 +151,7 @@ select {
 
 
 /* Buttons SPEZIELL */
+#arbeit_info .button {margin: 0;}
 #alle_gruppieren {
 	display: block;
 	margin-top: -1.75em !important;
