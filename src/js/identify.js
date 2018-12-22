@@ -170,6 +170,35 @@ function change_Buttons() {
 	// Buttons wurden hier noch nicht geladen
 	window.addEventListener('load', function () {
 		var buttons = {
+			"btn_Back"	: ["/img/mobile/abort.png", false],
+			"btn_Add"	: ["/img/mobile/neu1.png", "initial"],
+			"btn_Delete": ["/img/mobile/delete.png", "initial"],
+			"Abbrechen"	: ["/img/mobile/abort.png", "initial"],
+			"Save"		: ["/img/mobile/neu2.png", "initial"],
+			"export"	: ["/img/mobile/export.png", "initial"],
+			"import"	: ["/img/mobile/import.png", "initial"],
+			"btn_Settings": ["/img/mobile/settings.png", "initial"],
+		};
+		for (var key in buttons) {
+			var oldButton = document.getElementById(key);
+			if (oldButton) {
+				var txt = false;
+				var img = "<img src='"+buttons[key][0]+"' />";
+				if (buttons[key][1] == "initial") {
+					txt = oldButton.innerText;
+				}else if (buttons[key][1]) {
+					txt = buttons[key][1];
+				}
+				oldButton.innerHTML = (txt) ? img + "<br>" + txt : img;
+			}
+		}
+	});
+}
+/*
+function change_Buttons_old() {
+	// Buttons wurden hier noch nicht geladen
+	window.addEventListener('load', function () {
+		var buttons = {
 			"btn_Back": "",
 			"btn_Add": "&star;",
 			"btn_Delete": "&bigotimes;",
@@ -187,7 +216,7 @@ function change_Buttons() {
 		}
 	});
 }
-
+*/
 // -- Add CSS
 function passCss(absolutePath) {
 	var cssId = btoa(absolutePath);

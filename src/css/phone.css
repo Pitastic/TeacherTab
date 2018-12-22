@@ -227,7 +227,7 @@ nav .button {
 	float: none !important;
 	display: inline-block;
 	margin: 0 !important;
-	padding: 1em 0;
+	padding: 0.5em 0;
 	width: 24%;
 	border: none !important;
 	background: none !important;
@@ -240,25 +240,41 @@ nav .button {
 		background: rgba(0,0,0,0.25) !important;
     	border-radius: 20px !important;
 	}
-	/* nav .selector, #btn_Back { */
-	nav .selector {
+	nav .button img {width: 1.5em;}
+
+nav #selector {
+	position: static;
+	padding: 0 !important;
+	width: 24%;
+}
+	nav #selector .marker {
 		position: static;
-		padding: 0 !important;
-		width: 24%;
-		margin-bottom: -1em !important;
+		display: inline-block;
+		padding: 10px;
+		width: 25px;
+		height: 25px;
+		border: none;
+		border-radius: 25px;
+		background-image: url(/img/reload_button.gif);
+		background-color: white;
+	    box-shadow: 0 0 3px black;
+	    background-size: auto;
 	}
-		nav .selector .marker {
-			position: static;
-			display: block;
-			background-image: url(/img/slider.png);
-			background-color: transparent;
-			border: none;
-		}
-		.selector .marker:active, .selector .marker:focus {background-image: url(/img/slider.png);}
+	#selector .marker:active, #selector .marker:focus {background-image: url(/img/mobile/abort.png);}
 
 
 #syncOpen {margin: auto auto 1em;}	
 
+#btn_Back {}
+	#btn_Back img {
+		padding: 10px;
+		width: 25px;
+		height: 25px;
+		border-radius: 25px;
+		background-color: red !important;
+		box-shadow: 0 0 3px black;
+	}
+/*
 #btn_Back {
 	background-image: url(/img/poweroff.png) !important;
 	background-repeat: no-repeat !important;
@@ -266,23 +282,6 @@ nav .button {
 	background-size: contain !important;
 	height: 1em;
 	margin-bottom: -0.5em !important;
-}
- 
-/*
-#btn_Delete {
-	background: linear-gradient(to bottom, #FF5252 0%,#BB5252 47%,#FF5252 100%);
-}
-#btn_Add {
-	background: linear-gradient(to bottom, #52FF63 0%,#52BB63 47%,#52FF63 100%);
-}
-#export {
-	background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%);
-}
-#import {
-	background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%);
-}
-#btn_Settings {
-	background: linear-gradient(to bottom, #BDBDBD 0%,#969696 47%,#BDBDBD 100%);
 }
 */
 

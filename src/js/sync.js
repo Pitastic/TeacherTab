@@ -4,6 +4,7 @@
 removeDups closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings
 waitForDB db_neueKlasse db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
 sync_deleteKlasse sync_pushBack sync_getKlasse*/
+
 function testCreds(callback) {
 // eingetragene Credentials testen
 	$.ajax({
@@ -159,6 +160,7 @@ function sync_pushBack(callback, Data, uri) {
 		// keine lokalen Daten pushen
 		var pushData = Object.assign({}, Data);
 		if (pushData.hasOwnProperty('local')) {pushData.local = null;}
+		console.log("pushing:", pushData);
 		var encrypted = encryptData(pushData);
 		var url = (Array.isArray(uri)) ? uri.filter(function (val) {return val;}).join("/") : uri;
 		url = "/" + url + "/";
@@ -410,6 +412,50 @@ function mergeKlasse(newData, localData) {
 		Klasse[1].blacklist = Blacklist;
 		return Klasse;
 
+	}
+}
+
+
+function sync_cleanBlacklist(callback, localAccount) {
+// Account syncen und dabei Blacklist lokal und remote bereinigen
+	if (GLOBALS.AUTH) {
+		console.log("ACCOUNT: clean up blacklist");
+		$.ajax({
+			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/account/',
+			type: 'GET',
+			headers: {
+				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
+			},
+			timeout: GLOBALS.timeout,
+			success: function(data, status, jqXHR){
+				// GET
+				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
+				//DEV console.log("SYNC: data", data);
+				// Merge and clean
+				var merged = mergeAccount(newData, localAccount);
+				merged['blacklist'] = [];
+				merged['valid'] = data.valid;
+				merged['validDate'] = data.validDate;
+				//DEV console.log("SYNC: Merged", merged);
+				// Save and Push back
+				db_replaceData(function(){
+					sync_pushBack(callback, merged, "account");
+				}, merged, "account");
+			},
+			error: function(data, status, jqXHR){
+				console.log("SYNC-ERROR: Kein Clean Up der Blacklist durchgeführt !");
+				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
+				GLOBALS.AUTH = false;
+				localStorage.setItem("auth", false);
+				localStorage.removeItem("TeacherTab");
+				window.location.reload();
+			},
+		});
+	}else{
+		localAccount['blacklist'] = [];
+		db_replaceData(function(){
+			callback(localAccount);
+		}, localAccount, "account");
 	}
 }
 

@@ -10,7 +10,6 @@ sync_deleteKlasse sync_pushBack sync_getKlasse*/
 
 var SETTINGS;
 
-//$(document).ready(function() {
 window.addEventListener('load', function () {
 	// Init Vars
 	GLOBALS.noSyncCols = ["vorjahr"];
@@ -1000,4 +999,12 @@ function handleSchnitt(callback, sID) {
 		callback();
 	}
 	);
+}
+
+// Helper zum einfachen Aufruf der Blacklistbereinigung
+// TODO: Account[klassenliste] ist meist schon leer ?! (issue #46)
+function handleCleanUpBlacklist(){
+	db_readGeneric(function(localAccount){
+		sync_cleanBlacklist(function(){console.log("Blacklist should be clean now", localAccount['blacklist'])}, localAccount);
+	}, 1, "account");
 }

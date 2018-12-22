@@ -185,14 +185,14 @@ select {
     width: 85px;
 }
 
-.selector {
+#selector {
     position: relative;
     z-index: 2;
 	background: none !important;
 	border: none !important;
 }
-    .selector a {display: none;}
-    	.selector .marker {
+    #selector a {display: none;}
+    	#selector .marker {
     		position: absolute;
     		top: 0; bottom: 0; left: 0; right: 0;
 			height: 65px;
@@ -213,7 +213,7 @@ select {
             transition-timing-function: cubic-bezier(.77,0,.18,1);
 		}
 		
-			.selector .marker:active, .selector .marker:focus {
+			#selector .marker:active, #selector .marker:focus {
 				-webkit-tap-highlight-color: rgba(0,0,0,0);
 				background-image: url(/img/slider.png), -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
 				background-image: url(/img/slider.png), -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%);
@@ -290,7 +290,7 @@ select {
 		margin: 15px 20px; margin-bottom: 10px;
 		float: left;
 	}
-	nav .button.selector {
+	#selector {
 		float: left;
 	}
 	#btn_refresh a {
