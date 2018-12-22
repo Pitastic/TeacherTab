@@ -93,9 +93,11 @@ Panels allgemein
 	background: none;
 	min-height: 100px;
 }
+	#item0 .indexBox:nth-child(1) {padding-top: 0;}
 	#item0 .indexBox:nth-child(3) {
 		overflow: visible;
 		border: none;
+		box-shadow: none;
 	}
 
 .indexBox span {
