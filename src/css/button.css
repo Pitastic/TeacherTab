@@ -76,7 +76,7 @@ input[type="checkbox"] {
     background-color: grey;
 }
     input[type="checkbox"]:before {
-        content: "AUS";
+        content: "X";
         color: white;
         font-size: 9px;
     }
@@ -84,7 +84,7 @@ input[type="checkbox"] {
         background-color: rgb(50,190,40);
     }
     input[type="checkbox"]:checked:before {
-        content: "AN";
+        content: "O";
         color: white;
     }
 input[type=range]{

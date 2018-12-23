@@ -17,8 +17,23 @@ h1 {
 	text-align: center;
 }
 h2 {display: none;}
-
-
+label {display: block !important;}
+/*
+#mitschreiberTrue
+#mitschreiberTrue:checked:before{
+*/
+input[type=checkbox] {
+	margin: 0 !important; padding: 0 !important;
+	margin-top: -0.25em !important;
+	width: 1.5em !important; height: 1.5em;
+	float: right;
+	font-size: 1.25em;
+}
+	input[type=checkbox]:before{
+		font-size: 0.75em;
+		display: block;
+		line-height: 2em;
+	}
 /*
 ===============================================================================
 Header und Footer Leiste
@@ -164,10 +179,25 @@ PopUp Fenster
 			width: 100%;
 			margin: 0.5em 0 !important;
 		}
-		.popUp label {
-			font-weight: normal;
+		.popUp label, li.edit span {
+			display: block;
+			font-weight: normal !important;
 			font-style: italic;
 		}
+
+		li.edit {
+			padding-left: 0;
+			padding-right: 0;
+		}
+			li.edit span {
+				width: auto;
+				padding: 0.5em 0;
+			}
+			li.edit input[type]{
+				width: auto;
+				margin: 0;
+				padding: 0.5em 0;
+			}
 
 
 	.close a {
@@ -258,9 +288,11 @@ nav #selector {
 		background-image: url(/img/reload_button.gif);
 		background-color: white;
 	    box-shadow: 0 0 3px black;
-	    background-size: auto;
+	    background-size: 25px 25px;
 	}
-	#selector .marker:active, #selector .marker:focus {background-image: url(/img/mobile/abort.png);}
+	#selector .marker:active, #selector .marker:focus {
+		background-image: url(/img/reload_button.gif); /* Hintergrund bei Click nicht ändern */
+	}
 
 
 #syncOpen {margin: auto auto 1em;}	
@@ -326,6 +358,14 @@ Settings
     display: inline-block;
 	margin: auto;
 }
+#alle_gruppieren {
+	margin-top: 0.5em !important;
+	text-align: center;
+}
+	#alle_gruppieren .button {
+		display: block;
+		margin: 0;
+	}
 
 /*
 ===============================================================================
@@ -394,7 +434,11 @@ Studentdetails
 #item1_gewichtung {height: 4em;}
 #item1_gewichtung div {height: 2.5em;}
 
-#item1details ul li {padding: 0.75em;}
+#item1details ul li {
+	padding: 0.75em;
+	margin-bottom: 1em;
+}
+	#item1details ul li:last-of-type {margin-bottom: initial;}
 	#item1details ul li .lupe {margin-top: -32px}
 	#item1details ul li span:nth-child(2) {
 		text-align: left;
