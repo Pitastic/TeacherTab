@@ -18,10 +18,7 @@ h1 {
 }
 h2 {display: none;}
 label {display: block !important;}
-/*
-#mitschreiberTrue
-#mitschreiberTrue:checked:before{
-*/
+
 input[type=checkbox] {
 	margin: 0 !important; padding: 0 !important;
 	margin-top: -0.25em !important;
@@ -153,10 +150,6 @@ PopUp Fenster
 	background: transparent;
 	box-shadow: none;
 	border: none !important;
-	/* 
-	border-left: 0; border-radius: 8px; border-right: 0;
-	border-top-width: 1px;
- 	*/
 	-webkit-transform: translateX(-110%);
 	-moz-transform: translateX(-110%);
 	transform: translateX(-110%);
@@ -185,15 +178,17 @@ PopUp Fenster
 			font-style: italic;
 		}
 
-		li.edit {
+		.popUp li.edit {
 			padding-left: 0;
 			padding-right: 0;
 		}
-			li.edit span {
+			.popUp li.edit span {
+				display: inline-block;
 				width: auto;
+				float: none;
 				padding: 0.5em 0;
 			}
-			li.edit input[type]{
+			.popUp li.edit input[type]{
 				width: auto;
 				margin: 0;
 				padding: 0.5em 0;
