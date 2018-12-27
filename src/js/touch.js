@@ -29,7 +29,7 @@ function touchScroller() {
 
 function touchSlider() {
 	// Schüler- und Leistungsübersicht
-	var scrollables = document.getElementsByClassName('styleWrap scrollable');
+	var scrollables = document.querySelectorAll('#item1 .scrollable, #item2 .scrollable');
 	for (var i = 0; i < scrollables.length; i++) {
 		scrollables[i].addEventListener("touchstart", touchStart, false);
 		scrollables[i].addEventListener("touchend", touchEnd, false);
@@ -37,7 +37,7 @@ function touchSlider() {
 }
 
 function noTouchSlider() {
-	var scrollables = document.getElementsByClassName('styleWrap scrollable');
+	var scrollables = document.getElementsByClassName('scrollable');
 	for (var i = 0; i < scrollables.length; i++) {
 		scrollables[i].removeEventListener("touchstart", touchStart, false);
 		scrollables[i].removeEventListener("touchend", touchEnd, false);
