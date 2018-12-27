@@ -437,10 +437,11 @@ Details Schüler (item1details)
 ===============================================================================
 */
 #item1details li {
+    margin-bottom: 1em;
+	padding: 0.75em 0.25em;
 	text-align: left;
 	clear: both;
 	color: grey;
-	padding: 0.75em 0.25em;
 }
 
 .item1_gesamt h3 {

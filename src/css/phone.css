@@ -269,7 +269,6 @@ nav .button {
 
 nav #selector {
 	position: static;
-	padding: 0 !important;
 	width: 24%;
 }
 	nav #selector .marker {
@@ -280,13 +279,13 @@ nav #selector {
 		height: 25px;
 		border: none;
 		border-radius: 25px;
-		background-image: url(/img/reload_button.gif);
-		background-color: white;
+		background-image: url(/img/mobile/switch.png);
+		background-color: #007ecb;
 	    box-shadow: 0 0 3px black;
 	    background-size: 25px 25px;
 	}
 	#selector .marker:active, #selector .marker:focus {
-		background-image: url(/img/reload_button.gif); /* Hintergrund bei Click nicht ändern */
+		background-image: url(/img/mobile/switch.png); /* Hintergrund bei Click nicht ändern */
 	}
 
 
@@ -431,7 +430,6 @@ Studentdetails
 
 #item1details ul li {
 	padding: 0.75em;
-	margin-bottom: 1em;
 }
 	#item1details ul li:last-of-type {margin-bottom: initial;}
 	#item1details ul li .lupe {margin-top: -32px}

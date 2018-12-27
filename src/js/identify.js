@@ -170,7 +170,7 @@ function change_Buttons() {
 	// Buttons wurden hier noch nicht geladen
 	window.addEventListener('load', function () {
 		var buttons = {
-			"btn_Back"	: ["/img/mobile/abort.png", false],
+			"btn_Back"	: ["/img/mobile/power.png", false],
 			"btn_Add"	: ["/img/mobile/neu1.png", "initial"],
 			"btn_Delete": ["/img/mobile/delete.png", "initial"],
 			"Abbrechen"	: ["/img/mobile/abort.png", "initial"],
