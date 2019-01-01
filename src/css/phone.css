@@ -561,6 +561,12 @@ einzelne, spezielle Elemente
 */
 #fadeBlack.show {background-color: rgba(0,0,0,.8);}
 
+@media (min-aspect-ratio: 5/6) {
+
+	nav {display: none !important;} /* Soft-Keyboard PopUp */
+
+}
+
 @media (max-height: 360px) and (min-width: 400px) and (orientation: landscape){
 
 	#fadeBlack{
@@ -574,6 +580,7 @@ einzelne, spezielle Elemente
 			display: block;
 			top: 25%;
 			text-align: center;
+			color: silver;
 		}
 
 	.content{display: none !important;}
