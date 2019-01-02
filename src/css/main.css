@@ -307,7 +307,6 @@ Index - Startseite
         top: 0%; left: 0; right: 0;
         bottom: 60%;
         min-height: 130px;
-        max-height: 200px;
     }
         .indexBox:nth-child(1) select{
             margin-left: 0; margin-right: 0;
