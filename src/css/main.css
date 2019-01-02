@@ -421,8 +421,6 @@ Setting (item0details)
 
 #gruppierer {
 	display: inline-block;
-	width: 75px;
-	height: 75px;
 	position: absolute;
 	right: 30px; top: 30%;
 	margin: 0; padding-left: 20px;
@@ -791,7 +789,7 @@ Details Leistungen (item2details)
     #NotenListe_Arbeit a.button.OK {
         margin: 0;
     }
-    #NotenListe_Arbeit select {
+    #NotenListe_Arbeit select, #gruppierer {
         padding: 10px;
         padding-right: 25px; padding-left: 15px;
         margin: 0.75em auto;

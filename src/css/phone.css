@@ -92,6 +92,7 @@ Panels allgemein
 	margin: 0 !important; padding: 1em !important;
 	border: none;
 	background: none;
+	overflow-y: auto !important;
 }
 
     #item0 .styleWrap {overflow: visible !important;}
@@ -247,6 +248,7 @@ select {
 	margin-left: 0; margin-right: 0;
 	padding-left: 0; padding-right: 0;
 }
+	.indexBox .button + br {display: none;}
 
 nav .button {
 	float: none !important;
@@ -337,6 +339,11 @@ Index
 Settings
 ===============================================================================
 */
+#item1setting_gruppen .styleWrap {
+	padding-top: 62px !important;
+	margin-top: 1em !important;
+}
+
 #form_Notenverteilung label {
 	display: inline-block;
 	margin-left: 0;
@@ -347,6 +354,12 @@ Settings
 	margin-left: 0;
 }
 #form_KompNamen input, #form_Notenverteilung input {width: auto;}
+
+#form_Gewichtung {
+	text-align: right !important;
+	width: auto;
+	padding-right: 10px;
+}
 #form_Gewichtung input {
     width: 33%;
     display: inline-block;
@@ -361,6 +374,24 @@ Settings
 		margin: 0;
 	}
 
+.gruppierer-container {
+	/*siehe #NotenListe_Arbeit*/
+	padding: 10px 5px;
+/* 	text-align: center; */
+}
+	.gruppierer-container::before{
+		content: "Zuweisen:";
+		float: left;
+		padding: 10px;
+		color: #fff;
+		font-size: 1em;
+		line-height: 1.25em;
+	}
+#gruppierer {
+	/* siehe #NotenListe_Arbeit select */
+	position: static;
+	float: right;
+}
 /*
 ===============================================================================
 Uebersicht
@@ -376,6 +407,12 @@ Uebersicht
 #rangeWert{
 	display: block;
 	text-align: center;
+}
+div.s_flag {
+	float: right;
+	padding: 10px !important;
+	margin: -16px -8px 0 0 !important;
+	width: auto !important; height: auto !important;
 }
 
 #listLeistung ul li, #listStudents ul li {padding: 1em;}
@@ -433,6 +470,7 @@ Studentdetails
 }
 	#item1details ul li:last-of-type {margin-bottom: initial;}
 	#item1details ul li .lupe {margin-top: -32px}
+		#item1details .fspz_div ul li .lupe {margin-top: -16px}
 	#item1details ul li span:nth-child(2) {
 		text-align: left;
 		width: 66%;
@@ -506,7 +544,7 @@ Leistungsdetails
 	padding-bottom: 2em !important;
 	width: auto !important;
 }
-	#NotenListe_Arbeit {
+	#NotenListe_Arbeit, .gruppierer-container {
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -525,7 +563,7 @@ Leistungsdetails
 			margin: 0;
 			padding: 0;
 		}
-		#NotenListe_Arbeit select, #NotenListe_Arbeit li, #NotenListe_Arbeit .button {
+		#NotenListe_Arbeit select, #NotenListe_Arbeit li, #NotenListe_Arbeit .button, #gruppierer {
 			display: inline-block !important;
 			margin-top: 0 !important; margin-bottom: 0 !important;
 			padding-top: 10px !important; padding-bottom: 10px !important;
