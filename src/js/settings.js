@@ -120,10 +120,10 @@ function SettingsSave(bol_save) {
 
 function gruppierenListe(results) {
 	var r, c, liste, ul;
+	console.log(results);
 	liste = document.getElementById('gruppierenListe');
 	ul = document.createElement('ul');
 	for (var i in results) {
-		if (i == 0) { continue; }
 		var row = results[i];
 		r = document.createElement('li');
 		if (row.sort && row.sort !== "-" && row.sort !== "null") {
