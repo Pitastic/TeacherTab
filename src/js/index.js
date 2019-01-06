@@ -12,41 +12,41 @@ window.addEventListener('load', function () {
 	closeListener();
 
 	// -- Buttons
-	document.getElementById('syncOpen').addEventListener('click', function(){
+	document.getElementById('syncOpen').addEventListener('click', function () {
 		klassenAuswahl(document.getElementById('klasseSelect'));
 		// Öffnen mit Sync der geählten Klasse
 		if (GLOBALS.klasse && GLOBALS.klasse != "-") {
 			klassenSyncHandler("uebersicht.htm");
-		}else{
+		} else {
 			alert("Es wurde keine Klasse ausgewählt !");
 		}
 	});
 
-	document.getElementById('btn_Delete').addEventListener('click', function(){
+	document.getElementById('btn_Delete').addEventListener('click', function () {
 		klassenAuswahl(document.getElementById('klasseSelect'));
-		if (window.confirm('Bist du sicher, dass du die gesamte Klasse:\n\n'+GLOBALS.klassenbezeichnung+' (id: ' + GLOBALS.klasse.substring(0,6) + ')\n\nlöschen möchtest ?')){
+		if (window.confirm('Bist du sicher, dass du die gesamte Klasse:\n\n' + GLOBALS.klassenbezeichnung + ' (id: ' + GLOBALS.klasse.substring(0, 6) + ')\n\nlöschen möchtest ?')) {
 			klassenDeleteHandler(GLOBALS.klasse);
 		}
 	});
 
-	document.getElementById('export').addEventListener('click', function(){
+	document.getElementById('export').addEventListener('click', function () {
 		klassenAuswahl(document.getElementById('klasseSelect'));
 		if (GLOBALS.klasse && GLOBALS.klasse != "-") {
 			popUp("item0Export");
-		}else{
+		} else {
 			alert("Es wurde keine Klasse ausgewählt !");
 		}
 	});
 
-	document.getElementById('import').addEventListener('click', function(){
+	document.getElementById('import').addEventListener('click', function () {
 		if (GLOBALS.AUTH) {
 			popUp("item0Import");
-		}else{
+		} else {
 			alert("Dein Account ist nicht für den Import auf den Server berechtigt.");
 		}
 	});
 
-	document.getElementById('closeSync').addEventListener('click', function(){
+	document.getElementById('closeSync').addEventListener('click', function () {
 		// ( Zurücksetzen der ProgressBar )
 		var syncStatus = document.getElementById('syncStatus');
 		syncStatus.classList.remove('ok');
@@ -55,14 +55,14 @@ window.addEventListener('load', function () {
 		document.getElementById('syncText').innerHTML = "Synchronisiere";
 		document.getElementById('syncInnerText').innerHTML = "";
 		var buttons = document.getElementById('item0Sync').getElementsByClassName('button');
-		for (var i=0; i<buttons.length; i++){
+		for (var i = 0; i < buttons.length; i++) {
 			buttons[i].classList.add('hide');
 		}
 	});
 
 
 	// Setting up...
-	document.getElementById("indexKlassen").getElementsByTagName("span")[1].innerHTML = "Version: "+GLOBALS.appversion;
+	document.getElementById("indexKlassen").getElementsByTagName("span")[1].innerHTML = "Version: " + GLOBALS.appversion;
 	// -- format neue Klasse Eingabe
 	Schuljahre();
 
@@ -75,20 +75,20 @@ window.addEventListener('load', function () {
 	if (GLOBALS.knownDevice) {
 
 		// -- Init DB
-		initDB(function(){
+		initDB(function () {
 
 			// -- Liste aller Klassen
 			// --> Get Local-Account - Get Sync-Account - Merge - Push back - List
-			db_readGeneric(function(localAccount){
+			db_readGeneric(function (localAccount) {
 				sync_getAccount(listIdx_Select, localAccount);
 			}, 1, "account");
-			
+
 		});
 
 		// -- Set Allgemeine Einstellungen PopUp
 		document.getElementById('userID').value = GLOBALS.userID;
 
-	}else{
+	} else {
 		GLOBALS.userID = 'Nobody';
 		GLOBALS.passW = '-';
 		popUp('item0First');
@@ -118,7 +118,7 @@ function addToHomeScreen(thisElement) {
 
 	// Wait for the user to respond to the prompt
 	GLOBALS['deferredPrompt'].userChoice
-		.then(function(choiceResult){
+		.then(function (choiceResult) {
 			if (choiceResult.outcome === 'accepted') {
 				console.log('SW: Prompt accepted');
 			} else {
@@ -127,9 +127,9 @@ function addToHomeScreen(thisElement) {
 			GLOBALS['deferredPrompt'] = null;
 			window.location.reload();
 		})
-		.catch(function(err){
+		.catch(function (err) {
 			console.log("SW:", err);
-			setTimeout(function() {
+			setTimeout(function () {
 				window.location.reload();
 			}, 3000);
 		});
@@ -138,7 +138,7 @@ function addToHomeScreen(thisElement) {
 
 
 
-function settingsAllgemein(){
+function settingsAllgemein() {
 	GLOBALS.userID = document.getElementById('userID').value || "Niemand";
 	localStorage.setItem('userID', GLOBALS.userID);
 	GLOBALS.passW = document.getElementById('passW').value || "false";
@@ -170,20 +170,20 @@ function setAuth(status) {
 
 		// - DOM Manipulation: Meldung !
 		// -- unterscheiden ob Daten oder Verbinungsproblem
-		var msg = "Fehler beim Anmelden ("+status+")";
+		var msg = "Fehler beim Anmelden (" + status + ")";
 		if (status == "401" || status == "403") {
 			msg += ":<br>Emailadresse oder Passwort sind falsch !";
 
-		}else if (status == "400" || status == "0") {
+		} else if (status == "400" || status == "0") {
 			msg = ":<br>Der Server ist nicht erreichbar. Bist du online ?";
-		}else if (status == "500") {
+		} else if (status == "500") {
 			msg += ":<br>Uuups ! Auf dem Server ist etwas schiefgegangen. Probier es bitte nochmal...";
 		}
 		errorMsg = document.querySelector("#item0First .msg.error");
 		errorMsg.innerHTML = msg;
 		errorMsg.classList.remove("hide");
 
-	}else{
+	} else {
 		// ggf. vorherige Meldungen löschen
 		errorMsg = document.querySelector("#item0First .msg.error");
 		errorMsg.innerHTML = "";
@@ -193,9 +193,9 @@ function setAuth(status) {
 		localStorage.setItem('TeacherTab', true);
 		var thisElement = document.querySelector("#item0First .OK");
 		popUpClose(thisElement);
-		setTimeout(function() {
+		setTimeout(function () {
 			window.location.reload();
-		},550);
+		}, 550);
 	}
 	checkAuth();
 	return;
@@ -228,31 +228,34 @@ function listIdx_Select(account) {
 		keylist.sort(compareKlassen);
 		// Schleife durch Optionen
 		for (var i = 0; i < keylist.length; i++) {
+			// nur bei Pro alle sonst nur lokale Klassen anzeigen
 			var hash = keylist[i][0];
-			var bezeichnung = result[hash].bezeichnung;
-			//var bezeichnung = (account.local.indexOf(hash) === -1) ? "# "+result[hash].bezeichnung : result[hash].bezeichnung;
-			opt = new Option(bezeichnung);
-			opt.value = hash;
-			clone.appendChild(opt);
-			optCount += 1;
+			if (account.valid || account.local.indexOf(hash) !== -1) {
+				var bezeichnung = result[hash].bezeichnung;
+				//var bezeichnung = (account.local.indexOf(hash) === -1) ? "# "+result[hash].bezeichnung : result[hash].bezeichnung;
+				opt = new Option(bezeichnung);
+				opt.value = hash;
+				clone.appendChild(opt);
+				optCount += 1;
+			}
 		}
 	}
 
-	sel.parentNode.replaceChild(clone,sel);
+	sel.parentNode.replaceChild(clone, sel);
 	document.getElementById("indexKlassen").getElementsByTagName("span")[0].innerHTML = "Insgesamt " + optCount + " Klassen in deinem Account";
 	var auth_status = document.getElementById('AuthStatus');
 	var text = auth_status.getElementsByClassName('statusText')[0];
 	var info = auth_status.getElementsByClassName('statusInfo')[0];
 	if (account.valid) {
 		text.classList.add("pro");
-		if (account.validDate != "2099-01-01") {
+		if (GLOBALS.unlimited.indexOf(account.validDate) === -1) {
 			text.innerHTML = 'PRO Account bis ' + datum(true, account.validDate);
-			info.innerHTML =  '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">unbegrenzt Pro holen</a>';
-		}else{
+			info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">unbegrenzt Pro holen</a>';
+		} else {
 			text.innerHTML = 'PRO Account !';
 			info.parentNode.removeChild(info);
 		}
-	}else{
+	} else {
 		// Werbung: Square
 		/*
 		google_ad_client = "ca-pub-5341512616014650";
@@ -267,13 +270,13 @@ function listIdx_Select(account) {
 }
 
 
-function klassenAuswahl(selectbox){
+function klassenAuswahl(selectbox) {
 	var klasseSelect = selectbox;
 	if (klasseSelect.value !== "null" && klasseSelect.value !== "") {
 		sessionStorage.setItem('klasse', klasseSelect.value);
 		GLOBALS.klasse = klasseSelect.value;
 		GLOBALS.klassenbezeichnung = klasseSelect.selectedOptions[0].innerHTML;
-	}else{
+	} else {
 		alert('Es wurde keine Klasse ausgewählt !');
 	}
 }
@@ -293,12 +296,12 @@ function addKlasse(thisElement) {
 			nameKlasse.value;  // Name
 		var newId = uniqueClassID(newKlasse);
 		sessionStorage.setItem('klasse', newId);
-		db_neueKlasse(function(){
+		db_neueKlasse(function () {
 			window.location = "settings.htm";
 		}, newId, newKlasse);
 		document.getElementById('item0').classList.remove('show');
 		popUpClose(thisElement);
-	}else{
+	} else {
 		alert('Klassenname ungültig.');
 	}
 }

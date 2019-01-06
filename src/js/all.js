@@ -284,41 +284,9 @@ function mergeDeep(target, ...sources) {
 	return mergeDeep(target, ...sources);
 }
 
-/*
-function mergeDeep_noJS_support(target, sources) {
-	if (!sources.length) return target;
-	var source = sources.shift();
-	
-	if (isObject(target) && isObject(source)) {
-		for (var key in source) {
-			if (isObject(source[key])) {
-				if (!target[key]) Object.assign(target, { [key]: {} });
-				mergeDeep(target[key], source[key]);
-			} else {
-				Object.assign(target, { [key]: source[key] });
-			}
-		}
-	}
-	
-	return mergeDeep.apply(target, spread(sources));
+function copyObject(src) {
+	return JSON.parse(JSON.stringify(src));
 }
-
-function spread() {
-	var args = [];
-	var a = [].slice.call(arguments).forEach(function (n) {
-		if (Array.isArray(n)) {
-			args = args.concat(n);
-		} else if (n.next) {
-			for (var i = n, r = i.next(); !r.done; result = i.next()) {
-				args.push(r.value);
-			}
-		} else {
-			args.push(n);
-		}
-	});
-	return args;
-}
-*/
 
 
 function checkAuth() {
@@ -929,15 +897,15 @@ function klassenImportHandler() {
 	var jsonBackup = document.getElementById("jsonBackup").value;
 	try {
 		jsonBackup = JSON.parse(jsonBackup);
+		jsonBackup = stampImport(jsonBackup, changed);
+		jsonBackup[1].name = jsonBackup[1].name + " (Import " + datum(true) + ")";
+		jsonBackup[1].klasse = uniqueClassID(jsonBackup[1].name);
+		var changed = timestamp();
+		var target = jsonBackup[1].klasse;
 	} catch (e) {
 		updateStatus(progress, "Falsches Datenformat!", "Importiere Backup: Ein Fehler ist aufgetreten !", false, true);
+		return false;
 	}
-	jsonBackup = stampImport(jsonBackup, changed);
-	jsonBackup[1].name = jsonBackup[1].name + " (Import " + datum(true) + ")";
-	jsonBackup[1].klasse = uniqueClassID(jsonBackup[1].name);
-
-	var changed = timestamp();
-	var target = jsonBackup[1].klasse;
 
 	// Sync an Server
 	progress += 30; // Statusbar
@@ -1003,8 +971,8 @@ function handleSchnitt(callback, sID) {
 
 // Helper zum einfachen Aufruf der Blacklistbereinigung
 // TODO: Account[klassenliste] ist meist schon leer ?! (issue #46)
-function handleCleanUpBlacklist(){
-	db_readGeneric(function(localAccount){
-		sync_cleanBlacklist(function(){console.log("Blacklist should be clean now", localAccount['blacklist'])}, localAccount);
+function handleCleanUpBlacklist() {
+	db_readGeneric(function (localAccount) {
+		sync_cleanBlacklist(function () { console.log("Blacklist should be clean now", localAccount['blacklist']) }, localAccount);
 	}, 1, "account");
 }

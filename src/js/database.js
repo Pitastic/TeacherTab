@@ -365,6 +365,15 @@ function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 						if (idx > -1) {toUpdate.local.splice(idx, 1);}
 						// auf Blacklist
 						toUpdate.blacklist.push(val);
+
+
+					// Account bereinigen
+					}else if (mode == "cleanUp") {
+						// aus Klassenliste
+						delete toUpdate.klassenliste[val];
+						// aus Local
+						idx = toUpdate.local.indexOf(val);
+						if (idx > -1) { toUpdate.local.splice(idx, 1); }
 					}
 
 					var requestUpdate = cursor.update(toUpdate);

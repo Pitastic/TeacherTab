@@ -20,6 +20,7 @@ var GLOBALS = {
 	'passW': null,
 	'SyncServer': "c/api",
 	'timeout': 6000,
+	'unlimited': ["2099-01-01", "2098-01-01"],
 
 	'appversion': "1.1",
 	'dbname': null,
