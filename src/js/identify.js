@@ -16,6 +16,7 @@ var STYLES = [
 
 var GLOBALS = {
 	'AUTH': null,
+	'PRO': null,
 	'userID': null,
 	'passW': null,
 	'SyncServer': "c/api",

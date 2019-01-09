@@ -5,8 +5,8 @@
 
 // esLint Globals:
 /* global $ GLOBALS hashData listStudents listLeistung
-db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc
-sync_deleteKlasse sync_pushBack sync_getKlasse*/
+db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_readGeneric
+sync_getAccount sync_deleteKlasse sync_pushBack sync_getKlasse*/
 
 var SETTINGS;
 
@@ -843,12 +843,13 @@ function klassenSyncHandler(location, newWindow) {
 						if (newWindow) {
 							window.open(location, '_blank');
 						} else {
-							window.location.href = location;
+							//window.location.href = location;
 						}
 					}, 3000);
 				} else {
 					// Klasse nicht lokal vorhanden und kein Sync
-					updateStatus(progress, mergedKlasse, "Keine Synchronisation und Klasse nicht vorhanden !", false, true);
+					GLOBALS.PRO = false;
+					updateStatus(progress, mergedKlasse, "Keine Synchronisation möglich und Klasse lokal nicht vorhanden !", false, true);
 				}
 
 			}
@@ -867,19 +868,46 @@ function klassenDeleteHandler() {
 	var progress = 0;
 	progress += 30;
 	updateStatus(progress, progress + " %", "Lösche Klassendaten: Aus dem Speicher und Verzeichnis dieses Geräts");
+	var cleanMode = (GLOBALS.PRO) ? "delKlasse" : "cleanUp";
 
 	db_dropKlasse(GLOBALS.klasse, function () {
-		progress += 40;
-		updateStatus(progress, progress + " %", "Lösche Klassendaten: Aus dem Speicher und Verzeichnis des Servers");
+
+
 		sync_deleteKlasse(GLOBALS.klasse, function (msg) {
+			progress += 40;
+			updateStatus(progress, progress + " %", "Lösche Klassendaten: Aus dem Speicher und Verzeichnis des Servers");
 			if (msg) {
-				progress = 100;
-				updateStatus(progress, progress + " %", "Lösche Klassendaten: Erfolgreich !");
+				// bei Erfolg mit Blacklist löschen
+				db_simpleUpdate(function () {
+
+					// sofort Account syncen
+					db_readGeneric(function (localAccount) {
+						sync_getAccount(function () {
+							setTimeout(function () {
+								window.location.reload();
+							}, 2000);
+						}, localAccount);
+					}, 1, "account");
+					progress = 100;
+					updateStatus(progress, progress + " %", "Lösche Klassendaten: Erfolgreich !");
+
+				}, 1, "klassenliste", "delKlasse", GLOBALS.klasse, "account");
+
 			} else {
-				updateStatus(progress, msg, "Klasse nicht vom Server gelöscht", false, true);
+				// nur lokale Änderungen möglich
+				db_simpleUpdate(function () {
+
+					updateStatus(progress, "Kein PRO Account vorhanden", "Klasse nur lokal gelöscht", false, true);
+					setTimeout(function () {
+						window.location.reload();
+					}, 3500);
+
+				}, 1, "klassenliste", "cleanUp", GLOBALS.klasse, "account");
+
 			}
-			setTimeout(function () { window.location.reload(); }, 3000);
 		});
+
+
 	});
 	return;
 }
@@ -890,49 +918,58 @@ function klassenImportHandler() {
 
 	// Animation, Sync und DB
 	var progress = 0;
-	progress += 50;
-	updateStatus(progress, "Einlesen der Daten", "Importiere Backup...");
 
-	// Textfeld lesen, untersuchen und Timestamp setzen
-	var jsonBackup = document.getElementById("jsonBackup").value;
-	try {
-		jsonBackup = JSON.parse(jsonBackup);
-		jsonBackup = stampImport(jsonBackup, changed);
-		jsonBackup[1].name = jsonBackup[1].name + " (Import " + datum(true) + ")";
-		jsonBackup[1].klasse = uniqueClassID(jsonBackup[1].name);
-		var changed = timestamp();
-		var target = jsonBackup[1].klasse;
-	} catch (e) {
-		updateStatus(progress, "Falsches Datenformat!", "Importiere Backup: Ein Fehler ist aufgetreten !", false, true);
-		return false;
-	}
+	if (GLOBALS.PRO) {
+		progress += 50;
+		updateStatus(progress, "Einlesen der Daten", "Importiere Backup...");
 
-	// Sync an Server
-	progress += 30; // Statusbar
-	updateStatus(progress, "verschlüsselte Daten senden", "Importiere Backup...");
-	sync_pushBack(function (unencrypted, errormsg) {
-
-		if (errormsg && typeof errormsg != "undefined") {
-			setTimeout(function () {
-				updateStatus(progress, errormsg, "Import fehlgeschlagen !", false, true);
-			}, 3000);
+		// Textfeld lesen, untersuchen und Timestamp setzen
+		var jsonBackup = document.getElementById("jsonBackup").value;
+		try {
+			jsonBackup = JSON.parse(jsonBackup);
+			jsonBackup = stampImport(jsonBackup, changed);
+			jsonBackup[1].name = jsonBackup[1].name + " (Import " + datum(true) + ")";
+			jsonBackup[1].klasse = uniqueClassID(jsonBackup[1].name);
+			var changed = timestamp();
+			var target = jsonBackup[1].klasse;
+		} catch (e) {
+			updateStatus(progress, "Falsches Datenformat!", "Importiere Backup: Ein Fehler ist aufgetreten !", false, true);
+			return false;
 		}
-		// auf Klassenliste setzen oder aktualisieren
-		console.log("IDB: adding Class to Account (not local)");
-		db_simpleUpdate(function () {
 
-			setTimeout(function () {
-				progress = 100; // Statusbar
-				updateStatus(progress, progress + " %", "Import erfolgreich abgeschlossen !");
-				// --- Klasse aufrufen/schließen ---
+		// Sync an Server
+		progress += 30; // Statusbar
+		updateStatus(progress, "verschlüsselte Daten senden", "Importiere Backup...");
+		sync_pushBack(function (unencrypted, errormsg) {
+
+			if (errormsg && typeof errormsg != "undefined") {
 				setTimeout(function () {
-					window.location.reload();
-				}, 1200);
-			}, 500);
+					updateStatus(progress, errormsg, "Import fehlgeschlagen !", false, true);
+				}, 3000);
+			}
+			// auf Klassenliste setzen oder aktualisieren
+			console.log("IDB: adding Class to Account (not local)");
+			db_simpleUpdate(function () {
 
-		}, 1, "notlocal", "addKlasse", [target, { 'bezeichnung': jsonBackup[1].name, 'id': target, 'changed': changed }], "account");
+				setTimeout(function () {
+					progress = 100; // Statusbar
+					updateStatus(progress, progress + " %", "Import erfolgreich abgeschlossen !");
+					// --- Klasse aufrufen/schließen ---
+					setTimeout(function () {
+						window.location.reload();
+					}, 1200);
+				}, 500);
 
-	}, jsonBackup, ["class", target]);
+			}, 1, "notlocal", "addKlasse", [target, { 'bezeichnung': jsonBackup[1].name, 'id': target, 'changed': changed }], "account");
+
+		}, jsonBackup, ["class", target]);
+
+
+	} else {
+		// Kein Pro, kein Import
+		updateStatus(progress, "Dafür wird ein PRO Account benötigt", "Import fehlgeschlagen !", false, true);
+
+	}
 
 	return;
 }

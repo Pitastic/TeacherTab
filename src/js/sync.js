@@ -37,11 +37,12 @@ function sync_getAccount(callback, localAccount) {
 			success: function (data, status, jqXHR) {
 				// GET
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
-				//DEV console.log("SYNC: data", data);
+				//DEVconsole.log("SYNC: data", newData);
 				// Merge
 				var merged = mergeAccount(newData, localAccount);
 				merged['valid'] = data.valid;
 				merged['validDate'] = data.validDate;
+				GLOBALS.PRO = data.valid;
 				//DEV console.log("SYNC: Merged", merged);
 				// Save and Push back
 				db_replaceData(function () {
@@ -52,6 +53,7 @@ function sync_getAccount(callback, localAccount) {
 				console.log("SYNC-ERROR: Kein Sync des Accounts durchgeführt !");
 				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
 				GLOBALS.AUTH = false;
+				GLOBALS.PRO = false;
 				localStorage.setItem("auth", false);
 				localStorage.removeItem("TeacherTab");
 				window.location.reload();
@@ -81,11 +83,12 @@ function sync_getKlasse(callback, classObjectArray) {
 			timeout: GLOBALS.timeout,
 			success: function (data, status, jqXHR) {
 				// GET Klasse
-				//DEV console.log("SYNC: Data ", data);
 				//DEV console.log("SYNC local:", klassenObject);
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
-				// Merge Klasse
-				if (objLength(newData) > -1) {
+				//DEV console.log("SYNC: data ", data);
+				//DEV console.log("SYNC: newData ", newData);
+				// Merge Klasse, wenn PRO (Funktionsname wird übermittelt)
+				if (data.f) {
 					//DEV console.log("SYNC recieved:", newData);
 					var merged = mergeKlasse(newData, klassenObject);
 					if (merged) {
@@ -101,11 +104,13 @@ function sync_getKlasse(callback, classObjectArray) {
 						}, klassenHash, merged[1].name);
 					} else {
 						alert("Diese Klasse kann nicht geöffnet werden !\nSie ist weder auf dem Gerät, noch konnte sie vom Server geladen werden !\nDie Liste wird bereinigt...");
-						// Account um diese Klasse bereinigen (kein Blacklisting)
+						var cleanMode = (GLOBALS.PRO) ? "delKlasse" : "cleanUp";
+						// Account um diese Klasse bereinigen (Blacklisting nur bei PRO)
 						db_simpleUpdate(function () {
 							window.location.reload();
-						}, 1, "klassenliste", "cleanUp", klassenHash, "account");
+						}, 1, "klassenliste", cleanMode, klassenHash, "account");
 					}
+
 				} else {
 					return callback(data.msg);
 				}
@@ -208,7 +213,7 @@ function sync_deleteKlasse(id, callback) {
 					callback(data.payload);
 				} else {
 					console.log("SYNC-ERROR: Löschen auf dem Server nicht möglich");
-					callback(data.msg);
+					callback(false);
 				}
 			},
 			error: function (data, status, jqXHR) {

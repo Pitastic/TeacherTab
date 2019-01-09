@@ -230,7 +230,7 @@ function listIdx_Select(account) {
 		for (var i = 0; i < keylist.length; i++) {
 			// nur bei Pro alle sonst nur lokale Klassen anzeigen
 			var hash = keylist[i][0];
-			if (account.valid || account.local.indexOf(hash) !== -1) {
+			if (GLOBALS.PRO || account.local.indexOf(hash) !== -1) {
 				var bezeichnung = result[hash].bezeichnung;
 				//var bezeichnung = (account.local.indexOf(hash) === -1) ? "# "+result[hash].bezeichnung : result[hash].bezeichnung;
 				opt = new Option(bezeichnung);
@@ -246,7 +246,7 @@ function listIdx_Select(account) {
 	var auth_status = document.getElementById('AuthStatus');
 	var text = auth_status.getElementsByClassName('statusText')[0];
 	var info = auth_status.getElementsByClassName('statusInfo')[0];
-	if (account.valid) {
+	if (GLOBALS.PRO) {
 		text.classList.add("pro");
 		if (GLOBALS.unlimited.indexOf(account.validDate) === -1) {
 			text.innerHTML = 'PRO Account bis ' + datum(true, account.validDate);
@@ -256,13 +256,6 @@ function listIdx_Select(account) {
 			info.parentNode.removeChild(info);
 		}
 	} else {
-		// Werbung: Square
-		/*
-		google_ad_client = "ca-pub-5341512616014650";
-		google_ad_slot = "9424168592";
-		google_ad_width = 200;
-		google_ad_height = 200;
-		*/
 		text.innerHTML = 'Basic Account';
 		text.classList.add("basic");
 		info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>';
