@@ -868,7 +868,6 @@ function klassenDeleteHandler() {
 	var progress = 0;
 	progress += 30;
 	updateStatus(progress, progress + " %", "Lösche Klassendaten: Aus dem Speicher und Verzeichnis dieses Geräts");
-	var cleanMode = (GLOBALS.PRO) ? "delKlasse" : "cleanUp";
 
 	db_dropKlasse(GLOBALS.klasse, function () {
 

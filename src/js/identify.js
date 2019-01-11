@@ -33,6 +33,7 @@ var GLOBALS = {
 	'klasse': null,
 	'klassenbezeichnung': null,
 
+	'device': null,
 	'knownDevice': null,
 	'perfStart': null,
 	'perfEnd': null,
@@ -259,9 +260,10 @@ function passJs(absolutePath, entrypoint, wait) {
 // Apply Settings
 function prepareDevice() {
 
-	// Save to Session
+	// Save to Session and GLOBALS
 	console.log("IDENTIFY: (prepare) Device is:", DEVICE);
 	localStorage.setItem("DEVICE", JSON.stringify(DEVICE));
+	GLOBALS['device'] = DEVICE['type'];
 
 	// Load standard styles
 	// -- add Medias
@@ -321,18 +323,18 @@ function prepareDevice() {
 
 	// Scripts und CSS
 	switch (DEVICE['type']) {
-		case "mobile":
-			// Lade CSS und Buttons für Smartphone
-			passCss("/css/phone.css");
-			change_Buttons();
-			break;
+	case "mobile":
+		// Lade CSS und Buttons für Smartphone
+		passCss("/css/phone.css");
+		change_Buttons();
+		break;
 
-		case "tablet":
-			// Lade CSS und Buttons für Tablet
-			break;
+	case "tablet":
+		// Lade CSS und Buttons für Tablet
+		break;
 
-		default: // Desktop
-			break;
+	default: // Desktop
+		break;
 	}
 
 	// Cache

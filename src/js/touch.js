@@ -5,8 +5,9 @@ var slideBeginX;
 var slideBeginY;
 
 function touchScroller() {
+	var toScroll = (GLOBALS['device'] == "mobile") ? "scrollable" : "styleWrap";
 	// ausgesuchte scrollable machen
-	var scrollables = document.getElementsByClassName('scrollable');
+	var scrollables = document.getElementsByClassName(toScroll);
 	for (var i = 0; i < scrollables.length; i++) {
 		scrollables[i].addEventListener('touchstart', function (event) {
 			this.slideBeginY = event.pageY || event.touches[0].pageY;
