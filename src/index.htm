@@ -1,0 +1,354 @@
+<!doctype html>
+<html manifest="cache.manifest">
+
+<head>
+	<meta charset="utf-8">
+	<link rel="manifest" href="manifest.json">
+	<meta id="dynamicViewport" name="viewport">
+
+	<!-- Service Worker -->
+	<script type="text/javascript">
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker
+				.register('/sw.js', { scope: '.' })
+				.then(function () { console.log("SW: Service Worker Registered"); })
+				.catch(function (err) { console.log("SW: Error, Service Worker failed to register !", err); });
+		} else {
+			console.log("SW: Service Worker werden nicht unterstützt ! - Fallback zu cache.manifest...");
+		}
+	</script>
+
+	<!-- Apple -->
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="application-name" content="TeacherTab">
+	<meta name="apple-mobile-web-app-title" content="TeacherTab">
+	<!-- iPad (portrait) SPLASHSCREEN -->
+	<link href="apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (orientation: portrait)" rel="apple-touch-startup-image">
+	<!-- iPad (landscape) SPLASHSCREEN-->
+	<link href="apple-touch-startup-image-748x1024.png" media="(device-width: 768px) and (orientation: landscape)" rel="apple-touch-startup-image">
+
+	<!-- Favicons -->
+	<link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+
+	<!-- detect Device -->
+	<script type="text/javascript" src="/js/identify.js"></script>
+
+	<title>TeacherTab</title>
+</head>
+
+<body ontouchstart>
+	<div id="header">
+		<h1>TeacherTab WebApp</h1>
+	</div>
+
+	<!--Übersicht INDEX -->
+	<div id="item0" class="uebersicht show">
+		<div class="content scrollable">
+			<h2>Willkommen</h2>
+
+			<div class="styleWrap">
+
+				<div id="indexKlassen" class="indexBox">
+					<p>Liste aller verfügbaren Klassen</p>
+					<form>
+						<select id="klasseSelect" onchange="klassenAuswahl(this)">
+							<option>Lade...</option>
+						</select>
+						<a class="button OK stay hide" href="#" id="syncAll">Sync Alle</a>
+						<a class="button OK stay" href="#" id="syncOpen">Öffnen</a>
+					</form>
+					<span>Lade...</span>
+					<span>Lade...</span>
+				</div>
+
+				<div class="indexBox">
+					<div class="table">
+						<div class="cell">
+							<a class="button stay" href="#" title="Grundeinstellungen" onclick="popUp('item0First')">Grundeinstellungen</a><br>
+							<a class="button HELP stay" href="https://my.teachertab.de" title="Hilfe" target="_blank">My.TeacherTab.de</a><br>
+							<a href="#" class="button stay" onclick="window.location.reload();">App Update</a>
+						</div class="cell">
+					</div>
+				</div>
+
+				<div class="indexBox">
+					<div class="table">
+						<div class="cell" id="AuthStatus">
+							<h4>Dein Status:</h4>
+							<div class="statusText">Lade...</div>
+							<footer class="statusInfo">...</footer>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+		<pre id="dev_info1"></pre>
+	</div>
+	<!-- /Index-->
+
+
+	<!-- Eingabe-PopUp -->
+	<div id="fadeBlack" class="hide">
+
+		<!-- Klasse hinzufügen -->
+		<div id="item0Add" class="popUp">
+			<h3>Klasse hinzufügen</h3>
+			<div class="container">
+				<form>
+					<ul>
+						<li>
+							<input id="nameKlasse" type="text" placeholder="Name / Bezeichnung">
+						</li>
+						<li>
+							<label>Schuljahr : <select id="jahrKlasse">
+								</select>
+							</label>
+						</li>
+						<li>
+							<label>Fach : <select id="fachKlasse">
+									<option value="Awt">AWT</option>
+									<option value="Eng">Englisch</option>
+									<option value="Mus">Musik</option>
+									<option value="Nw">Naturwissenschaft</option>
+									<option value="Che">Chemie</option>
+									<option value="Bio">Biologie</option>
+									<option value="Phy">Physik</option>
+								</select>
+							</label>
+						</li>
+					</ul>
+				</form>
+			</div>
+			<div class="close"><a class="stay" href="#">x</a></div>
+			<div><a class="button OK stay" href="#" onclick="addKlasse(this);">Erstellen</a></div>
+		</div>
+
+		<div id="item0Sync" class="popUp">
+			<div class="container">
+				<ul>
+					<li>
+						<div id="syncText">Synchronisiere</div>
+						<div class="schiene sync">
+							<div id="syncInnerText">0 %</div>
+							<div class="balken" id="syncStatus"></div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="close"><a class="stay" id="closeSync" href="#">x</a></div>
+			<div>
+				<a class="button OK hide stay" href="uebersicht.htm">Öffnen</a>
+				<a class="button hide stay" href="#" onclick="location.reload()">Zurück</a>
+			</div>
+		</div>
+
+		<div id="item0Export" class="popUp">
+			<h3>Klasse exportieren</h3>
+			<div class="container">
+				<ul>
+					<li>Der Export wird in einem neuen Fenster geöffnet. Achte daher auf deinen PopUp-Blocker...</li>
+				</ul>
+				<ul>
+					<li>HTML
+						<ul>
+							<li>zum Archivieren oder Mitnehmen</li>
+							<li>Ausdruck über den Browser als PDF oder auf Papier</li>
+						</ul>
+					</li>
+					<li>JSON
+						<ul>
+							<li>zum Archivieren oder Wiederherstellen</li>
+							<li>rohes Backup aus der Datenbank als Text, um den Stand einer Klasse wiederherzustellen</li>
+							<li>für den Import ist ein Sync-Account erforderlich</li>
+						</ul>
+					</li>
+
+					<li class="soon">CSV (kommt bald...)
+						<!--
+			<ul>
+				<li>zum Bearbeiten z.b in einer Tabellenkalkulation</li>
+			</ul>
+		-->
+					</li>
+					<li class="soon">Kopie (kommt bald...)
+						<!--
+			<ul>
+				<li>neue Klasse durch Kopie erstellen</li>
+				<li>nur Grunddaten und Schüler werden übernommen</li>
+				<li>hilfreich bei Fortführung einer Klasse im nächsten Schuljahr</li>
+				<li>...erst bald verfügbar...</li>
+			</ul>
+		-->
+					</li>
+				</ul>
+			</div>
+
+			<div class="close"><a class="stay" href="#">x</a></div>
+			<div>
+				<a id="export_to_json" class="button" href="#" onclick='popUpSwitch(this);klassenSyncHandler("export_json.htm", true);'>JSON</a>
+				<a id="export_to_html" class="button" href="#" onclick='popUpSwitch(this);klassenSyncHandler("export_html.htm", true);'>HTML</a>
+				<!--
+		<a class="button OK stay" href="#" onclick="setTimeout(function(){popUp('item0Copy');},1000);popUpClose(this);">Kopie</a>
+		<a id="export_to_csv" class="button" href="https://www.teachertab.de/webapp/export.htm" title="CSV Export">CSV</a>
+		-->
+			</div>
+		</div>
+
+		<div id="item0Import" class="popUp">
+			<h3>Klasse importieren</h3>
+			<div class="container">
+				<ul>
+					<li class="msg error">Die importierte Klasse erhält im Namen den Zusatz 'Import'.</li>
+					<li>Die Daten werden erst verschlüsselt und dann an den Server gesendet:
+						<ul>
+							<li>Öffne die .json-Datei mit einem Texteditor</li>
+							<li>Markiere den gesamten Inhalt mit [STRG+A] / [Command+A]</li>
+							<li>Kopiere ihn mit [STRG+C] / [Command+C]</li>
+							<li>Klicke in das Textfeld und füge ihn dort ein mit [STRG+V] / [Command+V]</li>
+						</ul>
+					</li>
+				</ul>
+				<ul>
+					<li><textarea name="jsonBackup" id="jsonBackup" placeholder="Inhalt der .json-Datei hier einfügen..."></textarea></li>
+				</ul>
+			</div>
+			<div class="close"><a class="stay" href="#">x</a></div>
+			<div>
+				<a id="export_to_html" class="button OK stay" href="#" onclick='popUpSwitch(this);klassenImportHandler();'>Importieren</a>
+			</div>
+		</div>
+
+		<div id="item0Copy" class="popUp">
+			<h3>neue Klasse durch Kopieren</h3>
+			<div class="container">
+				<ul>
+					<li><input id="nameCopyKlasse" type="text" placeholder="neuer Klassenname"></li>
+					<li>
+						<label>Schuljahr : <select id="jahrCopyKlasse">
+							</select>
+						</label>
+					</li>
+					<li>
+						<label>Fach : <select id="fachCopyKlasse">
+								<option value="Awt">AWT</option>
+								<option value="Eng">Englisch</option>
+								<option value="Nw">Naturwissenschaft</option>
+								<option value="Che">Chemie</option>
+								<option value="Bio">Biologie</option>
+								<option value="Phy">Physik</option>
+							</select>
+						</label>
+					</li>
+				</ul>
+			</div>
+			<div class="close"><a class="stay" href="#">x</a></div>
+			<div>
+				<a class="button OK" href="#" onclick="copyKlasse(this, sessionStorage.getItem('klasse'))">kopieren</a>
+			</div>
+		</div>
+
+		<div id="item0First" class="popUp">
+			<h3>Account Einstellungen</h3>
+			<div class="container">
+				<form>
+					<ul>
+						<li>
+							<span>
+								Gib hier deine Accountdaten von <a href="https://my.teachertab.de" class="extern" target="_blank">my.teachertab.de</a>
+								an.
+							</span><br>
+							<span class="highlight">
+								Du hast noch keinen Account ? Dann kannst du dich <a href="https://my.teachertab.de/register.php" class="extern"
+								 target="_blank">hier</a> einfach kostenlos registrieren !
+							</span>
+						</li>
+						<li>
+							<input id="userID" type="email" placeholder="Emailadresse" required="required" tabindex="1">
+						</li>
+						<li>
+							<input id="passW" type="password" placeholder="Passwort" required="required" tabindex="2">
+						</li>
+						<li>
+							<span>
+								Wenn du erweiterte Funktionen nutzen möchtest (z.B. die Synchronisierung und Backup-Import) kannst du deinen
+								Account auf Pro updaten, ohne Abo, so oft und lange wie du es möchtest !
+							</span><br>
+							<span class="highlight">
+								Auf <a href="https://my.teachertab.de" class="extern" target="_blank">my.teachertab.de</a> kannst du deinen
+								Account verwalten und dir Pro anschauen.
+							</span>
+						</li>
+						<li class="msg error hide">
+							Fehlermeldung
+						</li>
+					</ul>
+				</form>
+			</div>
+			<div>
+				<a class="button ABORT stay" onclick="popUpClose(this); window.location.reload();" href="#">Abbrechen</a>
+				<a class="button OK stay" onclick="settingsAllgemein()" href="#">Login</a>
+			</div>
+		</div>
+
+		<div id="item0Install" class="popUp">
+			<h3>Installation</h3>
+			<div class="container">
+				<ul>
+					<li>Klicke auf Installieren</li>
+					<li>Es erscheint ein Systemdialog, der dich durch die Installation leitet</li>
+					<li>Schließe dieses Fenster und öffne die WebApp vom Homescreen oder der App-Liste</li>
+				</ul>
+			</div>
+			<div class="close"><a class="stay" href="#">x</a></div>
+			<div>
+				<a class="button OK stay" onclick="addToHomeScreen(this)" href="#">Installieren</a>
+			</div>
+		</div>
+
+	</div>
+	<!-- /popUp-PopUp -->
+
+	<nav>
+		<div class="centerWrap-child">
+			<div id="seitenleiste">
+				<a id="btn_Add" class="button OK stay" data-name="item0Add" href="#">Neu</a>
+				<a id="import" class="button stay" href="#">Import</a>
+				<a id="export" class="button stay" href="#">Export</a>
+				<a id="btn_Delete" class="button ABORT stay">Löschen</a>
+
+				<div class="clearer"></div>
+			</div>
+		</div>
+	</nav>
+
+	<div id="footer"></div>
+</body>
+
+<!-- Frameworks -->
+<script src="/js/frameworks/jquery.min.js"></script>
+<script src="/js/frameworks/crypto-js/aes.js"></script>
+<script src="/js/frameworks/crypto-js/sha1.js"></script>
+<!-- Basismodule -->
+<script type="text/javascript" src="/js/all.js"></script>
+<script type="text/javascript" src="/js/database.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+<script type="text/javascript" src="/js/sync.js"></script>
+<script type="text/javascript" src="/js/stay.js"></script>
+
+</html>

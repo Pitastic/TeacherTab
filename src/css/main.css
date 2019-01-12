@@ -1,0 +1,844 @@
+/*
+===============================================================================
+Header und Footer Leiste
+===============================================================================
+*/
+#header {
+	display: block;
+	position: fixed;
+	left: 200px; right: 30px; top: 25px;/*status-bar-fix*/
+	height: 75px;
+}
+#header h1 {
+	float: left;
+	padding-top: 13px;
+	font-size: 26px;
+	line-height: 40px;
+	font-weight: bold;
+	color: white;
+	text-shadow: 0 0 2px black;
+	}
+
+nav {
+	display: table;
+	position: fixed;
+	height: 100%;
+	}
+	nav a, nav .button {
+		display: block;
+		padding: 5px 10px 40px;
+		margin: 25px 15px;
+		width: 65px;
+		text-align: center;
+		font-size: 12px;
+		line-height: 20px;
+	}
+	nav .button:first-child {
+		margin-top: 15px;
+		}
+	nav .button:last-of-type {
+		margin-bottom: 15px;
+	}
+	nav .clearer {
+		display: none;
+	}
+	.notenHeader {
+		display: none;
+	}
+
+/*
+===============================================================================
+Panels allgemein
+===============================================================================
+*/
+.content{
+	position: absolute;
+	margin: 0 0 30px 150px;
+	top: 75px; bottom: 0;
+	left: 0;
+	right: 0;
+	overflow-x: hidden;
+}
+
+.centerWrap-child {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+#item0 .styleWrap, #item1 .styleWrap, #item2 .styleWrap, #item1details .styleWrap, #item2details .styleWrap, #item1setting .styleWrap, #item1setting_gruppen .styleWrap {
+    position: absolute;
+    top: 0; bottom: 0; right: 30px; left: 0;
+    overflow-y:scroll; overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    
+}
+
+/*Scroll-Bug-Fix*/
+#listStudents, #listLeistung {
+-webkit-transform: translate3d(0%,0,0);
+-moz-transform: translate3d(0%,0,0);
+transform: translate3d(-0%,0,0);
+}
+
+.uebersicht {
+	/* Style */
+	position: fixed;
+	top: 25px; /*status-bar-fix*/
+	bottom: 0;
+	width: 100%;
+	-webkit-backface-visibility:hidden;
+	backface-visibility:hidden;
+	-webkit-perspective: 1000;
+	perspective: 1000;
+	overflow-x: hidden;
+	-webkit-transition: right 0s linear 0.3s, -webkit-transform 1s;
+	-moz-transition: right 0s linear 0.3s, -webkit-transform 1s;
+	transition: right 0s linear 0.3s, -webkit-transform 1s;
+}
+
+	/* Startpositionen */
+	.uebersicht.left {
+		-webkit-transform: translate3d(-150%,0,0);
+		-moz-transform: translate3d(-150%,0,0);
+		transform: translate3d(-150%,0,0);
+		}
+	.uebersicht.right {
+		-webkit-transform: translate3d(150%,0,0);
+		-moz-transform: translate3d(150%,0,0);
+		transform: translate3d(150%,0,0);
+		}
+	.uebersicht.bottom {
+		-webkit-transform: translateY(100%);
+		-moz-transform: translateY(100%);
+		transform: translateY(100%);
+		}
+	.uebersicht.top {
+		-webkit-transform: translateY(-100%);
+		-moz-transform: translateY(-100%);
+		transform: translateY(-100%);
+		}
+	/* Endposition */
+	.uebersicht.top.show, .uebersicht.bottom.show {
+		-webkit-transform: translateY(0);
+		-moz-transform: translateY(0);
+		transform: translateY(0);
+		}
+	.uebersicht.right.show, .uebersicht.left.show {
+		-webkit-transform: translateX(0);
+		-moz-transform: translateX(0);
+		transform: translateX(0);
+	}
+		/* Dreh-Animation */
+		.uebersicht.flip {
+			-webkit-transform: rotateY(180deg);
+			-moz-transform: rotateY(180deg);
+			transform: rotateY(180deg);
+			right: -100%;
+		}
+		.uebersicht.flip.show {
+			right: 0;
+			-webkit-transform: rotateY(0deg);
+			-moz-transform: rotateY(0deg);
+			transform: rotateY(0deg);
+			-webkit-transition: right 0s linear 0.25s, -webkit-transform 1s;
+			-moz-transition: right 0s linear 0.25s, -webkit-transform 1s;
+			transition: right 0s linear 0.25s, -webkit-transform 1s;
+		}
+
+#itemExport {
+	position: relative;
+}
+
+
+/*
+===============================================================================
+Listen in allen Ansichten
+===============================================================================
+*/
+
+.uebersicht li, #KeyBar li {
+		position: relative;
+		margin-bottom: 1em;
+		text-decoration: none;
+		text-align: right;
+		cursor: pointer;
+	}
+.uebersicht li div {
+		display: inline-block;
+		padding: 1em 0;
+		margin: auto 1.5em;
+		text-align: center;
+	}
+
+	.uebersicht li .gesamt.eingetragen {
+		padding: 0 0.75em; padding-top: 0.5em;
+		margin: 0 1em; margin-left: 3em;
+		height: 1.5em;
+		color: white;
+		background-color: darkslategrey;
+		font-size: 1em;
+		font-weight: bold;
+		box-shadow: inset 0px -2px 1px 0 white, inset 0px 2px 1px 0 black;
+	}
+	.uebersicht li .fspz {
+		font-size: 0.8em;
+	}
+	.uebersicht li .tools.right {
+		color: rgb(50,90,255);
+		text-decoration: none;
+		font-weight: bold;
+		font-family: 'Courier';
+		}
+
+/* -speziell Schüler- */
+#listStudents div.name, #listLeistung div.name {
+	position: absolute;
+	left: 0; top:0;bottom:0;
+	margin: 0; padding-left: 1em;
+	width: 35%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-overflow: ".";
+	text-align: right;
+}
+	/*-- Farben wie in Details*/
+	#listStudents div.mdl, h3.mndl {
+		color: #027585;
+	}
+	#listStudents div.fspz, h3.fspz {
+		color: #008C6D;
+	}
+	#listStudents div.schr, h3.schr {
+		color: #D95E00;
+	}
+
+/* -speziell Leistungen- */
+	#listLeistung h4 {
+		padding: 1em; padding-bottom: 0.25em;
+		color: white;
+		text-shadow: 0 0 4px black;
+		}
+	#listLeistung li div {
+		text-align: center;
+		}
+	#listLeistung div.name {
+		text-align: left;
+		}
+	#listLeistung li div:nth-child(2) {
+		width: 30%;
+		}
+	#listLeistung li div:nth-child(3) {
+		margin: auto 5%;
+		width: 5%; /*Symbol*/
+		}
+	#listLeistung li div.gewichtung, span.gewichtung {
+		margin: auto 5%;
+		font-size: 75%;
+		width: 5%; /*Gewichtung*/
+		}
+	#listLeistung li div.tools {
+		width: 5%;
+		text-align: right;
+		}
+	#listLeistung li div.keine {
+		font-size: 0.8em;
+		color: gray;
+		width: auto;
+	}
+	#listLeistung li div.rohpunkte {
+		background-image: url('../img/rohpunkte.gif');
+		background-position: center center;
+		background-repeat: no-repeat;
+		background-size: 30px;
+	}
+	#listLeistung li div.punkte {
+		background-image: url('../img/punkte.gif');
+		background-position: center center;
+		background-repeat: no-repeat;
+		background-size: 30px;
+	}
+	#listLeistung li div.noten {
+		background-image: url('../img/noten.gif');
+		background-position: center center;
+		background-repeat: no-repeat;
+		background-size: 25px;
+	}
+
+/*- Flags -*/
+div.s_flag {
+	float: left;
+	width: 25px;
+	margin-left: 5px !important; margin-top: -2px !important;
+	padding: 15px 0 3px !important;
+	color: white;
+	font-weight: bold;
+	border-radius: 5px 3px 0 0;
+	box-shadow: 1px 1px 1px black;
+	background: -moz-linear-gradient(top,  rgba(9,103,181,1) 0%, rgba(57,123,178,1) 33%, rgba(8,102,178,1) 100%);
+	background: -webkit-linear-gradient(top,  rgba(9,103,181,1) 0%,rgba(57,123,178,1) 33%,rgba(8,102,178,1) 100%);
+	background: -o-linear-gradient(top,  rgba(9,103,181,1) 0%,rgba(57,123,178,1) 33%,rgba(8,102,178,1) 100%);
+	background: linear-gradient(to bottom,  rgba(9,103,181,1) 0%,rgba(57,123,178,1) 33%,rgba(8,102,178,1) 100%);
+}
+
+
+/*
+===============================================================================
+Index - Startseite
+===============================================================================
+*/
+#item0 .styleWrap {
+    padding: 0px;
+    text-align: center;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    border: none;
+    background: none;
+}
+
+.indexBox {
+    position: absolute;
+    display: block;
+    padding: 20px;
+	text-align: center;
+	}
+
+    .indexBox:nth-child(1){
+        top: 0%; left: 0; right: 0;
+        bottom: 60%;
+        min-height: 130px;
+    }
+        .indexBox:nth-child(1) select{
+            margin-left: 0; margin-right: 0;
+        }
+
+    .indexBox:nth-child(2){
+		top: 45%;
+		left: 0; right: 52%;
+        bottom: 10%;
+	}
+    .indexBox:nth-child(3){
+		top: 45%;
+        left: 52%; right: 0;
+        bottom: 10%;
+        padding-left: 0; padding-right: 0;
+    }
+		.indexBox:nth-child(2) .button, .indexBox:nth-child(3) .button {
+			margin: 1em 0;
+		}
+			#AuthStatus h4 {
+				font-weight: bold;
+				margin-bottom: 0.5em;
+			}
+			#AuthStatus .statusText{
+				padding: 1.5em 0;
+				background-color: grey;
+				border: 1px solid black;
+				border-width: 1px 0 1px 0;
+			}
+				#AuthStatus .statusText.pro{background-color: #76e97f;}
+				#AuthStatus .statusText.basic{background-color: #76cde9;}
+			#AuthStatus .statusInfo{
+				font-style: italic;
+				margin-top: 0.5em;
+			}
+
+	.indexBox span {
+		position: absolute;
+        left: 5px; right: auto;
+        bottom: 5px;
+		font-size: small;
+	}
+	.indexBox span:last-Child {
+        left: auto; right: 5px;
+	}
+	.indexBox p {
+		text-align: center;
+		line-height: 1.3em;
+	}
+	.indexBox form {
+		margin-top: 30px;
+	}
+		.indexBox form select {
+			width: 100%;
+		}
+		.indexBox .button {
+			padding: 10px 30px;
+			margin: 35px 5px; margin-bottom: 0;
+		}
+
+/*
+===============================================================================
+Setting (item0details)
+===============================================================================
+*/
+#listSetting h3 {
+	color: darkslategray;
+}
+	#listSetting > div {
+		border-color: darkslategray;
+		color: darkslategray;
+		font-size: 0.8em;
+	}
+	#listSetting > div div, #listSetting > div form {
+		margin-top: 0.5em;
+		color: black;
+		font-size: initial;
+		text-align: center;
+	}
+	#listSetting label {
+		padding: 0.25em 0;
+	}
+	#listSetting input[type="text"], #listSetting input[type="number"] {
+		padding: 0.25em;
+		font-size: 1em;
+		text-align: center;
+		border-radius: 4px;
+		background-color: #FFF;
+		color: #222;
+		border: 1px solid #999999;
+		}
+		#form_Notenverteilung label, #form_Gewichtung label {
+			margin-left: 1.25em;
+		}
+		#form_Notenverteilung label:first-child, #form_Gewichtung label:first-child {
+		margin-left: 0;
+		}
+		#form_Notenverteilung label:after, #form_Gewichtung label:after{
+			content: "%";
+		}
+	#form_KompNamen label {
+		display: inline-block;
+		width: 50%;
+	}
+		#form_KompNamen input {
+			width: 60%;
+		}
+	#form_fspz, #form_sex, #form_vorjahr {
+		text-align: left !important;
+		padding-bottom: 0.3em;
+	}
+
+#gruppierer {
+	display: inline-block;
+	position: absolute;
+	right: 30px; top: 30%;
+	margin: 0; padding-left: 20px;
+	font-size: 2em;
+}
+
+
+/*
+===============================================================================
+Details Schüler (item1details)
+===============================================================================
+*/
+#item1details li {
+    margin-bottom: 1em;
+	padding: 0.75em 0.25em;
+	text-align: left;
+	clear: both;
+	color: grey;
+}
+
+.item1_gesamt h3 {
+	color: white;
+}
+
+#studentInfo h3, #listSetting h3 {
+	padding: 0.25em;
+	margin-top: 1em;
+	display: block;
+	border-style: solid;
+	}
+	#ds_gesamt {
+		padding: 2em 100px 2em 2em !important;
+		margin-bottom: 2em !important;
+		border-radius: 4px;
+		border: 2px solid darkslategray;
+		color:darkslategray;
+	}
+	#ds_mndl {
+	   color: #027585;
+	   border-color: #027585;
+	}
+		#item1_mndl span.note {
+			color: #027585;
+			margin-right: 1em;
+			float: right;
+			}
+	.fspz_div h3 {
+		margin-bottom: 0.5em;
+		color: #008C6D;
+		border-bottom-width: 1px;
+		border-color: #008C6D;
+	}
+		#item1_mndl div.fspz_div span.note {
+			color: #008C6D;
+			margin-right: 1em;
+			float: right;
+			}
+	
+	
+	#ds_schr {
+	   color: #D95E00;
+	}
+	#item1_schr h3 {
+		margin-bottom: 0.5em;
+		color: #D95E00;
+		border-bottom-width: 1px;
+		border-color: #D95E00;
+	}
+		#item1_schr span.note {
+			color: #D95E00;
+			float: right;
+		}
+	
+#item1_gewichtung, #item1_mndl, #item1_fspz, #item1_schr, #listSetting > div {
+	margin-bottom: 2em;
+	padding: 0.5em;
+	border: 2px solid white;
+	border-radius: 4px;
+}
+	#item1_gewichtung{
+		height: 2.5em;
+	}
+	#item1_mndl {
+		border-color: #027585;
+	}
+	#item1_schr {
+		border-color: #D95E00;
+	}
+
+
+/*- Gesamt -*/
+#item1_gewichtung {
+	position: relative;
+}
+#item1_gewichtung div {
+	float: left;
+	margin-left: -1px;
+	padding: 0.75em 0;
+	border-radius: 4px;
+	border: 1px solid darkslategrey;
+}
+	#item1_gewichtung div:nth-child(1){
+		background-color: #3898A5;
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+		border-right-width: 0;
+	}
+		#item1_gewichtung div:nth-child(1) div{
+			padding: 0.25em 0;
+			margin: -0.25em 1em -1em 0;
+			float: right;
+			border-radius: 4px;
+			border-right-width: 1px;
+			background-color: #38AC92;
+			text-align: center;
+			font-size: 0.8em;
+		}
+			#item1_gewichtung div:nth-child(1) div span {
+				padding: 0;
+			}
+	#item1_gewichtung div:nth-child(2){
+		background-color: #FF9E53;
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+		border-left-width: 0;
+	}
+	#item1_gewichtung span {
+		display: block;
+		padding: 0 10px;
+		font-size: 0.75em;
+	}
+
+#studentInfo h3 span {
+	float:right;
+}
+	span.Notendurchschnitt {
+		font-weight: bold;
+		margin-left: 10px;
+		font-size: 100% !important;
+	}
+	span.Vorjahresnote {
+		margin-right: 1.5em;
+		font-style: italic;
+	}
+
+.item1_gesamt ul li span {
+	display: inline-block;
+}
+	.item1_gesamt li span:first-child, .fspz_div li span:first-child {
+		/*Beschreibung*/
+		padding-left: 0.5em;
+		width: 30%;
+	}
+	.item1_gesamt li span:nth-child(2) {
+		/*Datum*/
+		width: 35%;
+		text-align: center;
+		text-overflow: ellipsis;
+		text-overflow: '...';
+		white-space: nowrap;
+	}
+	.item1_gesamt li span.lupe{
+		/*Lupe*/
+		float: right;
+		height: 16px; width: 30px;
+		background: url(../img/lupe_klein.gif) center center no-repeat;
+		background-color: transparent;
+	}
+
+#differenzierteLeistung {
+	text-align: center;
+}
+	#differenzierteLeistung div {
+			margin: 0; padding: 0;
+			padding: 0.5em 0;
+			margin-right: 6.3%;
+			width: 20%;
+			background: -moz-linear-gradient(0deg, #464646 0%,#646464 100%);
+			background: -webkit-linear-gradient(0deg, #464646 0%,#646464 100%);
+			background: linear-gradient(0deg, #464646 0%,#646464 100%);
+			border-radius: 4px;
+			border: none;
+		}
+		#differenzierteLeistung div:last-child {
+			margin-right:0;
+		}
+		#differenzierteLeistung div.Kategorien span:last-child {
+			color: lightgray;
+		}
+		span.katSpans {
+			color: white;
+        }
+
+#item1setting_gruppen .styleWrap {
+    right: 150px;
+}
+    #item1setting_gruppen ul li {text-align:left;}
+    #item1setting_gruppen .s_flag {float:right;}
+
+/*
+===============================================================================
+Details Leistungen (item2details)
+===============================================================================
+*/
+.styleWrap.arbeit_info {
+	/* TODO:
+	- Breite Prozentual aber mit Max-Pixel (wird sonst zu breit)
+	- Bottom Stats zentrieren
+	margin-right: 68%;
+	*/
+	margin-right: 0;
+	right: 0 !important;
+	width: 230px;
+	overflow-y: auto !important;
+}
+.styleWrap.arbeit_leistung {
+	margin-left: 285px;
+}
+
+#arbeit_info {
+	border-radius: 4px 0 0 4px;
+	}
+	#arbeit_info menu, #arbeit_info .bottom{
+		border-bottom: 1px solid gray;
+		border-right: 1px solid gray;
+	}
+	#arbeit_info .button.OK {
+	display: inline-block;
+	padding: 10px 30px;
+	margin-top: 20px;
+	}
+	#arbeit_info > div, #arbeit_info > menu {
+		padding: 10px 5px;
+		background-color: rgb(240, 240, 240);
+		box-shadow: inset 0 0 10px 4px white;
+		border-radius: 4px;
+		text-align: center;
+	}
+		#item2_info_Verteilung select {
+			width: 80%;
+			margin-top: 10px; margin-bottom: 15px;
+		}
+		#item2_info_Verteilung div {
+			text-align: left;
+		}
+		#arbeit_info .bottom {
+			margin: 0;
+			margin-top: 20px;
+		}
+		#arbeit_info .bottom .button {
+			margin-top: 10px;
+			}
+	#diag_Mitschreiber {
+		height: 90px;
+		text-align: right;
+	}
+	
+#arbeit_leistung {
+	-webkit-transform: translateZ(0px);
+	-moz-transform: translateZ(0px);
+	transform: translateZ(0px);
+	position: absolute;
+	left: 15px; right: 15px;
+	}
+	#arbeit_leistung ul li {
+		margin-bottom: 7px;
+		padding: 6px;
+		background-color: white;
+		border-bottom: 1px solid gray;
+		border-right: 1px solid gray;
+		border-radius: 4px;
+		overflow: hidden;
+		text-align: right;
+		}
+	#arbeit_leistung ul li:last-child {
+		margin-bottom: 0;
+		}
+			div.Kategorien {
+			display: inline-block;
+			padding: 3px !important;
+			margin: 0 4px !important;
+			width: 50px;
+			border: 1px solid silver;
+			border-radius: 2px;
+			text-align: center;
+			}
+			#arbeit_leistung div span:last-child, div.Kategorien span:last-child {
+			display: block;
+			text-overflow: ellipsis;
+			text-overflow: '.';
+			white-space: nowrap;
+			overflow: hidden;
+			font-size: 0.7em;
+			color: gray;
+			}
+			#arbeit_leistung div.Name {
+			float: left;
+			margin: 0; padding: 3px;
+			background-color: transparent;
+			border: none;
+			text-align: left;
+			text-overflow: ellipsis;
+			text-overflow: '.';
+			white-space: nowrap;
+			overflow: hidden;
+			width: 116px; /*Max. Namenslaenge*/
+			}
+			#arbeit_leistung div.Kategorien:nth-child(6), #arbeit_leistung div.Gesamtpunkte {
+				border-color: darkslategray;
+				margin-left: 1em;
+			}
+				#arbeit_leistung div.Gesamtpunkte {
+					padding: 0; padding-top: 0.2em;
+				}
+			#arbeit_leistung div.Note {
+				margin: -7px; margin-left: 8px;
+				padding: 10px 8px;
+				float: right;
+				color: darkslategray;
+			}
+				#arbeit_leistung div.Note span:first-Child {
+					font-weight: bold;
+				}
+				#arbeit_leistung div.Note span:last-Child { /*erreichte Prozent*/
+					color: rgb(128,128,128);
+					width: 40px;
+				}
+			#arbeit_leistung div.Note.standalone {
+				width: 50px; height: 30px;
+				border-left: 1px solid darkslategray;
+			}
+				#arbeit_leistung div.Note.standalone span {
+					font-weight: bold;
+					font-size: 20px;
+					line-height: 30px;
+					color: darkslategray;
+				}
+				#arbeit_leistung li.selected div.Note.standalone span, #arbeit_leistung li.selected div.Gesamtpunkte span {
+					color: white;
+				}
+				#arbeit_leistung li.selected div.Note.standalone {
+					border-left-color: white;
+				}
+#item2details li.selected, #item1setting_gruppen li.selected {
+		background-image: -moz-linear-gradient(0deg, #464646 0%,#646464 100%);
+		background-image: -webkit-linear-gradient(0deg, #464646 0%,#646464 100%);
+		background-image: linear-gradient(0deg, #464646 0%,#646464 100%);
+		color: white;
+	}
+	#item2details li.selected .Name span:last-child{
+		color: lightgray;
+	}
+
+/* Custom Keyboard */
+#NotenListe_Arbeit {
+	display: none;
+    padding: 10px;
+    border-radius: 5px;
+}
+#NotenListe_Arbeit.show {display: block; opacity: 1;}
+
+    #NotenListe_Arbeit ul {
+        text-align: center;
+        margin-bottom: 1em;
+    }
+    #NotenListe_Arbeit a.button.OK {
+        margin: 0;
+    }
+    #NotenListe_Arbeit select, #gruppierer {
+        padding: 10px;
+        padding-right: 25px; padding-left: 15px;
+        margin: 0.75em auto;
+        font-weight: bold;
+        font-size: 26px;
+        text-align: center;
+        border-bottom-width: 2px;
+    }
+    #NotenListe_Arbeit p {
+        font-size: 1em;
+        line-height: 1.25em;
+    }
+
+
+/*Statistik Leistung*/
+table {
+	margin-top: 6px;
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
+	text-align: center;
+	border: 1px solid #ccc;
+}
+	thead tr {
+		background-color: #ccc;
+	}
+	thead td {
+	   font-weight: bold;
+	}
+	tr {
+		padding: 0; margin: 0;
+		}
+		tr:nth-child(2){
+			font-size: 85%;
+			background-color: rgb(226, 226, 226);
+			color: grey;
+		}
+		tr:nth-child(3) td {
+			padding: 0.5em 0;
+		}
+td {
+	padding: 0.25em 0;
+	font-weight: normal;
+	}
+	
+#diag_AnzahlNoten {
+	margin: auto;
+	margin-top: 6px;
+	width: 700px;
+	height: 200px;
+}
+
