@@ -13,7 +13,6 @@ ftpsync.settings
 # keine versteckten
 .*
 
-
 # Created by https://www.gitignore.io/api/sublimetext,visualstudiocode
 
 ### SublimeText ###
@@ -54,9 +53,6 @@ GitHub.sublime-settings
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-
-
-# End of https://www.gitignore.io/api/sublimetext,visualstudiocode
 
 # NPM
 node_modules
