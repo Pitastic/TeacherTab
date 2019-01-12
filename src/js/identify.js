@@ -177,7 +177,7 @@ function change_Buttons() {
 			"btn_Add"	: ["/img/mobile/neu1.png", "initial"],
 			"btn_Delete": ["/img/mobile/delete.png", "initial"],
 			"Abbrechen"	: ["/img/mobile/abort.png", "initial"],
-			"Save"		: ["/img/mobile/neu2.png", "initial"],
+			"Save"		: ["/img/mobile/save.png", "initial"],
 			"export"	: ["/img/mobile/export.png", "initial"],
 			"import"	: ["/img/mobile/import.png", "initial"],
 			"btn_Settings": ["/img/mobile/settings.png", "initial"],
