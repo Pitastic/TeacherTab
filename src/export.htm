@@ -1,0 +1,242 @@
+<!doctype html>
+<html manifest="cache.manifest">
+
+<head>
+	<meta charset="utf-8">
+	<meta id="dynamicViewport" name="viewport">
+	<script type="text/javascript">
+		// ServiceWorker
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker
+				.register('/sw.js', { scope: '.' })
+				.then(function () { console.log("SW: Service Worker Registered"); })
+				.catch(function (err) { console.log("SW: Error, Service Worker failed to register !", err); });
+		} else {
+			console.log("SW: Service Worker werden nicht unterstützt ! - Fallback zu cache.manifest...");
+		}
+	</script>
+
+	<!-- Apple Statusbar -->
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	<!-- Favicons -->
+	<link rel="apple-touch-icon" sizes="57x57" href="./favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="./favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="./favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="./favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="./favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="./favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="./favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="./favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="./favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="./favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
+
+	<!-- detect Device -->
+	<script type="text/javascript" src="/js/identify.js"></script>
+
+	<title>TeacherTab</title>
+</head>
+
+<body ontouchstart>
+
+<div id="item_HTML" class="hide">
+
+<section class="ersteseite">
+	<h1 class="sectionHead">Gesamtübersicht <span class="insert_klasse"></span></h1>
+	<table border="0" class="tab_gesamt">
+	</table>
+</section>
+
+<section>
+	<h1 class="sectionHead">mündlich <span class="insert_klasse"></span></h1>
+	<table border="0" class="tab_mndl">
+	</table>
+</section>
+
+<section>
+	<h1 class="sectionHead">fachspezifisch <span class="insert_klasse"></span></h1>
+	<table border="0" class="tab_fspz">
+	</table>
+</section>
+
+<section>
+	<h1 class="sectionHead">schriftlich<span class="insert_klasse"></span></h1>
+	<table border="0" class="tab_schr">
+	</table>
+</section>
+
+
+<!-- Legende für alle Nummern die in mndl, schr und fspz benutzt wurden (Bezeichnungen / Verteilungen / Bewertungssystem etc) -->
+<!-- Allgemeine Informationen zur Gewichtung, Zeitraum und evtl. Statistik -->
+<section>
+	<h1 class="sectionHead">allgemeine Informationen <span class="insert_klasse"></span></h1>
+
+	<div>
+		Eintragungen als ganze Note, Gesamtpunktzahl oder Rohpunktzahl mit Unterteilung in Kompetenzen (K.). Export-Muster:
+		<table border="0" class="tab_allgemein">
+			<thead>
+				<tr>
+					<td>Note</td>
+					<td>Punkte</td>
+					<td>Rohpunkte</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Note</td>
+					<td>(Gesamtpunkte) Note</td>
+					<td id="legende_kompetenzen"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div>
+		Die Verteilung beim Eintragungstyp "Punkte" entspricht der Maximalpunktzahl.
+	</div>
+
+	<div>
+		Im Bewertungszeitraum lag die Gewichtung bei <span id="insert_set_mndl" class="mndl"></span> mündlicher (<span id="insert_set_fspz"
+		 class="fspz"></span> hiervon aus fachspezifischen Leistungen) und <span id="insert_set_schr" class="schr"></span>
+		schriftlicher Leistung.
+	</div>
+
+	<div>
+		Die Notengebung erfolgte nach dieser Abstufung (Note ab x %):
+		<table border="0" class="tab_allgemein">
+			<thead>
+				<tr>
+					<td>1</td>
+					<td>2</td>
+					<td>3</td>
+					<td>4</td>
+					<td>5</td>
+					<td>6</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td id="insert_set_note1"></td>
+					<td id="insert_set_note2"></td>
+					<td id="insert_set_note3"></td>
+					<td id="insert_set_note4"></td>
+					<td id="insert_set_note5"></td>
+					<td>0 %</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="nobreak breaker">
+		<h2 class="mndl">mündliche Leistungen</h2>
+		<table border="0" class="tab_allgemein">
+			<thead>
+				</tr>
+				<td class="nummer">&#35;</td>
+				<td>Datum</td>
+				<td>Bezeichnung</td>
+				<td class="gewichtung">Faktor</td>
+				<td>Eintragung</td>
+				<td class="verteilungen">Verteilungen</td>
+				</tr>
+			</thead>
+			<tbody id="tab_allgemein_mndl">
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="nobreak">
+		<h2 class="fspz">fachspezifische Leistungen</h2>
+		<table border="0" class="tab_allgemein">
+			<thead>
+				</tr>
+				<td class="nummer">&#35;</td>
+				<td>Datum</td>
+				<td>Bezeichnung</td>
+				<td class="gewichtung">Faktor</td>
+				<td>Eintragung</td>
+				<td class="verteilungen">Verteilungen</td>
+				</tr>
+			</thead>
+			<tbody id="tab_allgemein_fspz">
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="nobreak">
+		<h2 class="schr">schriftlich Leistungen</h2>
+		<table border="0" class="tab_allgemein">
+			<thead>
+				</tr>
+				<td class="nummer">&#35;</td>
+				<td>Datum</td>
+				<td>Bezeichnung</td>
+				<td class="gewichtung">Faktor</td>
+				<td>Eintragung</td>
+				<td class="verteilungen">Verteilungen</td>
+				</tr>
+			</thead>
+			<tbody id="tab_allgemein_schr">
+			</tbody>
+		</table>
+	</div>
+
+</section>
+
+</div>
+
+<div id="item_JSON">
+</div>
+
+<div id="fadeBlack" class="show">
+
+	<div id="itemJSONTipp" class="popUp">
+		<h3>Hinweis</h3>
+		<ul>
+			<li>Deine Daten zur Klasse <span id="bezeichnung">?</span> werden aufbereitet.</li>
+			<li>Der Download startet automatisch.</li>
+			<li>Der Dateiname entspricht der Bezeichnung in der Datenbank und kann beliebig angepasst werden.</li>
+			<li class="msg error">Achtung: Dieses Backup kann nur mit einem Sync-Account wieder in die TeacherTab importiert werden !</li>
+		</ul>
+	</div>
+
+	<div id="itemHTMLTipp" class="popUp">
+		<h3>Hinweise zum Drucken</h3>
+		<ul>
+			<li>Passe gleich die Druckeinstellungen an, falls sie vorhanden sind:
+				<ul>
+					<li>Ausrichtung: Querformat</li>
+					<li>Ränder: Standard</li>
+					<li>Hintergrundgrafik drucken: ja</li>
+					<li>Farbe: Farbe (optional)</li>
+				</ul>
+			</li>
+			<li>Je nach Betriebssystem kannst du als Drucker auch PDF wählen und die Datei auf deinem Gerät ablegen.</li>
+			<li>Dieser Hinweis wird automatisch <u>nicht</u> mitgedruckt.</li>
+			<li>Drucke diese Seite über das Browsermenü, dem Shortcut STRG+P oder mit dem Button unten.</li>
+		</ul>
+		<div class="close"><a class="stay" href="#">x</a></div>
+		<div>
+			<a class="button OK" href="#" onclick="window.print()">Drucken</a>
+		</div>
+	</div>
+
+</div>
+
+</body>
+
+	<!-- Frameworks -->
+	<script src="/js/frameworks/jquery.min.js"></script>
+	<!-- Basismodule -->
+	<script type="text/javascript" src="/js/all.js"></script>
+	<script type="text/javascript" src="/js/database.js"></script>
+	<script type="text/javascript" src="/js/export.js"></script>
+	<script type="text/javascript" src="/js/stay.js"></script>
+</html>

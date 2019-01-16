@@ -266,9 +266,10 @@ function listIdx_Select(account) {
 function klassenAuswahl(selectbox) {
 	var klasseSelect = selectbox;
 	if (klasseSelect.value !== "null" && klasseSelect.value !== "") {
-		sessionStorage.setItem('klasse', klasseSelect.value);
 		GLOBALS.klasse = klasseSelect.value;
 		GLOBALS.klassenbezeichnung = klasseSelect.selectedOptions[0].innerHTML;
+		sessionStorage.setItem('klasse', GLOBALS.klasse);
+		sessionStorage.setItem('klassenbezeichnung', GLOBALS.klassenbezeichnung);
 	} else {
 		alert('Es wurde keine Klasse ausgewählt !');
 	}

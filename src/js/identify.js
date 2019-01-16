@@ -12,6 +12,12 @@ var STYLES = [
 	"/css/popup.css",
 	"/css/button.css",
 ];
+var STYLES_EXPORT = [
+	"/css/basic.css",
+	"/css/popup.css",
+	"/css/button.css",
+	"/css/export.css",
+];
 
 
 var GLOBALS = {
@@ -197,29 +203,7 @@ function change_Buttons() {
 		}
 	});
 }
-/*
-function change_Buttons_old() {
-	// Buttons wurden hier noch nicht geladen
-	window.addEventListener('load', function () {
-		var buttons = {
-			"btn_Back": "",
-			"btn_Add": "&star;",
-			"btn_Delete": "&bigotimes;",
-			"Abbrechen": "&bigotimes;",
-			"Save": "&#128190;",
-			"export": "&#8675;",
-			"import": "&#8673;",
-			"btn_Settings": "&#9881;"
-		};
-		for (var key in buttons) {
-			var oldButton = document.getElementById(key);
-			if (oldButton) {
-				oldButton.innerHTML = (buttons[key]) ? buttons[key] + "<br>" + oldButton.innerText : "";
-			}
-		}
-	});
-}
-*/
+
 // -- Add CSS
 function passCss(absolutePath) {
 	var cssId = btoa(absolutePath);
@@ -265,15 +249,8 @@ function prepareDevice() {
 	localStorage.setItem("DEVICE", JSON.stringify(DEVICE));
 	GLOBALS['device'] = DEVICE['type'];
 
-	// Load standard styles
-	// -- add Medias
-	if (DEVICE['type'] != "mobile") {
-		STYLES.push("/css/media.css");
-	}
-	// -- pass to DOM
-	for (var index = 0; index < STYLES.length; index++) {
-		passCss(STYLES[index]);
-	}
+	// Type export ?
+	var device_type = (window.location.pathname.indexOf("export.htm") >= 0) ? "export" : DEVICE['type'];
 
 	// IDB Shim (hinterlegen bis Shim geladen)
 	if (DEVICE['noidx'] == 'ios9') {
@@ -310,7 +287,7 @@ function prepareDevice() {
 
 
 	// Touch Listener
-	if (DEVICE['touch']) {
+	if (DEVICE['touch'] && device_type != "export") {
 
 		// add Touchscreen Handlers
 		passJs("/js/touch.js", function () {
@@ -321,20 +298,30 @@ function prepareDevice() {
 
 	}
 
-	// Scripts und CSS
-	switch (DEVICE['type']) {
+	// Scripts und CSS (Ausnahme: Export.htm)
+	switch (device_type) {
 	case "mobile":
 		// Lade CSS und Buttons für Smartphone
-		passCss("/css/phone.css");
+		STYLES.push("/css/phone.css");
 		change_Buttons();
 		break;
 
 	case "tablet":
 		// Lade CSS und Buttons für Tablet
+		STYLES.push("/css/media.css");
+		break;
+	
+	case "export":
+		STYLES = STYLES_EXPORT;
 		break;
 
 	default: // Desktop
+		STYLES.push("/css/media.css");
 		break;
+	}
+
+	for (var index = 0; index < STYLES.length; index++) {
+		passCss(STYLES[index]);
 	}
 
 	// Cache

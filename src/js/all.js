@@ -288,6 +288,32 @@ function copyObject(src) {
 	return JSON.parse(JSON.stringify(src));
 }
 
+function jsGET() {
+	var result = {};
+	var arr_GET, s_GET = window.location.search.split("?")[1];
+	if (s_GET) {
+		arr_GET = s_GET.split("&");
+
+		for (var i = arr_GET.length - 1; i >= 0; i--) {
+			var kv = arr_GET[i].split("=");
+
+			if ( Array.isArray( result[kv[0]] ) ) {
+				// Eintrag schon als Array vorhanden
+				result[kv[0]].push(kv[1]);
+			}else if (result[kv[0]]) {
+				// Eintrag einzeln vorhanden
+				result[kv[0]] = [ result[kv[0]], kv[1] ];
+			}else{
+				// Eintrag nicht vorhanden
+				result[kv[0]] = kv[1];
+			}
+
+		}
+
+	}
+	return result;
+}
+
 
 function checkAuth() {
 	GLOBALS.AUTH = (localStorage.getItem("auth") == "true") ? true : false;
@@ -431,6 +457,7 @@ function stampImport(importData, stamp) {
 	}
 	return importData;
 }
+
 
 // =================================================== //
 // ================ Durchschnitte === ================ //
@@ -827,6 +854,7 @@ function klassenSyncHandler(location, newWindow) {
 					setTimeout(function () {
 						if (newWindow) {
 							window.open(location, '_blank');
+							window.location.reload();
 						} else {
 							window.location.href = location;
 						}
@@ -843,7 +871,7 @@ function klassenSyncHandler(location, newWindow) {
 						if (newWindow) {
 							window.open(location, '_blank');
 						} else {
-							//window.location.href = location;
+							window.location.href = location;
 						}
 					}, 3000);
 				} else {
@@ -973,6 +1001,13 @@ function klassenImportHandler() {
 	return;
 }
 
+function klassenExportHandler(mode) {
+	var thisButton = document.getElementById("export_to_" + mode)
+	popUpSwitch(thisButton);
+	// ein neues Tab außerhalb der App hat ggf. keinen Zugriff auf SessionsStorage der App
+	//sessionStorage.setItem("export_type", mode);
+	klassenSyncHandler("export.htm?" + "x="+mode, false);
+}
 
 // Helper zum Löschen von Leistunge
 function handleDeleteLeistung(callback, lART, lID) {

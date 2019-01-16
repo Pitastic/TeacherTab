@@ -4,8 +4,13 @@
 closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings
 db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
 sync_deleteKlasse sync_pushBack sync_getKlasse*/
-$(document).ready(function() {
+window.addEventListener('load', function () {
 
+console.log(jsGET());
+	var export_type = jsGET()['x'];
+
+	GLOBALS.klasse = sessionStorage.getItem('klasse');
+	GLOBALS.klassenbezeichnung = sessionStorage.getItem('klassenbezeichnung');
 	GLOBALS.mndl = [];
 	GLOBALS.fspz = [];
 	GLOBALS.schr = [];
@@ -16,12 +21,11 @@ $(document).ready(function() {
 		// Settings laden
 		SETTINGS = r[0];
 
-		// Ausgabe des Exports
-		switch(sessionStorage.getItem("export_type")){
+		switch (export_type) {
 		case "csv":
 		case "json":
 
-			document.getElementById("bezeichnung").innerHTML = SETTINGS.name;
+			document.getElementById("bezeichnung").innerHTML = GLOBALS.klassenbezeichnung + " (" + GLOBALS.klasse + ")";
 				
 			db_readKlasse(function(r){
 
@@ -37,6 +41,9 @@ $(document).ready(function() {
 				document.body.removeChild(a);
 
 			});
+			
+			popUp("itemJSONTipp");
+			document.body.classList.add("json");
 			break;
 
 		case "copy":
@@ -44,6 +51,9 @@ $(document).ready(function() {
 
 		default:
 			// Immer HTML wenn nicht anders gefordert
+			document.body.classList.add("white");
+			document.getElementById("item_HTML").classList.remove("hide");
+			popUp("itemHTMLTipp");
 			db_readMultiData(function(rows){
 				writeAllgemeines(rows);
 
@@ -76,7 +86,7 @@ function appendRow(className, Content, TableRow) {
 
 function writeAllgemeines(results){
 	if (!results || typeof results == "undefined") {results = [];}
-	
+
 	// Überschriften
 	var insert_klassen = document.getElementsByClassName("insert_klasse");
 	for (var i = insert_klassen.length - 1; i >= 0; i--) {
@@ -122,11 +132,10 @@ function writeAllgemeines(results){
 		document.getElementById('legende_kompetenzen').innerHTML = legende_kompetenzen;
 
 		var id_array = GLOBALS[arten[art]];
-		var tr2;
 
 		if (id_array.length) {
-			tr2 = appendRow("nummer", "Nr. 1");
 			for (var i3 = 0; i3 < id_array.length; i3++) {
+				var tr2 = appendRow("nummer", "Nr. " + (i3+1) );
 				var Leistung = id_array[i3];
 				tr2 = appendRow("", Leistung.Datum, tr2);
 				tr2 = appendRow("", Leistung.Bezeichnung, tr2);
@@ -153,6 +162,7 @@ function writeAllgemeines(results){
 				}
 
 				tr2 = appendRow("", vert_string, tr2);
+				document.getElementById("tab_allgemein_" + arten[art]).appendChild(tr2);
 			}
 
 
@@ -163,9 +173,9 @@ function writeAllgemeines(results){
 			tr2 = appendRow("", "-", tr2);
 			tr2 = appendRow("", "-", tr2);
 			tr2 = appendRow("", "-", tr2);
+			document.getElementById("tab_allgemein_"+arten[art]).appendChild(tr2);
 		}
 
-		document.getElementById("tab_allgemein_"+arten[art]).appendChild(tr2);
 	}
 }
 

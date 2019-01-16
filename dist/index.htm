@@ -201,8 +201,8 @@
 
 			<div class="close"><a class="stay" href="#">x</a></div>
 			<div>
-				<a id="export_to_json" class="button" href="#" onclick='popUpSwitch(this);klassenSyncHandler("export_json.htm", true);'>JSON</a>
-				<a id="export_to_html" class="button" href="#" onclick='popUpSwitch(this);klassenSyncHandler("export_html.htm", true);'>HTML</a>
+				<a id="export_to_json" class="button" href="#" onclick="klassenExportHandler('json')">JSON</a>
+				<a id="export_to_html" class="button" href="#" onclick="klassenExportHandler('html')">HTML</a>
 				<!--
 		<a class="button OK stay" href="#" onclick="setTimeout(function(){popUp('item0Copy');},1000);popUpClose(this);">Kopie</a>
 		<a id="export_to_csv" class="button" href="https://www.teachertab.de/webapp/export.htm" title="CSV Export">CSV</a>
