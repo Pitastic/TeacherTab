@@ -25,7 +25,7 @@ console.log(jsGET());
 		case "csv":
 		case "json":
 
-			document.getElementById("bezeichnung").innerHTML = GLOBALS.klassenbezeichnung + " (" + GLOBALS.klasse + ")";
+			document.getElementById("bezeichnung").innerHTML = GLOBALS.klassenbezeichnung + " (" + GLOBALS.klasse.substr(0,GLOBALS["k-string-len"]) + ")";
 				
 			db_readKlasse(function(r){
 
@@ -33,12 +33,17 @@ console.log(jsGET());
 
 				var a = document.createElement('a');
 				a.href = 'data:application/json;charset=utf-8;base64,' + jsonData;
-				a.download = GLOBALS.klasse+'.txt';
+				a.download = GLOBALS.klasse.substr(0, GLOBALS["k-string-len"]) + '.json';
+				a.className = "button OK";
+				a.innerText = "Download";
+				a.onclick = function() {
+					//this.href = "javascript:void(0);";
+					this.className = "button DISABLED";
+					this.innerText = "...lädt...";
+				}
 
-				// Append - Click - Remove
-				document.body.appendChild(a);
-				a.click();
-				document.body.removeChild(a);
+				// Append (- Click - Remove)
+				document.getElementById('jsonDownload').appendChild(a);
 
 			});
 			

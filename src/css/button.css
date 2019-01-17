@@ -49,6 +49,11 @@
     border-color: blue;
 }
 
+.button.DISABLED {
+    color: grey;
+    border-color: grey;
+}
+
 input[type="text"] {
     font-size: 1em;
     font-family: inherit;

@@ -38,6 +38,7 @@ var GLOBALS = {
 
 	'klasse': null,
 	'klassenbezeichnung': null,
+	'k-string-len' : 10,
 
 	'device': null,
 	'knownDevice': null,
