@@ -3,9 +3,11 @@
 
 <head>
 	<meta charset="utf-8">
+	<link rel="manifest" href="manifest.json">
 	<meta id="dynamicViewport" name="viewport">
+
+	<!-- Service Worker -->
 	<script type="text/javascript">
-		// ServiceWorker
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker
 				.register('/sw.js', { scope: '.' })
