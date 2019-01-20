@@ -320,6 +320,14 @@ function checkAuth() {
 	return;
 }
 
+function checkUpdate(newVersion) {
+	console.log("new"+newVersion+" > old:", newVersion>GLOBALS['appversion']);
+	if (newVersion && newVersion > GLOBALS['appversion']) {
+		document.getElementById('syncUpdate').classList.remove('hide');
+		document.getElementById('newVersion').innerHTML = "( v"+newVersion+" )";
+	}
+}
+
 function sum(n) {
 	var i, r = 0;
 	for (i = 0; i < n.length; i++) {

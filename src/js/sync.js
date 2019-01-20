@@ -38,6 +38,7 @@ function sync_getAccount(callback, localAccount) {
 				// GET
 				var newData = (data.payload && isObject(data.payload)) ? decryptData(data.payload.data) : {};
 				//DEVconsole.log("SYNC: data", newData);
+				checkUpdate(data.appversion);
 				// Merge
 				var merged = mergeAccount(newData, localAccount);
 				merged['valid'] = data.valid;

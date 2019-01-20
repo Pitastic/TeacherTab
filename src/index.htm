@@ -77,9 +77,9 @@
 				<div class="indexBox">
 					<div class="table">
 						<div class="cell">
-							<a class="button stay" href="#" title="Grundeinstellungen" onclick="popUp('item0First')">Grundeinstellungen</a><br>
+							<a class="button stay" href="#" title="Grundeinstellungen" onclick="popUp('item0First');">Grundeinstellungen</a><br>
 							<a class="button HELP stay" href="https://my.teachertab.de" title="Hilfe" target="_blank">My.TeacherTab.de</a><br>
-							<a href="#" class="button stay" onclick="window.location.reload();">App Update</a>
+							<a id="syncUpdate" href="#" class="button OK stay hide" onclick="popUp('item0Update');">Update verfügbar</a>
 						</div class="cell">
 					</div>
 				</div>
@@ -155,6 +155,19 @@
 				<a class="button OK hide stay" href="uebersicht.htm">Öffnen</a>
 				<a class="button hide stay" href="#" onclick="location.reload()">Zurück</a>
 			</div>
+		</div>
+
+		<div id="item0Update" class="popUp">
+			<h3>App Update</h3>
+			<div class="container">
+					<ul>
+						<li>Eine neue Version <span id="newVersion"></span> der WebApp ist verfügbar. Um sie zu installieren, muss die App nur neu geladen werden.</li>
+						<li>Je nach Gerät werden neue Inhalte erst nach Ablauf einer Frist oder oft auch automatisch heruntergeladen.</li>
+						<li>Wenn das Update also jetzt nicht funktioniert, probiere es einfach einen Tag später noch einmal.</li>
+					</ul>
+			</div>
+			<div class="close"><a class="stay" href="#">x</a></div>
+			<div><a class="button OK stay" href="#" onclick="window.location.reload();">Neu laden</a></div>
 		</div>
 
 		<div id="item0Export" class="popUp">
