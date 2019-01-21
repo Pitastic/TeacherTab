@@ -321,6 +321,16 @@ nav #selector {
 	border-radius: 2em;
 	color: rgb(0,255,0);
 }
+	.popUp .button, .close a {
+		-webkit-transition: background-color 0.3s ease-in-out;
+		-moz-transition: background-color 0.3s ease-in-out;
+		-o-transition: background-color 0.3s ease-in-out; 
+		transition: background-color 0.3s ease-in-out;
+}
+	}
+	.popUp .button:active { background-color: rgb(0,255,0) !important; }
+	.close a:active { background-color: rgb(255, 0, 0) !important; }
+
 
 /*
 ===============================================================================
