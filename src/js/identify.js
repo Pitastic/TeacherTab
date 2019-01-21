@@ -103,6 +103,14 @@ function checkIDBShim(callback) {
 			DEVICE['noidx'] = 'ios9';
 			db.close();
 			callback();
+		} finally {
+			var delReq = indexedDB.deleteDatabase("test");
+			delReq.onsuccess = function (event) {
+				console.log("IDENTIFY: (idb) Clean up Test DB");
+			}
+			delReq.onerror = function (event) {
+				console.log("IDENTIFY: (idb) ERROR Clean up Test DB", event);
+			}
 		}
 
 	};

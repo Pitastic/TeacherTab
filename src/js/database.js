@@ -186,6 +186,20 @@ function db_addDocument(callback, newObject, oStore) {
 }
 
 
+// Account löschen
+function db_dropAccount(account, callback) {
+	var db = SHIMindexedDB.deleteDatabase(account);
+	db.onerror = function (event) {
+		console.log("IDB: Error ! Account konnte nicht gelöscht werden !", event);
+		callback(false);
+	}
+	db.onsuccess = function (event) {
+		console.log("IDB: Account", account, "wurde erfolgreich entfernt !");
+		callback(true);
+		return;
+	};
+}
+
 // Klasse löschen
 function db_dropKlasse(oStore, callback) {
 	if (oStore == "" || !oStore) { return; }
