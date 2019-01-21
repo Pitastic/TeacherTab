@@ -140,10 +140,11 @@ function addToHomeScreen(thisElement) {
 
 function settingsAllgemein() {
 	GLOBALS.userID = document.getElementById('userID').value || "Niemand";
-	localStorage.setItem('userID', GLOBALS.userID);
 	GLOBALS.passW = document.getElementById('passW').value || "false";
+	//localStorage.setItem('userID', GLOBALS.userID);
 	// Check Credentials wenn Password gegeben
 	testCreds(setAuth);
+
 	/*
 	if (GLOBALS.passW) {
 	}else{
@@ -162,16 +163,16 @@ function settingsAllgemein() {
 function setAuth(status) {
 	var errorMsg;
 	if (status != "200" && status != "ok") {
-		// erneut nach PW fragen
-		localStorage.removeItem('TeacherTab');
-		localStorage.setItem('auth', false);
-		localStorage.setItem('passW', GLOBALS.passW);
 		document.getElementById('passW').value = "";
 
 		// - DOM Manipulation: Meldung !
 		// -- unterscheiden ob Daten oder Verbinungsproblem
 		var msg = "Fehler beim Anmelden (" + status + ")";
 		if (status == "401" || status == "403") {
+			// erneut nach PW fragen
+			localStorage.removeItem('TeacherTab');
+			localStorage.setItem('auth', false);
+			localStorage.setItem('passW', GLOBALS.passW);
 			msg += ":<br>Emailadresse oder Passwort sind falsch !";
 
 		} else if (status == "400" || status == "0") {
@@ -255,6 +256,10 @@ function listIdx_Select(account) {
 			text.innerHTML = 'PRO Account !';
 			info.parentNode.removeChild(info);
 		}
+	} else if (!navigator.onLine) {
+		text.innerHTML = 'Offline';
+		text.classList.add("offline");
+		info.parentNode.removeChild(info);
 	} else {
 		text.innerHTML = 'Basic Account';
 		text.classList.add("basic");

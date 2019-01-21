@@ -338,6 +338,7 @@ Index - Startseite
 			}
 				#AuthStatus .statusText.pro{background-color: #76e97f;}
 				#AuthStatus .statusText.basic{background-color: #76cde9;}
+				#AuthStatus .statusText.offline{background-color: #D95E00;}
 			#AuthStatus .statusInfo{
 				font-style: italic;
 				margin-top: 0.5em;
