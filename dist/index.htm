@@ -1,22 +1,10 @@
 <!doctype html>
-<html manifest="cache.manifest">
+<!-- <html manifest="cache.manifest"> -->
 
 <head>
 	<meta charset="utf-8">
 	<link rel="manifest" href="manifest.json">
 	<meta id="dynamicViewport" name="viewport">
-
-	<!-- Service Worker -->
-	<script type="text/javascript">
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker
-				.register('/sw.js', { scope: '.' })
-				.then(function () { console.log("SW: Service Worker Registered"); })
-				.catch(function (err) { console.log("SW: Error, Service Worker failed to register !", err); });
-		} else {
-			console.log("SW: Service Worker werden nicht unterstützt ! - Fallback zu cache.manifest...");
-		}
-	</script>
 
 	<!-- Apple -->
 	<meta name="mobile-web-app-capable" content="yes">

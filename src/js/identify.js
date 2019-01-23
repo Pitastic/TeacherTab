@@ -29,7 +29,7 @@ var GLOBALS = {
 	'timeout': 6000,
 	'unlimited': ["2099-01-01", "2098-01-01"],
 
-	'appversion': "1.1",
+	'appversion': "1.0",
 	'up2date': true,
 	'dbname': null,
 	'dbversion': null,
@@ -49,7 +49,6 @@ var GLOBALS = {
 };
 
 
-// TODO: Cleanup nach IDB test
 // TODO: ES6 Tests
 
 
@@ -58,6 +57,14 @@ var GLOBALS = {
 
 // -- IndexedDB
 function checkIDBShim(callback) {
+
+	if (!window.indexedDB) {
+		console.log("IDENTIFY: (idb) Feature Error !");
+		DEVICE['noidx'] = true;
+		callback();
+		return
+	}
+
 	//> From: https://bl.ocks.org/nolanlawson/8a2ead46a184c9fae231
 	var req = indexedDB.open('test', 1);
 
@@ -250,6 +257,17 @@ function passJs(absolutePath, entrypoint, wait) {
 	DEVICE['toCache'].push(absolutePath);
 }
 
+// -- Add Cache-iFrame
+function passIframe() {
+	var iframe = document.createElement('iframe');
+	iframe.style.display = 'none';
+	iframe.src = 'load-appcache.htm'
+	window.addEventListener('load', function () {
+		document.body.appendChild(iframe);
+		console.log("IDENTIFY: iFrame for AppCache loaded");
+	})
+}
+
 
 // Apply Settings
 function prepareDevice() {
@@ -337,7 +355,19 @@ function prepareDevice() {
 	// Cache
 	/*TODO: vorerst wird alles (zuviel gecached... issue #49) */
 	//extendCache();
+	
+	// activate and load Service Worker
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker
+			.register('/sw.js', { scope: '.' })
+			.then(function () { console.log("IDENTIFY: Service Worker Registered"); })
+			.catch(function (err) { console.log("IDENTIFY: Error, Service Worker failed to register !", err); });
+	} else {
+		console.log("IDENTIFY: Service Worker werden nicht unterstützt ! - Fallback zu cache.manifest...");
+		passIframe();
+	}
 }
+
 
 
 
