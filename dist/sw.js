@@ -8,8 +8,8 @@
 
 
 
-var CACHE = "tt_webapp_v3";
-var needToCache = [
+var CACHE = "tt_webapp_v1";
+/*var needToCache = [
 	'/',
 	'index.htm',
 	'/index.htm',
@@ -83,6 +83,50 @@ var needToCache = [
 	'/js/frameworks/babel_polyfill.min.js',
 	'/js/frameworks/indexeddbshim.min.js',
 	'/js/frameworks/indexeddbshim-ios9.pack.js',
+];*/
+
+
+var needToCache = [
+	'/index.htm',
+	'/settings.htm',
+	'/uebersicht.htm',
+	'/details_leistungen.htm',
+	'/details_students.htm',
+	'/export.htm',
+	'/css/basic.css',
+	'/css/button.css',
+	'/css/export.css',
+	'/css/main.css',
+	'/css/plot.css',
+	'/css/popup.css',
+	'/img/back_tisch.jpg',
+	'/img/DropDown.png',
+	'/img/lupe_klein.gif',
+	'/img/no_entry.png',
+	'/img/noten.gif',
+	'/img/punkte.gif',
+	'/img/reload_button.gif',
+	'/img/rohpunkte.gif',
+	'/favicon.ico',
+	'/favicon/favicon.ico',
+	'/js/all.js',
+	'/js/database.js',
+	'/js/details_leistungen.js',
+	'/js/details_students.js',
+	'/js/export.js',
+	'/js/index.js',
+	'/js/identify.js',
+	'/js/settings.js',
+	'/js/uebersicht.js',
+	'/js/stay.js',
+	'/js/sync.js',
+	'/js/frameworks/crypto-js/aes.js',
+	'/js/frameworks/crypto-js/sha1.js',
+	'/js/frameworks/jsflot/jquery.flot.min.js',
+	'/js/frameworks/jsflot/jquery.flot.pie.min.js',
+	'/js/frameworks/jsflot/jquery.flot.categories.min.js',
+	'/js/frameworks/jsflot/jquery.flot.valuelabels.js',
+	'/js/frameworks/jquery.min.js',
 ];
 
 
@@ -107,14 +151,14 @@ self.addEventListener('fetch', function(event) {
 			// Ressource anfragen
 			tryNetwork(event.request, 1000)
 			// Offline oder Timeout
-				.catch(function (request) {
+			.catch(function (request) {
 				// Ressource aus Cache raussuchen, weil offline/timeout
 				//DEV console.log("SW: Not in the Web, Lookup im Cache...");
-					return fromCache(event.request).catch( function(err){
+				return fromCache(event.request).catch( function(err){
 					//DEV console.log("SW: Not in Cache nor the Web:", err);
-						return false;
-					});
-				})
+					return false;
+				});
+			})
 		);
 	}
 });
@@ -151,25 +195,26 @@ function tryNetwork(request, timeout){
 			console.log("SW: Timed out:", request.url);
 			reject(request);
 		}, timeout);
-		fetch(request).then(function (response) {
+		fetch(request)
+		.then(function (response) {
 			clearTimeout(timeoutId);
 			// ...update Cache
 			caches.open(CACHE)
-				.then(function(cache){
-					var cacheResponse = response.clone();
-					cache.put(request, cacheResponse);
-					//DEV console.log("SW: Fullfilling", request.url);
-					resolve(response); // ...response
-				})
-				.catch(function(err) {
-					console.log("SW: Cache-Error", response.clone().url, err, "fullfilling anyway...");
-					resolve(response); // ...response mit Cache-Fail
-				});
-		})
-			.catch(function(){
-				console.log("SW: Fetch-Error:", request.url);
-				reject(request);
+			.then(function(cache){
+				var cacheResponse = response.clone();
+				cache.put(request, cacheResponse);
+				//DEV console.log("SW: Fullfilling", request.url);
+				resolve(response); // ...response
+			})
+			.catch(function(err) {
+				console.log("SW: Cache-Error", response.clone().url, err, "fullfilling anyway...");
+				resolve(response); // ...response mit Cache-Fail
 			});
+		})
+		.catch(function(){
+			console.log("SW: Fetch-Error:", request.url);
+			reject(request);
+		});
 	});
 	return promise;
 }
