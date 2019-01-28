@@ -143,7 +143,7 @@ function settingsAllgemein() {
 	GLOBALS.passW = document.getElementById('passW').value || "false";
 
 	// reset Error Msg
-	var document.querySelector("#item0First .msg.error");
+	var errorMsg = document.querySelector("#item0First .msg.error");
 	errorMsg.classList.add("hide");
 	errorMsg.innerHTML = "";
 	
