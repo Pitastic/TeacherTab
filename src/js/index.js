@@ -141,7 +141,12 @@ function addToHomeScreen(thisElement) {
 function settingsAllgemein() {
 	GLOBALS.userID = document.getElementById('userID').value || "Niemand";
 	GLOBALS.passW = document.getElementById('passW').value || "false";
-	//localStorage.setItem('userID', GLOBALS.userID);
+
+	// reset Error Msg
+	var document.querySelector("#item0First .msg.error");
+	errorMsg.classList.add("hide");
+	errorMsg.innerHTML = "";
+	
 	// Check Credentials wenn Password gegeben
 	testCreds(setAuth);
 
@@ -176,29 +181,31 @@ function setAuth(status) {
 			msg += ":<br>Emailadresse oder Passwort sind falsch !";
 
 		} else if (status == "400" || status == "0") {
-			msg = ":<br>Der Server ist nicht erreichbar. Bist du online ?";
+			msg += ":<br>Der Server ist nicht erreichbar. Bist du online ?";
 		} else if (status == "500") {
 			msg += ":<br>Uuups ! Auf dem Server ist etwas schiefgegangen. Probier es bitte nochmal...";
 		}
 		errorMsg = document.querySelector("#item0First .msg.error");
 		errorMsg.innerHTML = msg;
 		errorMsg.classList.remove("hide");
+		checkAuth();
 
 	} else {
 		// ggf. vorherige Meldungen löschen
 		errorMsg = document.querySelector("#item0First .msg.error");
 		errorMsg.innerHTML = "";
 		// OK: Speichern und neu laden
+		localStorage.setItem('userID', GLOBALS.userID);
 		localStorage.setItem('passW', GLOBALS.passW);
 		localStorage.setItem('auth', true);
 		localStorage.setItem('TeacherTab', true);
 		var thisElement = document.querySelector("#item0First .OK");
 		popUpClose(thisElement);
+		checkAuth();
 		setTimeout(function () {
 			window.location.reload();
 		}, 550);
 	}
-	checkAuth();
 	return;
 }
 
