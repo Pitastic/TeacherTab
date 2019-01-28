@@ -635,6 +635,15 @@ function slide2(slideName) {
 	hideElement.classList.remove('show');
 	addBtn.setAttribute('data-name', slideName + 'Add');
 	sessionStorage.setItem('lastview', slideName);
+
+	// > MacBook Trackpad Fix
+	// -- make a change to be able to revert this change
+	slideElement.style.bottom = "1px";
+
+	// -- change some style (reset the prev. change)
+	setTimeout(function(){
+	    slideElement.style.bottom = "";
+	}, 1000 + 10); // CSS animation time + 10ms
 }
 
 function keyFunctions(event) {
