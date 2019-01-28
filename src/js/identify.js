@@ -368,7 +368,7 @@ function prepareDevice() {
 			passJs("/js/frameworks/indexeddbshim.min.js", function () {
 				console.log("IDENTIFY: idbshim loaded");
 				window.shimIndexedDB.__useShim();
-				window.shimIndexedDB.__debug(true);
+				//window.shimIndexedDB.__debug(true);
 				window.SHIMindexedDB = window.shimIndexedDB;
 			});
 		});
