@@ -9,7 +9,6 @@ window.addEventListener('load', function () {
 
 	// Event-Listener
 	closeListener();
-	//touchListener(['header', 'footer', 'fadeBlack', 'KeyBar'])
 
 	var pop = document.getElementById('item2Set');
 

@@ -27,7 +27,6 @@ window.addEventListener('load', function () {
 
 	// Event-Listener
 	closeListener();
-	//touchListener(['header', 'footer', 'fadeBlack', 'KeyBar'])
 	var pop = document.getElementById('item0edit');
 
 	// -- Editieren
@@ -398,7 +397,7 @@ function studentDetails(row){
 	};
 
 	// Animation
-	//slide1('item1details');
+	slide1('item1details');
 	return;
 }
 
