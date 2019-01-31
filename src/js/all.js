@@ -594,7 +594,10 @@ function slide() {
 	var i, slideElements = document.getElementsByClassName('uebersicht');
 	// Flip
 	for (i = 0; i < slideElements.length; i++) {
-		slideElements[i].classList.toggle('show');
+		var slide = slideElements[i];
+		slide.classList.toggle('show');
+		// > MacBook Trackpad Fix
+		macTrackPadFix(slide);
 	}
 	// Add-Button
 	var slideIndex = document.getElementsByClassName('uebersicht show')[0].id;
@@ -612,6 +615,8 @@ function slide1(id, location) {
 		slide.classList.remove('hide');
 		setTimeout(function () {
 			slide.classList.add('show');
+			// > MacBook Trackpad Fix
+			macTrackPadFix(slide);
 		}, 250);
 		return;
 	} else {
@@ -628,21 +633,24 @@ function slide2(slideName) {
 	var addBtn = document.getElementById('btn_Add');
 	document.getElementsByClassName('marker')[0].className = "marker " + slideName;
 	var items = ["item1", "item2"];
-	var slideElement = items.splice(items.indexOf(slideName), 1)[0];
-	slideElement = document.getElementById(slideElement);
-	slideElement.classList.add('show');
+	var slide = items.splice(items.indexOf(slideName), 1)[0];
+	slide = document.getElementById(slide);
+	slide.classList.add('show');
 	var hideElement = document.getElementById(items[0]);
 	hideElement.classList.remove('show');
 	addBtn.setAttribute('data-name', slideName + 'Add');
 	sessionStorage.setItem('lastview', slideName);
 
 	// > MacBook Trackpad Fix
-	// -- make a change to be able to revert this change
-	slideElement.style.bottom = "1px";
+	macTrackPadFix(slide);
+}
 
+function macTrackPadFix(element) {
+	// -- make a change to be able to revert this change
+	element.style.bottom = "1px";
 	// -- change some style (reset the prev. change)
 	setTimeout(function(){
-	    slideElement.style.bottom = "";
+	    element.style.bottom = "";
 	}, 1000 + 10); // CSS animation time + 10ms
 }
 
