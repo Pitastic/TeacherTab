@@ -155,9 +155,10 @@ function checkIDBShim(callback) {
 		});
 	};
 
-	req.onerror = function () {
-		console.log("IDENTIFY: (idb) Error opening IndexedDB");
+	req.onerror = function (e) {
+		console.log("IDENTIFY: (idb) Error opening IndexedDB", e);
 		DEVICE['noidx'] = true;
+		callback();
 	};
 
 	req.onsuccess = function (e) {
@@ -367,9 +368,13 @@ function prepareDevice() {
 		passJs("/js/frameworks/babel_polyfill.min.js", function () {
 			passJs("/js/frameworks/indexeddbshim.min.js", function () {
 				console.log("IDENTIFY: idbshim loaded");
-				window.shimIndexedDB.__useShim();
-				//window.shimIndexedDB.__debug(true);
-				window.SHIMindexedDB = window.shimIndexedDB;
+				var loadedSHIM = window.shimIndexedDB.__useShim();
+				if (loadedSHIM == false) {
+					alert("Eine Datenbank konnte in deinem Browser nicht initialisiert werden.\nEr ist entweder veraltet oder läuft im Privaten Modus, bei dem Daten nicht gespeichert werden dürfen.\nWechsle den Browser um TeacherTab verwenden zu können.");
+				}else{
+					//window.shimIndexedDB.__debug(true);
+					window.SHIMindexedDB = window.shimIndexedDB;
+				}
 			});
 		});
 	}
