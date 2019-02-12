@@ -221,33 +221,59 @@ function addStudent(el){
 
 // neuer Schüler (Textimport vieler)
 function massenAdd(el){
+	var thisUl = document.querySelector('#item1Add form ul:nth-child(2)');
 	var textblock = document.getElementById('item1Add').getElementsByTagName('textarea')[0];
 	var trennZeile = (document.getElementById('trennZ').value == "1") ? "\n" : "\n\n";
 	var trennNamen = document.getElementById('trennN');
 	if (!trennNamen.value) {
-		alert("Du hast vergessen ein Trennzeichen (ggf. mit Leerzeichen) anzugeben !");
+		var li = document.createElement('li');
+			li.className = "msg error";
+			li.innerHTML = "Du hast vergessen ein Trennzeichen anzugeben !";
+			thisUl.insertBefore(li, thisUl.firstChild);
 		return false;
 	}
 
-	var zeilen = []; var namen = []; var vnn;
+	var zeilen = []; var namen = []; var fails = []; var spalten;
 	zeilen = textblock.value.split(trennZeile);
+	var alleZeilen = zeilen.length;
 	GLOBALS.dbToGo = 0;
 	for (var zeile in zeilen){
-		console.log(zeilen[zeile]);
 		if (zeilen[zeile]) {
-			vnn = zeilen[zeile].split(trennNamen.value);
-			// Schüler-Objekt in Liste
-			GLOBALS.dbToGo += 1;
-			namen.push(formStudent(vnn[1].trim(),vnn[0].trim()));
+			spalten = zeilen[zeile].split(trennNamen.value);
+			if (spalten.length > 1) {
+				// Schüler-Objekt in Liste
+				GLOBALS.dbToGo += 1;
+				namen.push(formStudent(spalten[1].trim(),spalten[0].trim()));
+			}else{
+				console.log("INFO: Eintrag", zeilen[zeile], "enthält nicht das richtige Trennzeichen. Skip!");
+				fails.push(zeilen[zeile]);
+			}
+		}else{
+			console.log("INFO: Zeile", zeile, "ist leer. Skip!");
 		}
 	}
 
-	db_addDocument(function(){
-		db_readMultiData(listStudents, "student");
-		textblock.value = "";
-		trennNamen.value = "";
-		popUpClose(el);
-	}, namen);
+	// alte Errors entfernen
+	if (thisUl.firstChild.className == "msg error"){
+		thisUl.removeChild(thisUl.firstChild);
+	}
+
+	// Error oder DB Speicherung
+	if (fails.length) {
+		var li = document.createElement('li');
+			li.className = "msg error";
+			li.innerHTML = "Kein Import durchgeführt !<br>";
+			li.innerHTML += fails.length+" (von "+alleZeilen+") haben ein falsches Trennzeichen (z.B. "+fails[0]+")";
+			thisUl.insertBefore(li, thisUl.firstChild);
+			return false;
+	}else{
+		db_addDocument(function(){
+			db_readMultiData(listStudents, "student");
+				textblock.value = "";
+				trennNamen.value = "";
+				popUpClose(el);
+		}, namen);
+	}
 
 	return true;
 }

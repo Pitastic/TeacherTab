@@ -131,11 +131,12 @@ Hinzufügen (AddMenu)
 }
 	.trennzeichen {float: left;}
 	#trennN {
-	    border: 1px solid gray;
-	    margin: 0 10px; margin-top: -1px;
-	    padding: 0.75em 5px;
-	    border-radius: 5px;
-	    width: 2em;
+        border: 1px solid gray;
+        margin: 0 10px; margin-top: -1px;
+        padding: 0.75em 5px;
+        border-radius: 5px;
+        width: 2em;
+        text-align: center;
 	}
     #trennZ {
         vertical-align: top;
