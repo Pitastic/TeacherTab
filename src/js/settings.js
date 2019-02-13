@@ -120,7 +120,7 @@ function SettingsSave(bol_save) {
 
 function gruppierenListe(results) {
 	var r, c, liste, ul;
-	console.log(results);
+	results.sort(compareStudents);
 	liste = document.getElementById('gruppierenListe');
 	ul = document.createElement('ul');
 	for (var i in results) {
