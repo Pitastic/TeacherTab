@@ -4,7 +4,7 @@
 
 // Design- und Funktionsanpassung für die verschiedenen Geräte
 var DEV_LOG1 = "";
-var CACHE = "tt_webapp_v1";
+var CACHE = "tt_webapp_v1_1";
 var DEVICE;
 var STYLES = [
 	"/css/basic.css",
