@@ -24,9 +24,16 @@ window.addEventListener('load', function () {
 	// Event-Listener
 	addListener();
 	closeListener();
-	setTimeout(function(){
-		slide2(sessionStorage.getItem('lastview'));
-	},100);
+
+	// Anzeigen wenn ready
+	var DOMcheck = setInterval( function () {
+		if (document.readyState !== 'complete' ) return;
+		clearInterval( DOMcheck );
+		// DOM Ready - Smooth Animation !
+		setTimeout(function(){
+			slide2(sessionStorage.getItem('lastview'));
+		}, 200);
+	}, 50 );
 });
 
 

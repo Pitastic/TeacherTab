@@ -396,8 +396,13 @@ function studentDetails(row){
 		item1Save(row.id);
 	};
 
-	// Animation
-	slide1('item1details');
+	// Anzeigen wenn ready
+	var DOMcheck = setInterval( function () {
+		if (document.readyState !== 'complete' ) return;
+		clearInterval( DOMcheck );
+		// DOM Ready !
+		slide1('item1details');
+	}, 50 );
 	return;
 }
 

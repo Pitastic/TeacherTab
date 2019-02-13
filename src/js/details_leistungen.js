@@ -567,7 +567,6 @@ function leistungsDetails_rohpunkte(Leistung, Students){
 		clearInterval( DOMcheck );
 		// DOM Ready !
 		slide1('item2details');
-		//slide1('arbeit_info');
 		// Schülerleistung berechnen
 		var alleSchuler = document.getElementById('arbeit_leistung');
 		updateNoten(alleSchuler, false, Students);
