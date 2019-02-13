@@ -13,79 +13,122 @@ function initDB(callback) {
 		window.alert("Dein Browser ist für die WebApp-Funktionen leider zu alt. Mit einem aktuellen Browser bist du sicherer im Internet unterwegs und kannst die TeacherTab nutzen !");
 	} else {
 		console.log("IDB: supported !");
-		// >> first visit ?
-		var vCheck = SHIMindexedDB.open(GLOBALS.dbname);
-		vCheck.onerror = errorHandler;
-		vCheck.onsuccess = function (event) {
-			var connection = event.target.result;
-			//DEV console.log("IDB: GLOBALS.dbversion =", GLOBALS.dbversion);
-			if (!GLOBALS.dbversion) {
-				// -- vielleicht
-				GLOBALS.dbversion = parseInt(connection.version);
-				if (GLOBALS.dbversion <= 1) {
-					// -- definitiv
-					//DEV console.log("IDB: First.start");
-					var called = false;
-					var needUpgrade = false;
-					connection.close();
-					var request = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion + 1);
-					request.onerror = errorHandler;
-					request.onupgradeneeded = function (event) {
-						console.log("IDB: start upgrade");
-						var nextDB = request.result;
-						if (!nextDB.objectStoreNames.contains('account')) {
-							nextDB.createObjectStore('account', { keyPath: "id", autoIncrement: true });
-						}
-						GLOBALS.dbversion += 1;
-						localStorage.setItem("dbversion_" + GLOBALS.userID, GLOBALS.dbversion);
-						needUpgrade = true;
-						console.log("IDB: upgrade finished");
-					};
-					request.onsuccess = function (event) {
-						//DEV console.log("IDB: First.onsuccess");
-						if (needUpgrade) {
-							// Accountinformationen anlegen
-							var connection2 = event.target.result;
-							var objectStore = connection2.transaction(['account'], "readwrite").objectStore("account");
-							var row = createAccount(GLOBALS.dbname);
-							var adding = objectStore.add(row);
-							adding.onsuccess = function () {
-								window.location.reload();
-							};
-						}
-						console.log("IDB: initiiert");
-
-						// ---> Garbage Collection
-						connection2.onversionchange = function (event) {
-							connection2.close();
-						};
-
-					};
-					request.oncomplete = function (event) {
-						if (!called) {
-							called = true;
-							callback();
-						}
-					};
-				} else {
-					// -- nein
-					localStorage.setItem("dbversion_" + GLOBALS.userID, GLOBALS.dbversion);
-					vCheck.oncomplete = console.log("IDB: dbversion unknown (not in localStorage)");
-					callback();
-				}
-			} else {
-				// -- nein
-				console.log("IDB: version", GLOBALS.dbversion);
-				console.log("IDB: init");
-				callback();
+		// GC notwendig ?
+		var toDelete = localStorage.getItem("toDelete")
+		if (toDelete) {
+			var delRequest = SHIMindexedDB.deleteDatabase(toDelete);
+			delRequest.onerror = errorHandler;
+			delRequest.onsuccess = function(e){
+				localStorage.removeItem("toDelete");
+				localStorage.removeItem("dbversion_" + toDelete);
+				localStorage.removeItem("userID");
+				localStorage.removeItem("passW");
+				localStorage.removeItem("auth");
+				localStorage.removeItem("TeacherTab");
+				alert("Lokale Datenbank erfolgreich gelöscht");
+				window.location.reload();
 			}
 
-			// ---> Garbage Collection
-			connection.onversionchange = function (event) {
-				connection.close();
-			};
+		}else{
 
-		};
+			// >> first visit ?
+			var vCheck = SHIMindexedDB.open(GLOBALS.dbname);
+
+			// Verwaiste DBs sind 'pending' für immer
+			var tries = 0;
+			var IDBcheck = setInterval( function () {
+				if (document.readyState == 'done' ){
+					clearInterval( IDBcheck ); // Stop Timer
+				} else if (tries == 5) {
+					clearInterval( IDBcheck ); // Stop Timer
+					if (confirm("Die Datenbank auf deinem Gerät ist Verwaist (ggf. wegen alter Accountdaten) !\nBestätige, um diese Daten zu verwerfen (empfohlen).\nDu kannst auch warten, ob die Datenbank doch noch geöffnet werden kann.\n(Dazu hilft es, wenn du diesen Task beendest)") ){
+						// Datenbank zum Löschen vormerken
+						localStorage.setItem("toDelete", GLOBALS.dbname);
+						window.location.reload();
+					}
+				} else {
+					tries += 1;
+				}
+			}, 1000 );
+
+			console.log(vCheck);
+			vCheck.onerror = function(){
+				clearInterval( IDBcheck ); // Stop Timer
+				errorHandler();
+			};
+			vCheck.onsuccess = function (event) {
+				clearInterval( IDBcheck ); // Stop Timer
+				var connection = event.target.result;
+
+				if (!GLOBALS.dbversion || !connection.objectStoreNames.contains('account')) {
+
+					// -- vielleicht
+					GLOBALS.dbversion = parseInt(connection.version);
+					if (GLOBALS.dbversion <= 1 || !connection.objectStoreNames.contains('account')) {
+						// -- definitiv
+						//DEV console.log("IDB: First.start", GLOBALS.dbversion + 1);
+						var called = false;
+						var needUpgrade = false;
+						connection.close();
+						var request = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion + 1);
+						request.onerror = errorHandler;
+						request.onupgradeneeded = function (event) {
+							console.log("IDB: start upgrade");
+							var nextDB = request.result;
+							if (!nextDB.objectStoreNames.contains('account')) {
+								nextDB.createObjectStore('account', { keyPath: "id", autoIncrement: true });
+							}
+							GLOBALS.dbversion += 1;
+							localStorage.setItem("dbversion_" + GLOBALS.userID, GLOBALS.dbversion);
+							needUpgrade = true;
+							console.log("IDB: upgrade finished");
+						};
+						request.onsuccess = function (event) {
+							//DEV console.log("IDB: First.onsuccess");
+							if (needUpgrade) {
+								// Accountinformationen anlegen
+								var connection2 = event.target.result;
+								var objectStore = connection2.transaction(['account'], "readwrite").objectStore("account");
+								var row = createAccount(GLOBALS.dbname);
+								var adding = objectStore.add(row);
+								adding.onsuccess = function () {
+									window.location.reload();
+								};
+							}
+							console.log("IDB: initiiert");
+
+							// ---> Garbage Collection
+							connection2.onversionchange = function (event) {
+								connection2.close();
+							};
+
+						};
+						request.oncomplete = function (event) {
+							if (!called) {
+								called = true;
+								callback();
+							}
+						};
+					} else {
+						// -- nein
+						localStorage.setItem("dbversion_" + GLOBALS.userID, GLOBALS.dbversion);
+						vCheck.oncomplete = console.log("IDB: dbversion unknown (not in localStorage)");
+						callback();
+					}
+				} else {
+					// -- nein
+					console.log("IDB: version", GLOBALS.dbversion);
+					console.log("IDB: init");
+					callback();
+				}
+
+				// ---> Garbage Collection
+				connection.onversionchange = function (event) {
+					connection.close();
+				};
+
+			};
+		}
 	}
 }
 
@@ -288,7 +331,8 @@ function db_readGeneric(callback, id, oStore) {
 	db.onsuccess = function (event) {
 		var result;
 		var connection = event.target.result;
-		var objectStore = connection.transaction(oStore).objectStore(oStore);
+		var openStore = connection.transaction(oStore);
+		var objectStore = openStore.objectStore(oStore);
 		var transaction = objectStore.openCursor();
 		transaction.onerror = errorHandler;
 		transaction.onsuccess = function (event) {
