@@ -126,10 +126,10 @@ function gruppierenListe(results) {
 	for (var i in results) {
 		var row = results[i];
 		r = document.createElement('li');
-		if (row.sort && row.sort !== "-" && row.sort !== "null") {
+		if (row.name.sort && row.name.sort !== "-" && row.name.sort !== "null") {
 			c = document.createElement('div');
 			c.className = "s_flag";
-			c.innerHTML = row.sort;
+			c.innerHTML = row.name.sort;
 			r.appendChild(c);
 		}
 		r.setAttribute('data-rowid', row.id);
