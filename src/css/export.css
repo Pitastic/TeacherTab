@@ -45,7 +45,7 @@ h2 {
 	}
 p {margin: 1em 0;}
 table {
-	border-spacing: 10px 5px;
+	border-spacing: 10px 3px;
 	table-layout:fixed;
 	width:100%;
 	}
@@ -59,7 +59,8 @@ table {
 		thead .schr, div .schr, h2.schr {color: #FF9E53;}
 		thead .rechnerisch {color: grey;}
 	tbody td {
-			border: 2px solid black;
+			padding: 0.5px 0;
+			border: 1px solid black;
 			text-align: center;
 		}
 		tbody .namen {
