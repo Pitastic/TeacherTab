@@ -223,32 +223,9 @@ function extendCache() {
 		//DEVICE['toCache'].push("");
 	}
 
-	// Polyfills
-	/*
-	// Alle passJS / passCSS wurden schon an die Cache Liste angehängt !
-	//
-	if (DEVICE['noidx']){
-		// omg - run for babel and idx
-		DEVICE['toCache'].push("/js/frameworks/babel_polyfill.min.js");
-		DEVICE['toCache'].push("/js/frameworks/indexeddbshim.min.js");
-	} else if (DEVICE['nojs']){
-		// nur babel
-		DEVICE['toCache'].push("/js/frameworks/babel_polyfill.min.js");
-	}
-	*/
-
 	if (DEVICE['toCache'].length > 0) {
 		console.log("IDENTIFY: (sw) extending Cache", DEVICE['toCache']);
 		console.log("IDENTIFY: (sw) ...not implemented !");
-		/*
-		caches.open(CACHE).then(function(cache) {
-			for (var i = DEVICE['toCache'].length - 1; i >= 0; i--) {
-				console.log("IDENTIFY: (sw) caching", DEVICE['toCache'][i]);
-				cache.add( DEVICE['toCache'][i] )
-					.catch(function (err) { console.log("IDENTIFY: (sw) Fehler beim Cachen von", DEVICE['toCache'][i], err); });
-			}
-		});
-		*/
 	}
 }
 

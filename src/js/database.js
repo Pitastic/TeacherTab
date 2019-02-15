@@ -51,7 +51,6 @@ function initDB(callback) {
 				}
 			}, 1000 );
 
-			console.log(vCheck);
 			vCheck.onerror = function(){
 				clearInterval( IDBcheck ); // Stop Timer
 				errorHandler();

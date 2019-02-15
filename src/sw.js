@@ -1,14 +1,4 @@
-/*
-// Caching: find . -type f | grep -v "\.git\|README\.md\|sw\.js\|\.manifest" | sort -u
-//
-// Cache with Wildcard ?
-// Cache auch ohne Install (bei Desktop)
-// Cache-Policy
-*/
-
-
-
-var CACHE = "tt_webapp_v1";
+var CACHE = "tt_webapp_v1_4";
 var needToCache = [
 	'/index.htm',
 	'/settings.htm',
@@ -56,11 +46,27 @@ var needToCache = [
 self.addEventListener('install', function(event) {
 	event.waitUntil(
 		caches.open(CACHE).then(function(cache) {
-			for (var i = needToCache.length - 1; i >= 0; i--) {
-				console.log("SW: ...caching ( von", needToCache.length, ")");
-				cache.add( needToCache[i] )
-					.catch(function(err) { console.log("SW: Fehler beim Cachen von", needToCache[i], err); });
-			}
+			needToCache.map(function(toCache){
+				cache.add( toCache )
+				.catch(function(err) { console.log("SW: Fehler beim Cachen von", toCache, err); });
+			});
+		})
+		.then(function(cache){
+			caches.keys().then(function(keyList) {
+				keyList.map(function(item){
+					if (item != CACHE) {
+						caches.delete(item)
+						.then(function(r){
+							console.log("Cache gelöscht:", item, r);
+						})
+						.catch(function(r){
+							console.log("Fehler beim Löschen des Cache:", item, r);
+						})
+					}else{
+						console.log("Cache auslassen:", item);
+					}
+				});
+			})
 		})
 	);
 });
