@@ -99,9 +99,9 @@ function writeAllgemeines(results){
 	}
 
 	// Settings
-	document.getElementById('insert_set_mndl').innerHTML = SETTINGS.gewichtung.mündlich+" %";
-	document.getElementById('insert_set_fspz').innerHTML = SETTINGS.gewichtung['davon fachspezifisch']+" %";
-	document.getElementById('insert_set_schr').innerHTML = SETTINGS.gewichtung.schriftlich+" %";
+	document.getElementById('insert_set_mndl').innerHTML = 100 * SETTINGS.gewichtung.mündlich+" %";
+	document.getElementById('insert_set_fspz').innerHTML = 100 * SETTINGS.gewichtung['davon fachspezifisch']+" %";
+	document.getElementById('insert_set_schr').innerHTML = 100 * SETTINGS.gewichtung.schriftlich+" %";
 	for (var i2 = 6 - 1; i2 >= 1; i2--) {
 		document.getElementById('insert_set_note'+i2).innerHTML = SETTINGS.notenverteilung[i2]+" %";
 	}
@@ -222,7 +222,7 @@ function writeGesamtuebersicht(rows) {
 		}
 
 		tr = appendRow("schr", rows[i].gesamt.oschr, tr);
-		tr = appendRow("rechnerisch", rows[i].gesamt.rechnerisch, tr);
+		tr = appendRow("rechnerisch", Math.round(rows[i].gesamt.rechnerisch*100)/100, tr);
 		tr = appendRow("eingetragen", rows[i].gesamt.eingetragen, tr);
 
 		tbody.appendChild(tr);
