@@ -586,7 +586,6 @@ function itemAbort(names, target_site) {
 	}, 400);
 }
 
-
 function slide() {
 	//-> Onclick dreht die Ansicht
 	scroll(0, 0);
@@ -730,6 +729,15 @@ function popUpSwitch(thisElement, target_id) {
 	}
 }
 
+
+function shake(target) {
+//-> Hinweis Animation auf Target
+	target.classList.add('alert');
+	setTimeout(function(){
+		target.classList.remove('alert');
+		return false;
+	}, 2000);
+}
 
 // =================================================== //
 // ============= Datenbank - Objekt-Hilfe ============ //

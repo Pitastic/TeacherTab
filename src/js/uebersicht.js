@@ -238,11 +238,7 @@ function massenAdd(el){
 	var trennZeile = (document.getElementById('trennZ').value == "1") ? "\n" : "\n\n";
 	var trennNamen = document.getElementById('trennN');
 	if (!trennNamen.value) {
-		var li = document.createElement('li');
-			li.className = "msg error";
-			li.innerHTML = "Du hast vergessen ein Trennzeichen anzugeben !";
-			thisUl.insertBefore(li, thisUl.firstChild);
-		return false;
+		return shake(trennNamen);
 	}
 
 	var zeilen = []; var namen = []; var fails = []; var spalten;

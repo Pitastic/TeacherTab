@@ -481,7 +481,7 @@ function leistungsDetails_rohpunkte(Leistung, Students){
 			updateVerteilung(inputs, Pkt_Verteilung.value, function(){item2Save(true, Leistung.Bezeichnung, true);});
 			popUpClose(this,0);
 		}else{
-			shake(Pkt_Verteilung);
+			shake(Pkt_Verteilung.parentNode);
 		}
 	};
    
