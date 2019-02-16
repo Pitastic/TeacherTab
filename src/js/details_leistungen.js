@@ -477,8 +477,12 @@ function leistungsDetails_rohpunkte(Leistung, Students){
 	};
 	popVertNeu.onclick = function(){
 		var Pkt_Verteilung = document.getElementById('Pkt_new');
-		updateVerteilung(inputs, Pkt_Verteilung.value, function(){item2Save(true, Leistung.Bezeichnung, true);});
-		popUpClose(this,0);
+		if (Pkt_Verteilung.value != "") {
+			updateVerteilung(inputs, Pkt_Verteilung.value, function(){item2Save(true, Leistung.Bezeichnung, true);});
+			popUpClose(this,0);
+		}else{
+			shake(Pkt_Verteilung);
+		}
 	};
    
 	// - - - Schülerdaten - - -
