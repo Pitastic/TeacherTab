@@ -204,3 +204,7 @@ function saveGruppen() {
 
 	return true;
 }
+
+function testFunction(){
+	alert("Version: 1\n(online/offline)");
+}
