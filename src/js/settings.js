@@ -32,7 +32,6 @@ function settingDetails(results) {
 		}
 	}
 	//-- Kompetenz Namen
-	//var kompNamen = SETTINGS.kompetenzen;
 	var inputs2 = document.getElementById('form_KompNamen').getElementsByTagName('input');
 	for (i = 0; i < inputs2.length; i++) {
 		inputs2[i].value = SETTINGS.kompetenzen['Kat' + (i + 1)] || "";
@@ -54,7 +53,9 @@ function settingDetails(results) {
 	var a_button = document.getElementById('alle_gruppieren').getElementsByTagName('a')[0];
 	a_button.addEventListener('click', function () {
 		db_readMultiData(function (result) {
-			//document.getElementById('Abbrechen').innerHTML = "Abbrechen";
+			// Replace Buttons
+			var btn_abort = document.getElementById('Abbrechen');
+			btn_abort.innerHTML = btn_abort.innerHTML.replace("Reset", "Abbrechen");
 			document.getElementById('Save').onclick = function () {
 				// Gruppierung speichern
 				saveGruppen();

@@ -57,13 +57,13 @@ self.addEventListener('install', function(event) {
 					if (item != CACHE) {
 						caches.delete(item)
 						.then(function(r){
-							console.log("Cache gelöscht:", item, r);
+							console.log("SW: Cache gelöscht:", item, r);
 						})
 						.catch(function(r){
-							console.log("Fehler beim Löschen des Cache:", item, r);
+							console.log("SW: Fehler beim Löschen des Cache:", item, r);
 						})
 					}else{
-						console.log("Cache auslassen:", item);
+						console.log("SW: Cache auslassen:", item);
 					}
 				});
 			})

@@ -353,6 +353,10 @@ Settings
 	padding-top: 62px !important;
 	margin-top: 1em !important;
 }
+	#item1setting_gruppen .s_flag {
+		margin: auto !important;
+		margin-right: 1em !important;
+	}
 
 #form_Notenverteilung label {
 	display: inline-block;
