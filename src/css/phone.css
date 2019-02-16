@@ -468,8 +468,8 @@ Studentdetails
 ===============================================================================
 */
 #ds_gesamt_eingetragen {
-	top: calc(2em - 2px);
-	right: 2em;
+	margin-left: 1em;
+	margin-top: calc(-2em - 4px);
 	z-index: inherit;
 }
 #item1_gewichtung {height: 4em;}
@@ -483,7 +483,7 @@ Studentdetails
 		#item1details .fspz_div ul li .lupe {margin-top: -16px}
 	#item1details ul li span:nth-child(2) {
 		text-align: left;
-		width: 66%;
+		width: 50%;
 	}
 
 /*
