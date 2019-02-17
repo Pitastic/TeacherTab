@@ -49,6 +49,7 @@ table {
 	table-layout:fixed;
 	width:100%;
 	}
+	table.longTable { border-collapse: collapse; }
 	thead td {
 		border: none;
 		text-align: center;
@@ -59,9 +60,13 @@ table {
 		thead .schr, div .schr, h2.schr {color: #FF9E53;}
 		thead .rechnerisch {color: grey;}
 	tbody td {
-			padding: 0.5px 0;
-			border: 1px solid black;
+			padding: 1px 0;
+			border: 2px solid black;
 			text-align: center;
+		}
+		table.longTable td {
+			padding-top: 2px; padding-bottom: 2px;
+			border-width: 1px;
 		}
 		tbody .namen {
 			text-align: right;

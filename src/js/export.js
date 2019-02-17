@@ -4,9 +4,10 @@
 closeListener formLeistung slide1 handleDeleteLeistung fspz_Bezeichnung compareStudents popUp popUpClose updateNoten sum timestamp handleSchnitt RohpunkteAlsNote createAccount isObject updateStatus mergeDeep formSettings
 db_readMultiData db_readKlasse db_dropKlasse db_simpleUpdate db_dynamicUpdate db_deleteDoc db_replaceData db_readSingleData db_updateData
 sync_deleteKlasse sync_pushBack sync_getKlasse*/
+
 window.addEventListener('load', function () {
 
-console.log(jsGET());
+	console.log(jsGET());
 	var export_type = jsGET()['x'];
 
 	GLOBALS.klasse = sessionStorage.getItem('klasse');
@@ -230,6 +231,12 @@ function writeGesamtuebersicht(rows) {
 
 	GSU.appendChild(thead);
 	GSU.appendChild(tbody);
+
+	// Platzasparen, falls zu viele Schüler
+	console.log("Schüleranzahl:", rows.length);
+	if (rows.length >= 24) {
+		GSU.classList.add("longTable");
+	}
 }
 
 function writeLeistungen(rows) {
@@ -262,6 +269,9 @@ function writeLeistungen(rows) {
 		}
 
 		document.getElementsByClassName("tab_"+l_typ)[0].appendChild(tbody);
+		if (rows.length >= 24) {
+			document.getElementsByClassName("tab_"+l_typ)[0].classList.add("longTable");
+		}
 	}
 }
 
