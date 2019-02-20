@@ -35,7 +35,8 @@ window.addEventListener('load', function () {
 			// Datensatz ersetzen
 			db_replaceData(function(){
 				pop.classList.remove('showPop');
-				item2Save(true, notenBezeichnung, true)
+				var bol_kat = (Leistung.Eintragung == "Rohpunkte");
+				item2Save(bol_kat, notenBezeichnung, true)
 			}, neueLeistung);
 
 		}, "leistung", id);
