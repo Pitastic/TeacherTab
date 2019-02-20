@@ -25,15 +25,6 @@ window.addEventListener('load', function () {
 	addListener();
 	closeListener();
 
-	// Anzeigen wenn ready
-	var DOMcheck = setInterval( function () {
-		if (document.readyState !== 'complete' ) return;
-		clearInterval( DOMcheck );
-		// DOM Ready - Smooth Animation !
-		setTimeout(function(){
-			slide2(sessionStorage.getItem('lastview'));
-		}, 200);
-	}, 50 );
 });
 
 
@@ -116,6 +107,16 @@ function listStudents(results) {
 	}else{
 		item1Content.classList.add('emptyList');
 	}
+
+	// Anzeigen wenn ready
+	var DOMcheck = setInterval( function () {
+		if (document.readyState !== 'complete' ) return;
+		clearInterval( DOMcheck );
+		// DOM Ready - Smooth Animation !
+		setTimeout(function(){
+			slide2(sessionStorage.getItem('lastview'));
+		}, 200);
+	}, 50 );
 }
 
 
