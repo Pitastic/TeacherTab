@@ -14,25 +14,32 @@ window.addEventListener('load', function () {
 
 	// -- Leistung editieren (Metadaten)
 	pop.getElementsByClassName('button OK')[0].addEventListener('click', function(){
-		//var id_Leistung = sessionStorage.getItem('leistung_id');
-		var art = sessionStorage.getItem('leistung_art');
-		var eintragung = sessionStorage.getItem('Eintragung');
-		var notenBezeichnung = document.getElementById('notenBezeichnung');
-		var notenDatum = document.getElementById('notenDatum');
-		var rangeWert = document.getElementById('rangeWert');
-		var neueLeistung = formLeistung(
-			art, notenBezeichnung.value,
-			notenDatum.value,
-			eintragung,
-			rangeWert.value
-		);
-		neueLeistung.id = parseInt(sessionStorage.getItem('leistung_id'));
+		var id = parseInt(sessionStorage.getItem('leistung_id'));
+		var notenBezeichnung = document.getElementById('notenBezeichnung').value;
+		var notenDatum = document.getElementById('notenDatum').value;
+		var rangeWert = document.getElementById('rangeWert').value;
 
-		// Datensatz ersetzen
-		db_replaceData(function(){
-			pop.classList.remove('showPop');
-			slide1('item2details', "details_leistungen.htm");
-		}, neueLeistung);
+		// -- Leistung aus DB lesen, ändern und speichern
+		db_readSingleData(function(Leistung){
+			
+			var neueLeistung = formLeistung(
+				Leistung.subtyp,
+				notenBezeichnung,
+				notenDatum,
+				Leistung.Eintragung,
+				rangeWert,
+			);
+			neueLeistung.id = Leistung.id;
+			neueLeistung.Verteilungen = Leistung.Verteilungen;
+
+			// Datensatz ersetzen
+			db_replaceData(function(){
+				pop.classList.remove('showPop');
+				item2Save(true, notenBezeichnung, true)
+			}, neueLeistung);
+
+		}, "leistung", id);
+
 	});
 
 	// -- Leistung löschen

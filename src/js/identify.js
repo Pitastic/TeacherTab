@@ -131,7 +131,7 @@ var needToCache = [
 
 // Feature detection
 
-// -- IndexedDB
+// -- IndexedDB (Stores)
 function checkIDBShim(callback) {
 
 	if (!window.indexedDB) {
@@ -146,12 +146,14 @@ function checkIDBShim(callback) {
 
 	req.onupgradeneeded = function (e) {
 		var db = e.target.result;
-		db.createObjectStore('one', {
+		var one = db.createObjectStore('one', {
 			keyPath: 'key'
 		});
-		db.createObjectStore('two', {
+		var two = db.createObjectStore('two', {
 			keyPath: 'key'
 		});
+		var idx = two.createIndex("typ", "typ", { unique: false });
+
 	};
 
 	req.onerror = function (e) {
@@ -174,11 +176,23 @@ function checkIDBShim(callback) {
 				callback();
 			};
 
-			var req = tx.objectStore('two').put({
-				'key': new Date().valueOf()
-			});
-			req.onsuccess = function (e) {
-			};
+			var req = tx.objectStore('two').put(
+				{
+				'key': new Date().valueOf(),
+				'typ': 'testing',
+				'val': '01234',
+				}
+			);
+			// Put Testdaten
+			req.onsuccess = function(){
+				tx.objectStore('two').put(
+					{
+						'key': new Date().valueOf(),
+						'typ': 'testing',
+						'val': '56789',
+					}
+				);
+			}
 			req.onerror = function (e) {
 			};
 
@@ -187,17 +201,60 @@ function checkIDBShim(callback) {
 			DEVICE['noidx'] = 'ios9';
 			db.close();
 			callback();
-		} finally {
-			var delReq = indexedDB.deleteDatabase("test");
-			delReq.onsuccess = function (event) {
-				console.log("IDENTIFY: (idb) Clean up Test DB");
-			}
-			delReq.onerror = function (event) {
-				console.log("IDENTIFY: (idb) ERROR Clean up Test DB", event);
-			}
 		}
-
 	};
+}
+
+// -- IndexedDB (Cursor)
+function checkIDBCursorUpdate(callback){
+	if (DEVICE['noidx']) {
+		DEVICE['nocur'] = false
+		return true;
+	}else{
+		var req = indexedDB.open('test', 1);
+
+		req.onsuccess = function (event) {
+			var connection = event.target.result;
+			var oStore = connection.transaction(['two'], 'readwrite').objectStore('two');
+
+			// Typ einschränken
+			var idxTyp = oStore.index("typ");
+			var keyRange = IDBKeyRange.only("testing");
+			var transaction = idxTyp.openCursor(keyRange);
+
+			var toGo = 2; // mindestens 2 Testeinträge vorhanden
+			var i = 0;
+
+			transaction.onerror = function(e){
+				console.log("IDENTIFY: (idb) Error opening IDB Cursor");
+			};
+			transaction.onsuccess = function (event) {
+				var cursor = event.target.result;
+				if (cursor) {
+					var key = cursor.value.key;
+					var toUpdate = cursor.value;
+					toUpdate.val = "1111";
+					var requestUpdate = cursor.update(toUpdate);
+					requestUpdate.onsuccess = function (r) {
+						console.log("IDENTIFY: (idb) Cursor update für ", r.target.result);
+						i++;
+					};
+					cursor.continue();
+				}else{
+					// checken, ob alle geupdated wurden...
+					if (i >= toGo) {
+						console.log("IDENTIFY: (idb) Cursor update test PASSED !");
+						DEVICE['nocur'] = false;
+					}else{
+						console.log("IDENTIFY: (idb) Cursor update test FAILED ! (", i, "von", toGo, ")");
+						DEVICE['nocur'] = true;
+					}
+					callback();
+				}
+			}
+		};
+
+	}
 }
 
 // -- ES 6
@@ -208,6 +265,19 @@ function checkES6() {
 		DEVICE['nojs'] = false;
 	}
 }
+
+
+function cleanUpIDB(callback) {
+	var delReq = indexedDB.deleteDatabase("test");
+	delReq.onsuccess = function (event) {
+		console.log("IDENTIFY: (idb) Clean up Test DB");
+		if (callback) {callback()}
+	}
+	delReq.onerror = function (event) {
+		console.log("IDENTIFY: (idb) ERROR Clean up Test DB", event);
+	}
+}
+
 
 
 // Cache mit Device-Info erweitern
@@ -355,6 +425,10 @@ function prepareDevice() {
 		});
 	}
 
+	// Dynamic Update-Cursor possible ?
+	GLOBALS['no_cursor_update'] = (!DEVICE['noidx'] && DEVICE['nocur']);
+
+
 	// JS Shim
 	if (DEVICE['nojs'] && !DEVICE['noidx']) { passJs("/js/frameworks/babel_polyfill.min.js"); }
 
@@ -418,10 +492,10 @@ function prepareDevice() {
 	if ('serviceWorker' in navigator) {
 		navigator.serviceWorker
 			.register('/sw.js', { scope: '.' })
-			.then(function () { console.log("IDENTIFY: Service Worker Registered"); })
+			.then(function () { console.log("IDENTIFY: (sw) Service Worker Registered"); })
 			.catch(function (err) { console.log("IDENTIFY: Error, Service Worker failed to register !", err); });
 	} else {
-		console.log("IDENTIFY: Service Worker werden nicht unterstützt ! - Fallback zu cache.manifest...");
+		console.log("IDENTIFY: (sw) Service Worker werden nicht unterstützt ! - Fallback zu cache.manifest...");
 		passIframe();
 	}
 }
@@ -485,16 +559,19 @@ if (fromStore) {
 	DEV_LOG1 += "> STYLE: Pixel-Width " + window.innerWidth;
 
 	var devlog_container = document.getElementById("dev_info1");
-	console.log("IDENTIFY:", DEV_LOG1);
+	console.log("IDENTIFY:\n", DEV_LOG1);
 	if (devlog_container) { devlog_container.innerHTML = DEV_LOG1; }
 
 	// Shims und Caches hinterlegen
 	checkIDBShim(function () {
-		console.log("IDENTIFY: (idb) starte Callback");
-		checkES6();
-
-		// Einstellungen laden
-		prepareDevice();
-	}
-	);
+		console.log("IDENTIFY: (idb) starte Callback 1");
+		checkIDBCursorUpdate(function(){
+			console.log("IDENTIFY: (idb) starte Callback 2");
+			checkES6();
+	
+			// Einstellungen laden
+			prepareDevice();
+			cleanUpIDB();
+		})
+	});
 }

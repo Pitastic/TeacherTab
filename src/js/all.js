@@ -359,7 +359,6 @@ function removeDups(a, filter) {
 	return out;
 }
 
-
 function compareKlassen(a, b) {
 	//-> Vergleichsfunktion für die Liste aller Klassen
 	if (a[1].bezeichnung < b[1].bezeichnung)
@@ -842,13 +841,14 @@ function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
 
 
 // Wait for DB (wenn Callback nicht geht)
-function waitForDB(callback) {
+function waitForDB(callback, delay) {
+	if (typeof delay == "undefined") { delay = 250; }
 	if (GLOBALS.dbFinished >= GLOBALS.dbToGo) {
 		callback();
 	} else {
 		setTimeout(function () {
 			waitForDB(callback);
-		}, 250);
+		}, delay);
 	}
 }
 
