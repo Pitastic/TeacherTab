@@ -16,9 +16,9 @@ window.addEventListener('load', function () {
 		SETTINGS = r[0];
 		db_readMultiData(listLeistung, "leistung", function(){listLeistung([]);});
 		// List first View
-		handleSchnitt(function(){
+		//handleSchnitt(function(){
 			db_readMultiData(listStudents, "student");
-		});
+		//});
 	}, "settings");
 
 	// Event-Listener

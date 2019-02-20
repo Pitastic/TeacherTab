@@ -13,15 +13,20 @@ window.addEventListener('load', function () {
 		// Settings laden
 		SETTINGS = r[0];
 
-		// List first View
-		db_readMultiData(function(r){
-			firstListing(r, function(){
-		
-				// Fülle first View
-				db_readSingleData(studentDetails, "student", id);
-		
-			});
-		}, "leistung");
+		// Durchschnitt aktualisieren
+		//handleSchnitt(function(){
+
+			// List first View
+			db_readMultiData(function(r){
+				firstListing(r, function(){
+			
+					// Fülle first View
+					db_readSingleData(studentDetails, "student", id);
+			
+				});
+			}, "leistung");
+	
+		//}, id)
 	
 	}, "settings");
 

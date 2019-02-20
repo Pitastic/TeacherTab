@@ -111,6 +111,8 @@ function SettingsSave(bol_save) {
 		// DB save und refresh
 		db_replaceData(function () {
 			SETTINGS = settings;
+			document.getElementById('item1setting').classList.remove('show');
+			
 			handleSchnitt(function () {
 				slide1('item1setting', "uebersicht.htm");
 			});
