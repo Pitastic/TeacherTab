@@ -77,9 +77,9 @@ html, body {
 
 .styleWrap, .indexBox {
     padding: 20px;
-    border: 2px solid rgb(230,230,230);
+    border: 2px solid #2f4f4f;
     border-radius: 3px;
-    background: rgba(226,226,226,0.7);
+    background: rgba(170, 170, 170, 0.66);
 }
 
 /* ==== Status and Stats - Bars and Charts ==== */

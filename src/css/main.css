@@ -451,17 +451,10 @@ Details Schüler (item1details)
 	display: block;
 	border-style: solid;
 	}
-	#ds_gesamt {
-		padding: 2em .25em 2em 2em !important;
-		margin-bottom: 2em !important;
-		border-radius: 4px;
-		border: 2px solid darkslategray;
-		color:darkslategray;
+	#ds_gesamt_eingetragen {
+		float: right;
+		margin-top:-12.5px;
 	}
-		#ds_gesamt_eingetragen {
-			float: right;
-			margin-top: -0.5em;
-		}
 	#ds_mndl {
 	   color: #027585;
 	   border-color: #027585;
@@ -597,26 +590,9 @@ Details Schüler (item1details)
 #differenzierteLeistung {
 	text-align: center;
 }
-	#differenzierteLeistung div {
-			margin: 0; padding: 0;
-			padding: 0.5em 0;
-			margin-right: 6.3%;
-			width: 20%;
-			background: -moz-linear-gradient(0deg, #464646 0%,#646464 100%);
-			background: -webkit-linear-gradient(0deg, #464646 0%,#646464 100%);
-			background: linear-gradient(0deg, #464646 0%,#646464 100%);
-			border-radius: 4px;
-			border: none;
-		}
-		#differenzierteLeistung div:last-child {
-			margin-right:0;
-		}
-		#differenzierteLeistung div.Kategorien span:last-child {
-			color: lightgray;
-		}
-		span.katSpans {
-			color: white;
-        }
+	#differenzierteLeistung div:last-child {
+		margin-right:0;
+	}
 
 #item1setting_gruppen .styleWrap {
     right: 150px;
