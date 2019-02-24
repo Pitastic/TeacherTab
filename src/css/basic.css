@@ -77,7 +77,7 @@ html, body {
 
 .styleWrap, .indexBox {
     padding: 20px;
-    border: 2px solid #2f4f4f;
+    border: 1px dashed #2f4f4f;
     border-radius: 3px;
     background: rgba(170, 170, 170, 0.66);
 }

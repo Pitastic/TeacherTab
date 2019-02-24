@@ -100,7 +100,8 @@ Panels allgemein
 .indexBox {
 	position: static;
 	padding: 20px 10px;
-	border-width: 0 0 2px 0;
+	border-width: 0 0 1px 0;
+	border-style: solid;
 	border-radius: 0;
 	box-shadow: 0px 3px 2px -3px black;
 	background: none;
@@ -126,10 +127,10 @@ Panels allgemein
 	top: 0;
 	margin: 0 0.5em;
 	padding-bottom: 4.5em;
-	border-style: solid;
-	border-color: rgb(230,230,230);
-	border-width: 0 2px 0 2px;
-	background: rgba(226,226,226,0.7);
+	border-style: dashed;
+	border-color: #2f4f4f;
+	border-width: 0 1px 0 1px;
+    background: rgba(170, 170, 170, 0.66);
 }
 	#item1details .content {
 		top: 2.5em;
@@ -255,7 +256,7 @@ nav .button {
 	display: inline-block;
 	margin: 0 !important;
 	padding: 0.5em 0;
-	width: 24%;
+	width: 25%;
 	border: none !important;
 	background: none !important;
     font-size: initial !important;
