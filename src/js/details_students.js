@@ -116,15 +116,15 @@ function firstListing(results, callback) {
 	var gew_divs = document.getElementById('item1_gewichtung').getElementsByTagName('div');
 	gew_divs[0].style.width = gew_mndl+"%";
 	span = document.createElement('span');
-	span.innerHTML = "mündlich : "+gew_mndl+" %";
+	span.innerHTML = "mündlich : "+gew_mndl+"%";
 	gew_divs[0].appendChild(span);
 	gew_divs[1].style.width = gew_fspz+"%";
 	span = document.createElement('span');
-	span.innerHTML = "("+gew_fspz+" %)";
+	span.innerHTML = "("+gew_fspz+"%)";
 	gew_divs[1].appendChild(span);
 	gew_divs[2].style.width = gew_schr+"%";
 	span = document.createElement('span');
-	span.innerHTML = "schriftlich : "+gew_schr+" %";
+	span.innerHTML = "schriftlich : "+gew_schr+"%";
 	gew_divs[2].appendChild(span);
 
 	// -- mündlich
@@ -379,7 +379,7 @@ function studentDetails(row){
 		vorjSpan.innerHTML += (vorjahr) ? vorjahr.eingetragen+") " : "n/a) ";
 		vorjSpan.classList.remove('hide');
 	}
-	document.getElementById('ds_gesamt').getElementsByClassName('Notendurchschnitt')[0].innerHTML = (row.gesamt.rechnerisch) ? row.gesamt.rechnerisch.toPrecision(3) : "-";
+	document.getElementById('ds_gesamt').getElementsByClassName('Notendurchschnitt')[0].innerHTML = "&#216; " + ((row.gesamt.rechnerisch) ? row.gesamt.rechnerisch.toPrecision(3) : "-");
 	document.getElementById('ds_gesamt_eingetragen').getElementsByTagName('select')[0].value = row.gesamt.eingetragen || "-";
 	document.getElementById('ds_mndl').getElementsByClassName('Notendurchschnitt')[0].innerHTML = row.gesamt.omndl || "-";
 	if (!SETTINGS.fspzDiff){

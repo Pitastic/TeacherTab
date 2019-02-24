@@ -269,6 +269,8 @@ nav .button {
     	border-radius: 20px !important;
 	}
 	nav .button img {width: 1.5em;}
+	nav .double .button {width: 50%;}
+	nav .tripple .button {width: 33%;}
 
 nav #selector {
 	position: static;
@@ -463,7 +465,7 @@ div.s_flag {
 
 	#listLeistung ul li div:nth-child(2) {
 		text-align: left;
-		width: 50%;
+		width: auto;
 	}
 
 
@@ -472,6 +474,7 @@ div.s_flag {
 Studentdetails
 ===============================================================================
 */
+#studentInfo h3 {padding-left: 0.5em !important;}
 #ds_gesamt_eingetragen {
 	margin-left: 1em;
 	margin-top: calc(-2em - 4px);
@@ -490,6 +493,17 @@ Studentdetails
 		text-align: left;
 		width: 50%;
 	}
+
+#differenzierteLeistung div.Kategorien {
+	margin: 0.5em 5% 0 0 !important;
+	width: 45%;
+}
+	#differenzierteLeistung div.Kategorien:nth-child(2),
+	#differenzierteLeistung div.Kategorien:nth-child(4) {
+		margin-right: 0 !important;
+	}
+
+
 
 /*
 ===============================================================================
