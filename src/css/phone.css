@@ -132,9 +132,6 @@ Panels allgemein
 	border-width: 0 1px 0 1px;
     background: rgba(170, 170, 170, 0.66);
 }
-	#item1details .content {
-		top: 2.5em;
-	}
 
 .uebersicht {
 	top: 2.6em; /* padding + lineheight + border in header*/
