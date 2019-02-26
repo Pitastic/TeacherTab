@@ -6,10 +6,6 @@ db_addDocument waitForDB db_neueKlasse db_readMultiData db_readKlasse db_dropKla
 sync_deleteKlasse sync_pushBack sync_getKlasse*/
 
 window.addEventListener('load', function () {
-	// DEV
-	document.getElementById('footer').innerHTML = GLOBALS['appversion'];
-	// DEV
-
 
 	// Funktionen, die auf global SETTINGS warten müssen
 	db_readMultiData(function(r){

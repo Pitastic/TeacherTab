@@ -28,7 +28,7 @@ var GLOBALS = {
 	'timeout': 6000,
 	'unlimited': ["2099-01-01", "2098-01-01"],
 
-	'appversion': "1.0.3",
+	'appversion': "1.0.4",
 	'up2date': true,
 	'dbname': null,
 	'dbversion': null,

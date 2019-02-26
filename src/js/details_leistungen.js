@@ -673,9 +673,12 @@ function updateVerteilungHTML(){
 		var schiene_span = balken[i].parentNode.getElementsByTagName('span')[0];
 		var kat_span = document.getElementById('item2_info_Kat'+(i+1));
 		kat_span.innerHTML = katWert;
-		if (katWert != "?") {
-			balken[i].style.width = ((katWert/gesamtWert)*100).toFixed(0) +"%";
-			schiene_span.innerHTML = ((katWert/gesamtWert)*100).toFixed(1) +" %";
+		if (katWert != "?" && katWert > 0) {
+			balken[i].style.width = ((katWert/gesamtWert)*100).toFixed(0) + "%";
+			schiene_span.innerHTML = ((katWert/gesamtWert)*100).toFixed(1) + " %";
+		}else{
+			balken[i].style.width = "0%";
+			schiene_span.innerHTML = "0 %";
 		}
 	}
 	var gesamt_div = document.getElementById('item2_info_gesamt');

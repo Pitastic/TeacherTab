@@ -227,10 +227,13 @@ function updateStatus(progress, statustext, statustitle, elements, error) {
 		if (progress >= 100 && !error) {
 			el_statusbar.classList.add('ok');
 			el_statusbar.classList.remove('error');
-		} else if (error) {
+		} else if (error === true) {
 			el_statusbar.style.width = "100%";
 			el_statusbar.classList.remove('ok');
 			el_statusbar.classList.add('error');
+		} else if (error == "info") {
+			el_statusbar.style.width = "100%";
+			el_statusbar.classList.add('info');
 		}
 	}
 	return;
@@ -895,10 +898,10 @@ function klassenSyncHandler(location, newWindow) {
 
 			} else {
 
-				// mergedKlasse als Fehlermeldung ausgeben
+				// mergedKlasse als Fehlermeldung ausgeben (msg vom Server)
 				if (klassenObject) {
 					// Klasse kann trotzdem geöffnet
-					updateStatus(progress, mergedKlasse, "Keine Synchronisation durchgeführt !", false, true);
+					updateStatus(progress, mergedKlasse, "Keine Synchronisation durchgeführt !", false, "info");
 					setTimeout(function () {
 						if (newWindow) {
 							window.open(location, '_blank');
