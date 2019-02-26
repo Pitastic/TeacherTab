@@ -38,7 +38,6 @@ window.addEventListener('load', function () {
 				a.className = "button OK";
 				a.innerText = "Download";
 				a.onclick = function() {
-					//this.href = "javascript:void(0);";
 					this.className = "button DISABLED";
 					this.innerText = "...lädt...";
 				}
@@ -60,12 +59,14 @@ window.addEventListener('load', function () {
 			document.body.classList.add("white");
 			document.getElementById("item_HTML").classList.remove("hide");
 			popUp("itemHTMLTipp");
-			db_readMultiData(function(rows){
-				writeAllgemeines(rows);
+			db_readMultiData(function(first_rows){
+				writeAllgemeines(first_rows);
 
-				db_readMultiData(function(rows){
-					writeGesamtuebersicht(rows);
-					writeLeistungen(rows);
+				db_readMultiData(function(second_rows){
+					// Sortieren der Schüler
+					second_rows.sort(compareStudents);
+					writeGesamtuebersicht(second_rows);
+					writeLeistungen(second_rows);
 				}, "student");
 
 			}, "leistung");
@@ -95,7 +96,7 @@ function writeAllgemeines(results){
 
 	// Überschriften
 	var insert_klassen = document.getElementsByClassName("insert_klasse");
-	for (var i = insert_klassen.length - 1; i >= 0; i--) {
+	for (var i = 0; i < insert_klassen.length; i++) {
 		insert_klassen[i].innerHTML = SETTINGS.name;
 	}
 
@@ -187,6 +188,7 @@ function writeAllgemeines(results){
 
 function writeGesamtuebersicht(rows) {
 	if (!rows || typeof rows == "undefined") {rows = [];}
+
 	var tr;
 	var GSU = document.getElementsByClassName("tab_gesamt")[0];
 	var thead = document.createElement('thead');
@@ -210,9 +212,10 @@ function writeGesamtuebersicht(rows) {
 	thead.appendChild(tr);
 
 	// Body
-	for (var i = rows.length - 1; i >= 0; i--) {
+	for (var i = 0; i < rows.length; i++) {
 
-		tr = appendRow("namen", rows[i].name.nname+", "+rows[i].name.vname);
+		var kurs = (rows[i].name.sort) ? "("+rows[i].name.sort+") " : "";
+		var tr = appendRow("namen", kurs+rows[i].name.nname+", "+rows[i].name.vname);
 		tr = appendRow("mndl", rows[i].gesamt.omndl, tr);
 
 		if (SETTINGS.fspzDiff) {
@@ -241,6 +244,7 @@ function writeGesamtuebersicht(rows) {
 
 function writeLeistungen(rows) {
 	if (!rows || typeof rows == "undefined") {rows = [];}
+
 	var arten = ['mndl', 'fspz', 'schr'];
 	var l_id;
 
@@ -248,9 +252,10 @@ function writeLeistungen(rows) {
 		var tbody = document.createElement('tbody');
 		var l_typ = arten[art];
 
-		for (var i = rows.length - 1; i >= 0; i--) {
+		for (var i = 0; i < rows.length; i++) {
 
-			var tr = appendRow("namen", rows[i].name.nname+", "+rows[i].name.vname);
+			var kurs = (rows[i].name.sort) ? "("+rows[i].name.sort+") " : "";
+			var tr = appendRow("namen", kurs+rows[i].name.nname+", "+rows[i].name.vname);
 			var c;
 
 			for (var i2 = GLOBALS[l_typ].length - 1; i2 >= 0; i2--) {
