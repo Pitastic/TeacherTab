@@ -68,9 +68,11 @@ Panels allgemein
 #item0 .styleWrap, #item1 .styleWrap, #item2 .styleWrap, #item1details .styleWrap, #item2details .styleWrap, #item1setting .styleWrap, #item1setting_gruppen .styleWrap {
     position: absolute;
     top: 0; bottom: 0; right: 30px; left: 0;
-    overflow-y:scroll; overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
+	overflow-y:scroll; overflow-x: hidden;		
 }
+	.scrollable {
+	    -webkit-overflow-scrolling: touch;
+	}
 
 /*Scroll-Bug-Fix*/
 #listStudents, #listLeistung, #studentInfo {
@@ -232,7 +234,7 @@ Listen in allen Ansichten
 		width: 5%; /*Symbol*/
 		}
 	#listLeistung li div.gewichtung, span.gewichtung {
-		margin: auto 5%;
+		margin: auto 10%;
 		font-size: 75%;
 		width: 5%; /*Gewichtung*/
 		}
@@ -615,6 +617,7 @@ Details Leistungen (item2details)
 	right: 0 !important;
 	width: 230px;
 	overflow-y: auto !important;
+	-webkit-overflow-scrolling: auto !important;
 }
 .styleWrap.arbeit_leistung {
 	margin-left: 285px;

@@ -484,8 +484,11 @@ Studentdetails
 	padding: 0.75em;
 }
 	#item1details ul li:last-of-type {margin-bottom: initial;}
-	#item1details ul li .lupe {margin-top: -32px}
-		#item1details .fspz_div ul li .lupe {margin-top: -16px}
+	#item1details ul li .gewichtung, #item1details ul li .lupe {margin-top: -32px}
+	#item1details ul li .gewichtung {
+		float: right; margin-right: 32px;
+	}
+		/*#item1details .fspz_div ul li .gewichtung, #item1details .fspz_div ul li .lupe {margin-top: -16px}*/
 	#item1details ul li span:nth-child(2) {
 		text-align: left;
 		width: 50%;
@@ -518,6 +521,11 @@ Leistungsdetails
 	border-radius: 0;
 	box-shadow: 0px 3px 2px -3px black;
 }
+	.Note.standalone{
+		margin: -8px 0px !important;
+		padding: 16px 8px !important;
+		width: auto !important;
+	}
 	.rohpunkte .styleWrap.arbeit_leistung{padding-top: 393px !important;} /* Summe der Verteilungsbox + 20px */
 
 	#arbeit_leistung {position: static;}
@@ -603,9 +611,15 @@ Leistungsdetails
 		.punkte #NotenListe_Arbeit > p {display: none;}
 		#NotenListe_Arbeit > label {float: right;}
 		#NotenListe_Arbeit > div {float: left;}
-		#NotenListe_Arbeit a.button.OK {margin-left: 1em;}
+		#NotenListe_Arbeit a.button.OK {
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
+		}
 		#NotenListe_Arbeit ul {float: left; margin-bottom: 0;}
-		#NotenListe_Arbeit li {padding-top: 0 !important; padding-bottom: 0 !important;}
+		#NotenListe_Arbeit li {
+			padding-top: 0 !important; padding-bottom: 0 !important;
+			border-top-right-radius: 0; border-bottom-right-radius: 0;
+		}
 		#keyMax {line-height: 20px; padding: 10px 0 !important;}
 
 #item2Stats li.edit {text-align: center;}
