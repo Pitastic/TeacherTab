@@ -28,7 +28,7 @@ var GLOBALS = {
 	'timeout': 6000,
 	'unlimited': ["2099-01-01", "2098-01-01"],
 
-	'appversion': "1.0.4",
+	'appversion': "1.0.5",
 	'up2date': true,
 	'dbname': null,
 	'dbversion': null,
@@ -311,7 +311,7 @@ function handle_orientation_landscape(evt) {
 		document.getElementById('dynamicViewport').setAttribute('content', viewport);
 	} else {
 		// Portrait :
-		document.getElementById('dynamicViewport').setAttribute('content', viewport + " " + dwidth);
+		document.getElementById('dynamicViewport').setAttribute('content', viewport + ", " + dwidth);
 	}
 }
 
