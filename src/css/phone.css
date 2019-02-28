@@ -50,8 +50,7 @@ Header und Footer Leiste
 
 #header{
 	top: 0;
-	padding: 0.5em 0;
-	/* box-shadow: inset 0 -15px 30px -15px #eeeeee, 0 0 10px 1px #2c2c2c; */
+	padding: 0.5em 0; padding-top: 20px;
 	box-shadow: inset 0 -20px 20px -20px #eeeeee, 0 0 10px 1px #2c2c2c;
 	border-bottom-width: 1px;
 }
@@ -144,6 +143,7 @@ PopUp Fenster
 ===============================================================================
 */
 .popUp {
+	top: 20px;
 	left: 5%; right: 5%;
 	padding: 4em 5px; padding-bottom: 0;
 	background: transparent;
@@ -214,7 +214,6 @@ PopUp Fenster
 	}
 
 .showPop {
-	top: 0;
 	bottom: 0;
 	overflow-x: auto;
 	-webkit-transform: translateX(0);
@@ -456,7 +455,7 @@ div.s_flag {
 	}
 	#listLeistung ul li .gewichtung, #item1details li .gewichtung {
 		width: 10%;
-		margin-right: 0;
+		margin: 0;
 	}
 	#listLeistung ul li .tools.right, #listStudents ul li .tools.right {display: none;}
 
