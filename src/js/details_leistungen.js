@@ -56,7 +56,6 @@ window.addEventListener('load', function () {
 	});
 
 	// List first View
-	//var art = sessionStorage.getItem('leistung_art');
 	var id_Leistung = parseInt(sessionStorage.getItem('leistung_id'));
 
 	// Funktionen, die auf global SETTINGS warten müssen
@@ -735,7 +734,7 @@ function editLeistungsDetails(thisElement){
 	// Neu zeichnen nur der einen Zeile !
 	var line = document.getElementById('item2details').querySelector("[data-rowid="+pop.getAttribute('data-rowid')+"]");
 	for (i in punkteObj){
-		line.querySelector('[data-name="'+i+'"]').innerHTML = punkteObj[i];
+		line.querySelector('[data-name="'+i+'"]').innerHTML = (mitschreiberTrue) ? punkteObj[i] : "-";
 	}
 	line.setAttribute('data-verteilung', selectBox.value);
 	line.setAttribute('data-mitschreiber', mitschreiberTrue);
@@ -748,16 +747,14 @@ function editLeistungsDetails(thisElement){
 	Student[sID][lART][lID].Bezeichnung = lNAME;
 	Student[sID][lART][lID].Mitschreiber = mitschreiberTrue;
 	Student[sID][lART][lID].changed = timestamp();
-	
-	if (mitschreiberTrue) {
-		Student[sID][lART][lID].Gesamt = gesamt;
-		Student[sID][lART][lID].Gewichtung = 1;
-		Student[sID][lART][lID].Kat1 = punkteObj['Kat1'];
-		Student[sID][lART][lID].Kat2 = punkteObj['Kat2'];
-		Student[sID][lART][lID].Kat3 = punkteObj['Kat3'];
-		Student[sID][lART][lID].Kat4 = punkteObj['Kat4'];
-		Student[sID][lART][lID].Verteilung = selectBox.value;
-	}
+
+	Student[sID][lART][lID].Gesamt		= (mitschreiberTrue) ? gesamt : undefined;
+	Student[sID][lART][lID].Gewichtung	= (mitschreiberTrue) ? 1 : undefined;
+	Student[sID][lART][lID].Kat1		= (mitschreiberTrue) ? punkteObj['Kat1'] : undefined;
+	Student[sID][lART][lID].Kat2		= (mitschreiberTrue) ? punkteObj['Kat2'] : undefined;
+	Student[sID][lART][lID].Kat3		= (mitschreiberTrue) ? punkteObj['Kat3'] : undefined;
+	Student[sID][lART][lID].Kat4		= (mitschreiberTrue) ? punkteObj['Kat4'] : undefined;
+	Student[sID][lART][lID].Verteilung	= (mitschreiberTrue) ? selectBox.value : undefined;
 
 	var updatedStudents = updateNoten(line, true, Student);
 

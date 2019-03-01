@@ -189,7 +189,7 @@ PopUp Fenster
 			}
 			.popUp li.edit input[type]{
 				width: auto;
-				margin: 0;
+				/*margin: 0;*/
 				padding: 0.5em 0;
 			}
 
@@ -511,7 +511,7 @@ Leistungsdetails
 */
 .styleWrap.arbeit_leistung{
 	padding: 1em 0 !important;
-	padding-top: 62px !important; /* Summe der Paddings, Border und LineHeight */
+	padding-top: 72px !important; /* Summe der Paddings, Border und LineHeight + Statusbar*0.5 */
 	margin: 0 1em !important;
     margin-bottom: 0 !important;
     margin-top: 1em !important;
@@ -525,7 +525,7 @@ Leistungsdetails
 		padding: 16px 8px !important;
 		width: auto !important;
 	}
-	.rohpunkte .styleWrap.arbeit_leistung{padding-top: 393px !important;} /* Summe der Verteilungsbox + 20px */
+	.rohpunkte .styleWrap.arbeit_leistung{padding-top: 403px !important;} /* Summe der Verteilungsbox + 20px + Statusbar*0.5 */
 
 	#arbeit_leistung {position: static;}
 	.rohpunkte #arbeit_leistung {
@@ -579,7 +579,7 @@ Leistungsdetails
 }
 	#NotenListe_Arbeit, .gruppierer-container {
 		position: fixed;
-		top: 0;
+		top: 0.5em; /* Statusbar-Fix */
 		left: 0;
 		right: 0;
 		border: 1px solid black !important;
@@ -626,7 +626,7 @@ Leistungsdetails
 
 #item2_info_Verteilung {
 	position: absolute;
-	top: 1em;
+	top: 1.5em; /* + Statusbar-Fix */
 	right: 1em;
 	left: 1em;
 }
