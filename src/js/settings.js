@@ -208,5 +208,5 @@ function saveGruppen() {
 }
 
 function testFunction(){
-	alert("Version: 1\n(online/offline)");
+	alert("Version: 1.1.3\nDas ist die neue Version des Codes!");
 }

@@ -150,18 +150,6 @@ function settingsAllgemein() {
 	// Check Credentials wenn Password gegeben
 	testCreds(setAuth);
 
-	/*
-	if (GLOBALS.passW) {
-	}else{
-		localStorage.setItem('auth', false);
-		localStorage.setItem('passW', false);
-		var thisElement = document.querySelector("#item0First .OK");
-		popUpClose(thisElement);
-		setTimeout(function() {
-			window.location.reload();
-		},550);
-	}
-	*/
 	return;
 }
 
@@ -251,27 +239,6 @@ function listIdx_Select(account) {
 
 	sel.parentNode.replaceChild(clone, sel);
 	document.getElementById("indexKlassen").getElementsByTagName("span")[0].innerHTML = "Insgesamt " + optCount + " Klassen in deinem Account";
-	var auth_status = document.getElementById('AuthStatus');
-	var text = auth_status.getElementsByClassName('statusText')[0];
-	var info = auth_status.getElementsByClassName('statusInfo')[0];
-	if (GLOBALS.PRO) {
-		text.classList.add("pro");
-		if (GLOBALS.unlimited.indexOf(account.validDate) === -1) {
-			text.innerHTML = 'PRO Account bis ' + datum(true, account.validDate);
-			info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">unbegrenzt Pro holen</a>';
-		} else {
-			text.innerHTML = 'PRO Account !';
-			info.parentNode.removeChild(info);
-		}
-	} else if (!navigator.onLine) {
-		text.innerHTML = 'Offline';
-		text.classList.add("offline");
-		info.parentNode.removeChild(info);
-	} else {
-		text.innerHTML = 'Basic Account';
-		text.classList.add("basic");
-		info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>';
-	}
 }
 
 

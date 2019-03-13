@@ -11,8 +11,14 @@ sync_getAccount sync_deleteKlasse sync_pushBack sync_getKlasse*/
 var SETTINGS;
 
 window.addEventListener('load', function () {
+
+	// Allgemeine EventListener
+	window.addEventListener('online', setOnlineStatus);
+	window.addEventListener('offline', setOnlineStatus);
+
 	// Init Vars
 	GLOBALS.noSyncCols = ["vorjahr"];
+	setOnlineStatus();
 
 	// Not the First Time ?
 	if (localStorage.getItem('TeacherTab')) {
@@ -30,8 +36,10 @@ window.addEventListener('load', function () {
 
 	// Links bleiben in WebApp
 	$.stayInWebApp('a.stay');
+
 	// Anmeldestatus
 	checkAuth();
+
 });
 
 
@@ -45,6 +53,7 @@ function addListener() {
 		popUp(add.getAttribute('data-name'));
 	};
 }
+
 function closeListener() {
 	// Close 'X':
 	var closeX = document.getElementsByClassName('close');
@@ -53,6 +62,43 @@ function closeListener() {
 		closeX[i].getElementsByTagName('a')[0].onclick = function () {
 			popUpClose(this);
 		};
+	}
+}
+
+function setOnlineStatus(evt) {
+	var status = navigator.onLine;
+	GLOBALS['ONLINE'] = status;
+	var loc = window.location.pathname;
+
+	if (loc == "/index.htm" || loc == "/") {
+		// Index Status setzen
+		var auth_status = document.getElementById('AuthStatus');
+		var text = auth_status.getElementsByClassName('statusText')[0];
+		var info = auth_status.getElementsByClassName('statusInfo')[0];
+		if (GLOBALS.PRO && status) {
+			text.classList.remove("offline");
+			text.classList.remove("basic");
+			text.classList.add("pro");
+			if (GLOBALS.UNLIMITED === true) {
+				text.innerHTML = 'PRO Account !';
+				info.parentNode.removeChild(info);
+			} else {
+				text.innerHTML = 'PRO Account bis ' + datum(true, GLOBALS.UNLIMITED);
+				info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">unbegrenzt Pro holen</a>';
+			}
+		} else if (!status) {
+			text.innerHTML = 'Offline';
+			text.classList.remove("pro");
+			text.classList.remove("basic");
+			text.classList.add("offline");
+			info.parentNode.removeChild(info);
+		} else {
+			text.innerHTML = 'Basic Account';
+			text.classList.remove("pro");
+			text.classList.remove("offline");
+			text.classList.add("basic");
+			info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>';
+		}
 	}
 }
 
@@ -870,6 +916,10 @@ function klassenSyncHandler(location, newWindow) {
 	progress += 10;
 	updateStatus(progress, "Lokale Daten lesen", "Synchronisiere...");
 
+
+	if (GLOBALS.ONLINE) {
+
+
 	db_readKlasse(function (klassenObject) {
 
 		progress += 50; // Statusbar
@@ -924,6 +974,17 @@ function klassenSyncHandler(location, newWindow) {
 		}, klassenObject);
 
 	});
+
+	}else{
+		updateStatus(100, "Du bist offline!", "Keine Synchronisation durchgeführt !", false, true);
+		setTimeout(function () {
+		if (newWindow) {
+			window.open(location, '_blank');
+		} else {
+			window.location.href = location;
+		}
+	}, 3000);
+	}
 }
 
 

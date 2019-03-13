@@ -7,7 +7,7 @@ sync_deleteKlasse sync_pushBack sync_getKlasse copyObject*/
 
 function testCreds(callback) {
 	// eingetragene Credentials testen
-	if (navigator.onLine) {
+	if (GLOBALS.ONLINE) {
 		$.ajax({
 			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/check/',
 			type: 'GET',
@@ -29,7 +29,7 @@ function testCreds(callback) {
 
 function sync_getAccount(callback, localAccount) {
 	// Klassenliste und Metainfos für den Benutzer abfragen, mergen und weitergeben
-	if (GLOBALS.AUTH && navigator.onLine) {
+	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		console.log("ACCOUNT: sync/merge");
 		$.ajax({
 			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/account/',
@@ -47,7 +47,10 @@ function sync_getAccount(callback, localAccount) {
 				var merged = mergeAccount(newData, localAccount);
 				merged['valid'] = data.valid;
 				merged['validDate'] = data.validDate;
+				// Set Account Info
 				GLOBALS.PRO = data.valid;
+				GLOBALS.UNLIMITED = (GLOBALS.unlimited_dates.indexOf(data.validDate) === -1) ? data.validDate : true;
+				setOnlineStatus();
 				//DEV console.log("SYNC: Merged", merged);
 				// Save and Push back
 				db_replaceData(function () {
@@ -77,7 +80,7 @@ function sync_getKlasse(callback, classObjectArray) {
 	// Klasse vorhanden oder nur Hash übereben ?
 	var klassenObject = (classObjectArray.length === 1) ? {} : classObjectArray[1];
 
-	if (GLOBALS.AUTH && navigator.onLine) {
+	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		console.log("SYNC:", klassenHash);
 		$.ajax({
 			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/class/' + klassenHash,
@@ -135,7 +138,7 @@ function sync_getKlasse(callback, classObjectArray) {
 /* Erst interessant für Offline-Verfügbar oder Bereinigung
 function sync_getMultiKlasses(callback, klassenListe) {
 // Mehrere Klasse des Benutzers abfragen, mergen und weitergeben
-	if (GLOBALS.AUTH && navigator.onLine) {
+	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		var hashList = ""; // Join Klassenhashes aus den Objekten zu kommagetrennter Liste
 		$.ajax({
 			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/classes',
@@ -166,7 +169,7 @@ function sync_getMultiKlasses(callback, klassenListe) {
 
 function sync_pushBack(callback, Data, uri) {
 	// Daten an den Server schicken (generic Function)
-	if (GLOBALS.AUTH && navigator.onLine) {
+	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		// keine lokalen Daten pushen
 		var pushData = copyObject(Data);
 		if (pushData.hasOwnProperty('local')) { pushData.local = null; }
@@ -203,7 +206,7 @@ function sync_pushBack(callback, Data, uri) {
 
 function sync_deleteKlasse(id, callback) {
 	//-> Daten zur Klasse auf Server löschen
-	if (GLOBALS.AUTH && navigator.onLine) {
+	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		console.log("SYNC: lösche", id, "vom Server");
 		$.ajax({
 			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/class/' + id,
@@ -428,7 +431,7 @@ function mergeKlasse(newData, localData) {
 
 function sync_cleanBlacklist(callback, localAccount) {
 	// Account syncen und dabei Blacklist lokal und remote bereinigen
-	if (GLOBALS.AUTH && navigator.onLine) {
+	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		console.log("ACCOUNT: clean up blacklist");
 		$.ajax({
 			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/account/',

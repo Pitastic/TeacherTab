@@ -20,15 +20,17 @@ var STYLES_EXPORT = [
 
 
 var GLOBALS = {
+	'ONLINE' : null,
 	'AUTH': null,
 	'PRO': null,
+	'UNLIMITED' : null,
 	'userID': null,
 	'passW': null,
 	'SyncServer': "c/api",
 	'timeout': 6000,
-	'unlimited': ["2099-01-01", "2098-01-01"],
+	'unlimited_dates': ["2099-01-01", "2098-01-01"],
 
-	'appversion': "1.1.0",
+	'appversion': "1.1.4",
 	'up2date': true,
 	'dbname': null,
 	'dbversion': null,
