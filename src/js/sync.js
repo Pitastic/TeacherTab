@@ -513,6 +513,7 @@ function hashData(readAble) {
 
 function basicAuthString(username, passW){
 	// Korrektes Base64 auch mit Umlauten
+	// Thanks: https://stackoverflow.com/questions/30106476
 	if (!passW) {
 		return btoa(username);
 	}else{
@@ -523,10 +524,4 @@ function basicAuthString(username, passW){
 		}));
 		return "Basic " + b64;
 	}
-}
-
-function b64DecodeUnicode(str) {
-	return decodeURIComponent(atob(str).split('').map(function(c) {
-		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-	}).join(''));
 }
