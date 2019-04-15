@@ -9,10 +9,10 @@ function testCreds(callback) {
 	// eingetragene Credentials testen
 	if (GLOBALS.ONLINE) {
 		$.ajax({
-			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/check/',
+			url: GLOBALS.SyncServer + '/' + basicAuthString(GLOBALS.userID) + '/check/',
 			type: 'GET',
 			headers: {
-				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
+				"Authorization": basicAuthString(GLOBALS.userID, GLOBALS.passW)
 			},
 			timeout: GLOBALS.timeout,
 			success: function (data, status, jqXHR) {
@@ -32,10 +32,10 @@ function sync_getAccount(callback, localAccount) {
 	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		console.log("ACCOUNT: sync/merge");
 		$.ajax({
-			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/account/',
+			url: GLOBALS.SyncServer + '/' + basicAuthString(GLOBALS.userID) + '/account/',
 			type: 'GET',
 			headers: {
-				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
+				"Authorization": basicAuthString(GLOBALS.userID, GLOBALS.passW)
 			},
 			timeout: GLOBALS.timeout,
 			success: function (data, status, jqXHR) {
@@ -58,13 +58,7 @@ function sync_getAccount(callback, localAccount) {
 				}, merged, "account");
 			},
 			error: function (data, status, jqXHR) {
-				console.log("SYNC-ERROR: Kein Sync des Accounts durchgeführt !");
-				console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
-				GLOBALS.AUTH = false;
-				GLOBALS.PRO = false;
-				localStorage.setItem("auth", false);
-				localStorage.removeItem("TeacherTab");
-				window.location.reload();
+				pwFail(status, data, jqXHR);
 			},
 		});
 	} else {
@@ -83,10 +77,10 @@ function sync_getKlasse(callback, classObjectArray) {
 	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		console.log("SYNC:", klassenHash);
 		$.ajax({
-			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/class/' + klassenHash,
+			url: GLOBALS.SyncServer + '/' + basicAuthString(GLOBALS.userID) + '/class/' + klassenHash,
 			type: 'GET',
 			headers: {
-				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
+				"Authorization": basicAuthString(GLOBALS.userID, GLOBALS.passW)
 			},
 			timeout: GLOBALS.timeout,
 			success: function (data, status, jqXHR) {
@@ -141,12 +135,12 @@ function sync_getMultiKlasses(callback, klassenListe) {
 	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		var hashList = ""; // Join Klassenhashes aus den Objekten zu kommagetrennter Liste
 		$.ajax({
-			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/classes',
+			url: GLOBALS.SyncServer + '/' + basicAuthString(GLOBALS.userID) + '/classes',
 			type: 'GET',
 			dataType: 'json',
 			data: { 'ids' : hashList },
 			headers: {
-				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
+				"Authorization": basicAuthString(GLOBALS.userID, GLOBALS.passW)
 			},
 			timeout: GLOBALS.timeout,
 			success: function(data, status, jqXHR){
@@ -178,12 +172,12 @@ function sync_pushBack(callback, Data, uri) {
 		var url = (Array.isArray(uri)) ? uri.filter(function (val) { return val; }).join("/") : uri;
 		url = "/" + url + "/";
 		$.ajax({
-			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + url,
+			url: GLOBALS.SyncServer + '/' + basicAuthString(GLOBALS.userID) + url,
 			type: 'PUT',
 			dataType: 'json',
 			data: { 'payload': encrypted },
 			headers: {
-				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
+				"Authorization": basicAuthString(GLOBALS.userID, GLOBALS.passW)
 			},
 			timeout: GLOBALS.timeout,
 			success: function (data, status, jqXHR) {
@@ -209,10 +203,10 @@ function sync_deleteKlasse(id, callback) {
 	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		console.log("SYNC: lösche", id, "vom Server");
 		$.ajax({
-			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/class/' + id,
+			url: GLOBALS.SyncServer + '/' + basicAuthString(GLOBALS.userID) + '/class/' + id,
 			type: 'DELETE',
 			headers: {
-				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
+				"Authorization": basicAuthString(GLOBALS.userID, GLOBALS.passW)
 			},
 			timeout: GLOBALS.timeout,
 			success: function (data, status, jqXHR) {
@@ -434,10 +428,10 @@ function sync_cleanBlacklist(callback, localAccount) {
 	if (GLOBALS.AUTH && GLOBALS.ONLINE) {
 		console.log("ACCOUNT: clean up blacklist");
 		$.ajax({
-			url: GLOBALS.SyncServer + '/' + btoa(GLOBALS.userID) + '/account/',
+			url: GLOBALS.SyncServer + '/' + basicAuthString(GLOBALS.userID) + '/account/',
 			type: 'GET',
 			headers: {
-				"Authorization": "Basic " + btoa(GLOBALS.userID + ":" + GLOBALS.passW)
+				"Authorization": basicAuthString(GLOBALS.userID, GLOBALS.passW)
 			},
 			timeout: GLOBALS.timeout,
 			success: function (data, status, jqXHR) {
@@ -490,11 +484,49 @@ function encryptData(readAble) {
 
 function decryptData(unKnown) {
 	//-> JSON Daten entschlüsseln
-	var readAble = CryptoJS.AES.decrypt(unKnown, GLOBALS.passW).toString(CryptoJS.enc.Utf8);
-	return JSON.parse(readAble);
+	var decryptedBytes = CryptoJS.AES.decrypt(unKnown, GLOBALS.passW);
+	try {
+		var readAble = decryptedBytes.toString(CryptoJS.enc.Utf8);
+		return JSON.parse(readAble);
+	}catch{
+		pwFail(500, decryptedBytes, "Fehler beim Interpretieren des JSON");
+		return false
+	}
+}
+
+function pwFail(status, data, jqXHR) {
+	console.log("SYNC-ERROR: Kein Sync des Accounts durchgeführt !");
+	console.log("SYNC-ERROR (status, data, jqXHR):", status, data, jqXHR);
+	GLOBALS.AUTH = false;
+	GLOBALS.PRO = false;
+	localStorage.setItem("auth", false);
+	localStorage.removeItem("TeacherTab");
+	alert("Du konntest nicht korrekt mit deinem Account angemeldet werden. Schaue auf my.teachertab.de nach, ob dein Passwort stimmt und dein Account nicht gesperrt wurde. Probiere es danach erneut.\n\nSollte alles stimmen und es trotzdem nicht funktionieren, schreib' mir eine E-Mail an service@teachertab.de !");
+	window.location.reload();
+	return;
 }
 
 function hashData(readAble) {
 	//-> Daten hashen
 	return CryptoJS.SHA1(readAble).toString();
+}
+
+function basicAuthString(username, passW){
+	// Korrektes Base64 auch mit Umlauten
+	if (!passW) {
+		return btoa(username);
+	}else{
+		var str = username + ":" + passW;
+		var b64 = btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+			function toSolidBytes(match, p1) {
+				return String.fromCharCode('0x' + p1);
+		}));
+		return "Basic " + b64;
+	}
+}
+
+function b64DecodeUnicode(str) {
+	return decodeURIComponent(atob(str).split('').map(function(c) {
+		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+	}).join(''));
 }
