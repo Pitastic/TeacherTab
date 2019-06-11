@@ -64,8 +64,11 @@ window.addEventListener('load', function () {
 		}
 	});
 
-	// -- Eventlistener für Leistungen
-	setTimeout(function() {
+	// -- Eventlistener für Leistungen (wen DOM ready)
+	var DOMcheck = setInterval(function () {
+		if (document.readyState !== 'complete') return;
+		clearInterval(DOMcheck);
+		// DOM Ready - Set Listeners !
 		var i, liAll = document.getElementById('studentInfo').getElementsByTagName('li');
 		for (i=0; i<liAll.length; i++){
 			liAll[i].addEventListener('click', function(){
@@ -75,7 +78,7 @@ window.addEventListener('load', function () {
 				slide1('item1details', "details_leistungen.htm");				
 			});
 		}
-	}, 200);
+	}, 50);
 
 });
 

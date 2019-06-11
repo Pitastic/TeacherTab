@@ -27,10 +27,10 @@ var GLOBALS = {
 	'userID': null,
 	'passW': null,
 	'SyncServer': "c/api",
-	'timeout': 6000,
+	'timeout': 20000,
 	'unlimited_dates': ["2099-01-01", "2098-01-01"],
 
-	'appversion': "1.1.5",
+	'appversion': "1.1.6",
 	'up2date': true,
 	'dbname': null,
 	'dbversion': null,
