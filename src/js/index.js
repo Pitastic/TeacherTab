@@ -91,7 +91,7 @@ window.addEventListener('load', function () {
 	} else {
 		GLOBALS.userID = 'Nobody';
 		GLOBALS.passW = '-';
-		popUp('item0First');
+		if (!GLOBALS['deferredPrompt']){ popUp('item0First'); }
 	}
 
 	// Install-Prompt
@@ -100,7 +100,7 @@ window.addEventListener('load', function () {
 		console.log("SW: Verzögere das Install-Prompt");
 		e.preventDefault();
 		GLOBALS['deferredPrompt'] = e;
-		var old_pop = document.querySelector('#item0First div a');
+		var old_pop = document.querySelector('#item0First div form');
 		popUpSwitch(old_pop, 'item0Install');
 	});
 
