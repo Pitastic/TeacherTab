@@ -13,9 +13,6 @@ window.addEventListener('load', function () {
 		// Settings laden
 		SETTINGS = r[0];
 
-		// Durchschnitt aktualisieren
-		//handleSchnitt(function(){
-
 			// List first View
 			db_readMultiData(function(r){
 				firstListing(r, function(){
@@ -25,8 +22,6 @@ window.addEventListener('load', function () {
 			
 				});
 			}, "leistung");
-	
-		//}, id)
 	
 	}, "settings");
 
