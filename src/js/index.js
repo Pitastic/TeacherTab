@@ -169,7 +169,9 @@ function setAuth(status) {
 			msg += ":<br>Emailadresse oder Passwort sind falsch !";
 
 		} else if (status == "400" || status == "0") {
-			msg += ":<br>Der Server ist nicht erreichbar. Bist du online ?";
+			msg += ":<br>Der Server ist nicht erreichbar oder ignoriert deine Anfrage. Bist du online ?";
+		} else if (status == "423") {
+			msg += ":<br>Die Anmeldung wird aus Sicherheitsgründen für 2 Minuten gesperrt !";
 		} else if (status == "500") {
 			msg += ":<br>Uuups ! Auf dem Server ist etwas schiefgegangen. Probier es bitte nochmal...";
 		}
