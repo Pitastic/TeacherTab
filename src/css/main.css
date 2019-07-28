@@ -234,7 +234,7 @@ Listen in allen Ansichten
 		width: 5%; /*Symbol*/
 		}
 	#listLeistung li div.gewichtung, span.gewichtung {
-		margin: auto 10%;
+		text-align: right;
 		font-size: 75%;
 		width: 5%; /*Gewichtung*/
 		}

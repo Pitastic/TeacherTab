@@ -30,7 +30,7 @@
 			"type": "image/png"
 		}		
 	],
-	"name": "TeacherTab Notenorganisation",
+	"name": "TeacherTab WebApp",
 	"short_name": "TeacherTab",
 	"start_url": "/index.htm"
 }
