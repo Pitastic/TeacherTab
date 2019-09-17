@@ -81,23 +81,23 @@ function setOnlineStatus(evt) {
 			text.classList.add("pro");
 			if (GLOBALS.UNLIMITED === true) {
 				text.innerHTML = 'PRO Account !';
-				info.parentNode.removeChild(info);
+				if (info) {info.parentNode.removeChild(info);}
 			} else {
 				text.innerHTML = 'PRO Account bis ' + datum(true, GLOBALS.UNLIMITED);
-				info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">unbegrenzt Pro holen</a>';
+				if (info) {info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">unbegrenzt Pro holen</a>';}
 			}
 		} else if (!status) {
 			text.innerHTML = 'Offline';
 			text.classList.remove("pro");
 			text.classList.remove("basic");
 			text.classList.add("offline");
-			info.parentNode.removeChild(info);
+			if (info) {info.parentNode.removeChild(info);}
 		} else {
 			text.innerHTML = 'Basic Account';
 			text.classList.remove("pro");
 			text.classList.remove("offline");
 			text.classList.add("basic");
-			info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>';
+			if (info) {info.innerHTML = '<a href="https://my.teachertab.de/home.php" title="Zu deinem Account" class="button">wechsel zu Pro !</a>';}
 		}
 	}
 }
