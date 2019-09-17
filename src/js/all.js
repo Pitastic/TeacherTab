@@ -184,9 +184,11 @@ function updateNoten(liste, bol_singel, newObs_init) {
 				span[0].innerHTML = "-";
 				span[1].innerHTML = "%";
 				// Objekt eränzen
-				newObs[sID][lART][lID].Gesamt = undefined;
-				newObs[sID][lART][lID].Note = undefined;
-				newObs[sID][lART][lID].Prozent = undefined;
+				newObs[sID][lART][lID] = {
+					'Gesamt': undefined,
+					'Note': undefined,
+					'Prozent': undefined,
+				}
 			}
 
 		} else { // Punkte / Noten
