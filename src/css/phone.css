@@ -167,10 +167,15 @@ PopUp Fenster
 		padding: 0.5em 10px;
 		margin: 0px 0 0px -10px;
 	}
-		.popUp select {
+		.popUp select, .popUp input[type="date"] {
 			width: 100%;
 			margin: 0.5em 0 !important;
 		}
+			.popUp input[type="date"] {
+				padding-right: 0;
+				padding-left: 0;
+				text-align: center;
+			}
 		.popUp label, li.edit span {
 			display: block;
 			font-weight: normal !important;
@@ -227,7 +232,7 @@ Buttons
 ===============================================================================
 */
 
-select {
+select, input[type="date"] {
 	display: block;
 	margin: 1em auto;
 	padding: 10px 5px; padding-right: 20px;

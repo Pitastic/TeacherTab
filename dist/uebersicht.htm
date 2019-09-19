@@ -126,7 +126,9 @@
 				<ul>
 					<form>
 						<li>
-							<label>Art : <select id="notenArt" onchange="fspz_Bezeichnung();">
+							<label>
+								<span>Art : </span>
+								<select id="notenArt" onchange="fspz_Bezeichnung();">
 									<option value="mndl">mündliche Note</option>
 									<option value="fspz">fachspez. Leistung</option>
 									<option value="schr">schriftlich Note</option>
@@ -140,9 +142,16 @@
 								<option>Vokabeln</option>
 							</select>
 						</li>
-						<li><input type="text" placeholder="Datum" class="" id="notenDatum"></li>
+						<li class="date-polyfill">
+							<label>
+								<span>Datum : </span>
+								<input type="date" class="" id="notenDatum">
+							</label>
+						</li>
 						<li>
-							<label>Eingabe : <select id="notenEintragung">
+							<label>
+								<span>Eingabe : </span>
+								<select id="notenEintragung">
 									<option value="Noten">Noten</option>
 									<option value="Punkte">Punkte</option>
 									<option value="Rohpunkte">Kompetenzen</option>
@@ -150,7 +159,8 @@
 							</label>
 						</li>
 						<li>
-							<label>Gewichtung :
+							<label>
+								<span>Gewichtung : </span>
 								<input id="rangeSlide" type="range" min="0" max="2" value="1" oninput="rangeWert.value = (value > 0) ? value : 0.5;">
 								<output id="rangeWert">1</output>
 							</label>

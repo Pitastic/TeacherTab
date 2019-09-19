@@ -1,4 +1,4 @@
-var CACHE = "tt_webapp_1.1.8"
+var CACHE = "tt_webapp_2.0.1"
 var needToCache = [
 	'/index.htm',
 	'/settings.htm',

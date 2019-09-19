@@ -175,7 +175,7 @@ function listLeistung(results){
 	} // ende des Arten-Loops
 
 	// PopUp Datum
-	document.getElementById('notenDatum').value = datum();
+	document.getElementById('notenDatum').value = datum("ISO");
 	// Eventlistener	
 	var tr = document.getElementById('listLeistung').getElementsByTagName('li');
 	for (var i=0; i<tr.length; i++){
@@ -286,10 +286,10 @@ function massenAdd(el){
 function addLeistung(thisElement){
 	// Get Vars aus Input
 	var nBezeichnung = document.getElementById('notenBezeichnung');
-	var nDatum = document.getElementById('notenDatum').value;
 	var nEintragung = document.getElementById('notenEintragung');
 	var nArt = document.getElementById('notenArt').value;
 	var nGewicht = parseFloat(document.getElementById('rangeWert').value);
+	var nDatum = document.getElementById('notenDatum').value;
 	
 	// Leistung als Object erstellen
 	var Leistung = formLeistung(nArt, nBezeichnung.value, nDatum, nEintragung.value, nGewicht);

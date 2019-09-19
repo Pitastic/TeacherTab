@@ -30,7 +30,7 @@ var GLOBALS = {
 	'timeout': 20000,
 	'unlimited_dates': ["2099-01-01", "2098-01-01"],
 
-	'appversion': "1.1.8",
+	'appversion': "2.0.1",
 	'up2date': true,
 	'dbname': null,
 	'dbversion': null,
@@ -269,6 +269,17 @@ function checkES6() {
 }
 
 
+function checkInputs() {
+	var testInput = document.createElement("input");
+	testInput.type = "date";
+	if (testInput.type != "date") {
+		console.log("IDENTIFY: Polyfill Datepicker with flatpickr.js.org");
+		DEVICE['nodate'] = true;
+	}
+	return;
+}
+
+
 function cleanUpIDB(callback) {
 	var delReq = indexedDB.deleteDatabase("test");
 	delReq.onsuccess = function (event) {
@@ -434,6 +445,19 @@ function prepareDevice() {
 	// JS Shim
 	if (DEVICE['nojs'] && !DEVICE['noidx']) { passJs("/js/frameworks/babel_polyfill.min.js"); }
 
+	// Inputs Shim
+	if (DEVICE['nodate']) {
+		passCss("https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css");
+		passJs("https://cdn.jsdelivr.net/npm/flatpickr", function(){
+				flatpickr('[type="date"]', {
+					altInput: true,
+					altFormat: "j. F Y",
+					dateFormat: "Y-m-d",
+					defaultDate: "today",
+				});
+		})
+	}
+
 	// Orientation / Seitenverhältnisse
 	if (DEVICE['type'] == 'tablet') {
 
@@ -507,11 +531,11 @@ function prepareDevice() {
 
 // Run tests if DEVICE unknown
 var fromStore = localStorage.getItem("DEVICE");
+DEVICE = (fromStore) ? JSON.parse(fromStore) : false;
 
-if (fromStore) {
+if (DEVICE && DEVICE.appversion == GLOBALS.appversion) {
 
 	// no tests
-	DEVICE = JSON.parse(fromStore);
 	extendCache();
 	prepareDevice();
 
@@ -519,6 +543,7 @@ if (fromStore) {
 
 	DEVICE = {};
 	DEVICE['toCache'] = [];
+	DEVICE['appversion'] = GLOBALS.appversion;
 
 	// Queries
 	var isDesktop = "only screen and (hover: hover)";
@@ -570,7 +595,8 @@ if (fromStore) {
 		checkIDBCursorUpdate(function(){
 			console.log("IDENTIFY: (idb) starte Callback 2");
 			checkES6();
-	
+			checkInputs();
+
 			// Einstellungen laden
 			prepareDevice();
 			if (window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB) {

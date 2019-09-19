@@ -369,6 +369,31 @@ function jsGET() {
 	return result;
 }
 
+function passJsLater(absolutePath, entrypoint){
+	var jsId = btoa(absolutePath);
+	if (!document.getElementById(jsId)) {
+		var script = document.createElement('script');
+		script.type = "text/javascript";
+		script.src = absolutePath;
+		script.id = jsId;
+		document.head.appendChild(script);
+		script.onload = function () {
+			entrypoint();
+		};
+	}
+}
+
+function passCssLater(absolutePath) {
+	var cssId = btoa(absolutePath);
+	if (!document.getElementById(cssId)) {
+		var link = document.createElement('link');
+		link.id = cssId;
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = absolutePath;
+		document.head.appendChild(link);
+	}
+}
 
 function checkAuth() {
 	GLOBALS.AUTH = (localStorage.getItem("auth") == "true") ? true : false;
@@ -448,14 +473,22 @@ function datum(numeric, given) {
 	}
 	var monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 	var tag, monat, jahr;
-	tag = d.getDate();
+	var tag = d.getDate();
+	var monat = d.getMonth();
+	var jahr = d.getFullYear();
 	if (!numeric) {
-		monat = monate[d.getMonth()];
-		jahr = d.getFullYear();
+		monat = monate[monat];
 		return tag + '. ' + monat + ' ' + jahr;
 	} else {
-		var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-		return d.toLocaleDateString("de-DE", options);
+		var options;
+		if (numeric == "ISO") {
+			if (tag < 10) {tag = "0" + tag;}
+			if (monat < 10) {monat = "0" + monat;}
+			return jahr +"-"+ monat +"-"+ tag;
+		}else{
+			var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+			return d.toLocaleDateString("de-DE", options);
+		}
 	}
 }
 
@@ -865,15 +898,19 @@ function formStudent(vName, nName, sex) {
 }
 
 // Leistung mit ersten Daten
-function formLeistung(art, bezeichnung, datum, eintragung, gewicht) {
+function formLeistung(art, bezeichnung, theDate, eintragung, gewicht) {
 	var id = uniqueID();
+
+	bezeichnung = (bezeichnung) ? bezeichnung : "Leistung";
+	theDate = (theDate) ? datum(false, theDate) : "unbekannt";
+
 	return {
 		'id': id,
 		'typ': "leistung",
 		'subtyp': art,
 		'changed': 0,
 		'Bezeichnung': bezeichnung,
-		'Datum': datum,
+		'Datum': theDate,
 		'Eintragung': eintragung,
 		'DS': undefined,
 		'Gewichtung': gewicht,
