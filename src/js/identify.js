@@ -62,6 +62,7 @@ var needToCache = [
 	'/css/basic.css',
 	'/css/button.css',
 	'/css/export.css',
+	'/css/flatpickr.min.css',
 	'/css/main.css',
 	'/css/plot.css',
 	'/css/popup.css',
@@ -120,10 +121,11 @@ var needToCache = [
 	'/js/frameworks/jsflot/jquery.flot.pie.min.js',
 	'/js/frameworks/jsflot/jquery.flot.categories.min.js',
 	'/js/frameworks/jsflot/jquery.flot.valuelabels.js',
-	'/js/frameworks/jquery.min.js',
 	'/js/frameworks/babel_polyfill.min.js',
+	'/js/frameworks/flatpickr.min.js',
 	'/js/frameworks/indexeddbshim.min.js',
 	'/js/frameworks/indexeddbshim-ios9.pack.js',
+	'/js/frameworks/jquery.min.js',
 ];
 
 
@@ -447,9 +449,9 @@ function prepareDevice() {
 
 	// Inputs Shim
 	if (DEVICE['nodate']) {
-		passCss("https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css");
-		passJs("https://cdn.jsdelivr.net/npm/flatpickr", function(){
-				flatpickr('[type="date"]', {
+		passCss("/css/flatpickr.min.css");
+		passJs("/js/frameworks/flatpickr.min.js", function(){
+				GLOBALS['flatpickr'] = flatpickr('[type="date"]', {
 					altInput: true,
 					altFormat: "j. F Y",
 					dateFormat: "Y-m-d",

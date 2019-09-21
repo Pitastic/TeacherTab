@@ -119,6 +119,7 @@ function listLeistung(results){
 	if (typeof results === 'undefined') {results = [];}
 	var c, r, ul, idx, art, Leistung, hasEntries;
 	var old = document.getElementById("listLeistung").getElementsByTagName('ul');
+	results.sort(compareDate);
 	
 	var arten = ['mndl', 'fspz', 'schr'];
 	for (art = 0; art < arten.length; art++){
@@ -141,7 +142,7 @@ function listLeistung(results){
 				c.innerHTML = Leistung.Bezeichnung;
 				r.appendChild(c);
 				c = document.createElement('div');
-				c.innerHTML = Leistung.Datum;
+				c.innerHTML = datum(false, Leistung.Datum);
 				r.appendChild(c);
 				c = document.createElement('div');
 				c.innerHTML = "&#160;";

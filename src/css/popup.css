@@ -82,9 +82,6 @@ li.edit {
         .popUp li span {
             font-size: 0.75em;
             font-weight: normal;
-            display: inline-block;
-            text-align: right;
-            width: 30%;
         }
         	.popUp li.edit span {
         		float: left;
@@ -159,14 +156,23 @@ Hinzufügen (AddMenu)
         margin: 0 10px;
     }
 /* Leistungen */
-#item2Add input[type="text"] {text-align: center;}
-/*
-#item2Add select, #item2Add input[type="date"], #item2Add .date-polyfill input[type="text"]{
+#item2Add li span, #leistungEdit li span {
+	display: inline-block;
+	text-align: right;
+	width: 30%;
+}
+#leistungEdit li:last-child span {width: auto;}
+#item2Add input[type="text"], #leistungEdit input[type="text"] {text-align: center;}
+#item2Add select, #item2Add input[type="date"], #item2Add .date-polyfill input[type="text"],
+#leistungEdit select, #leistungEdit input[type="date"], #leistungEdit .date-polyfill input[type="text"]{
     width: 60%;
     display: inline-block;
     padding-right: 0;
 }
-*/
+	#item2Add input[type="date"], #item2Add .date-polyfill input[type="text"],
+	#leistungEdit input[type="date"], #leistungEdit .date-polyfill input[type="text"] 
+	{width: calc(60% - 7px);}
+
 /*
 ===============================================================================
 Eintragen / Editieren / Anzeigen

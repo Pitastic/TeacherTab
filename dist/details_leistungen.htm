@@ -175,7 +175,9 @@
 				<ul>
 					<form id="leistungEdit">
 						<li>
-							<label>Art : <select id="notenArt" disabled="disabled" onchange="fspz_Bezeichnung();">
+							<label>
+								<span>Art : </span>
+								<select id="notenArt" disabled="disabled" onchange="fspz_Bezeichnung();">
 									<option value="mndl">mündliche Note</option>
 									<option value="fspz">fachspez. Leistung</option>
 									<option value="schr">schriftlich Note</option>
@@ -189,9 +191,15 @@
 								<option>Vokabeln</option>
 							</select>
 						</li>
-						<li><label>Datum : <input type="text" id="notenDatum"></label></li>
+						<li class="date-polyfill">
+							<label>
+								<span>Datum : </span>
+								<input type="date" class="" id="notenDatum">
+							</label>
+						</li>
 						<li>
-							<label>Gewichtung :
+							<label>
+								<span>Gewichtung : </span>
 								<input id="rangeSlide" disabled="disabled" type="range" min="0" max="2" value="1" onchange="rangeWert.value = (value > 0) ? value : 0.5;">
 								<output id="rangeWert">1</output>
 							</label>

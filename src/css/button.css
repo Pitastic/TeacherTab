@@ -1,5 +1,7 @@
 /* Buttons ALLGEMEIN */
 /* - Alle klickbaren Elemente (Buttons, Li, Select)- */
+input[type="date"]{font-family: inherit}
+
 .button, input[type="button"], input[type="date"], .date-polyfill input[type="text"], .uebersicht li, #KeyBar li, #btn_refresh, select, .marker, #item1details li {
     cursor: pointer;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
@@ -144,7 +146,7 @@ select, input[type="date"], .date-polyfill input[type="text"]{
     -moz-appearance:none;
     text-indent: 0.01px; text-overflow: ""; 
     vertical-align: baseline;
-    margin: -10px 10px;
+    margin: -10px 0 -10px 10px;
     padding: 5px; padding-right: 20px;
     font-size: 16px;
     line-height: initial !important;
@@ -160,7 +162,7 @@ select, input[type="date"], .date-polyfill input[type="text"]{
     }
     /*Pfeil über Browser Pfeil positionieren*/
     input[type="date"]{padding-right: 0;margin-right: 0;}
-    input[type="date"]:focus{background-image: none;}
+    input[type="date"]:focus, input[type="date"]:hover{background-image: none;}
 
 
 /* Buttons SPEZIELL */

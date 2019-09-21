@@ -369,32 +369,6 @@ function jsGET() {
 	return result;
 }
 
-function passJsLater(absolutePath, entrypoint){
-	var jsId = btoa(absolutePath);
-	if (!document.getElementById(jsId)) {
-		var script = document.createElement('script');
-		script.type = "text/javascript";
-		script.src = absolutePath;
-		script.id = jsId;
-		document.head.appendChild(script);
-		script.onload = function () {
-			entrypoint();
-		};
-	}
-}
-
-function passCssLater(absolutePath) {
-	var cssId = btoa(absolutePath);
-	if (!document.getElementById(cssId)) {
-		var link = document.createElement('link');
-		link.id = cssId;
-		link.rel = 'stylesheet';
-		link.type = 'text/css';
-		link.href = absolutePath;
-		document.head.appendChild(link);
-	}
-}
-
 function checkAuth() {
 	GLOBALS.AUTH = (localStorage.getItem("auth") == "true") ? true : false;
 	return;
@@ -448,7 +422,6 @@ function compareKlassen(a, b) {
 	return 0;
 }
 
-
 function compareStudents(a, b) {
 	if (SETTINGS.studSort) {
 		// Sortieren nach Gruppe und Namen
@@ -463,24 +436,35 @@ function compareStudents(a, b) {
 	}
 }
 
+function compareDate(a, b) {
+	a = (a.Datum.split("-").length == 3) ? a.Datum : datum("ISO", a.Datum);
+	b = (b.Datum.split("-").length == 3) ? b.Datum : datum("ISO", b.Datum);
+	return (a > b) ? 1 : -1;
+}
 
 function datum(numeric, given) {
 	var d;
 	if (!given) {
 		d = new Date();
 	} else {
+		given = given.replace(". ", " ");
+		given = given.replace(".", " ");
 		d = new Date(given);
 	}
-	var monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
-	var tag, monat, jahr;
 	var tag = d.getDate();
-	var monat = d.getMonth();
 	var jahr = d.getFullYear();
+	var monat = d.getMonth();
+	var monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 	if (!numeric) {
 		monat = monate[monat];
-		return tag + '. ' + monat + ' ' + jahr;
+		if (!monat) {
+			return "?"
+		}else{
+			return tag + '. ' + monat + ' ' + jahr;
+		}
 	} else {
 		var options;
+		monat ++;
 		if (numeric == "ISO") {
 			if (tag < 10) {tag = "0" + tag;}
 			if (monat < 10) {monat = "0" + monat;}
@@ -902,7 +886,7 @@ function formLeistung(art, bezeichnung, theDate, eintragung, gewicht) {
 	var id = uniqueID();
 
 	bezeichnung = (bezeichnung) ? bezeichnung : "Leistung";
-	theDate = (theDate) ? datum(false, theDate) : "unbekannt";
+	theDate = (theDate) ? datum("ISO", theDate) : datum("ISO");
 
 	return {
 		'id': id,

@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version: 2.0.1 (**Thu Sep 19 21:47:41 CEST 2019**)
+# Version: 2.0.1 (**Sat Sep 21 13:36:20 CEST 2019**)
 
 CACHE:
 
@@ -12,6 +12,7 @@ CACHE:
 ./css/basic.css
 ./css/button.css
 ./css/export.css
+./css/flatpickr.min.css
 ./css/main.css
 ./css/media.css
 ./css/phone.css
@@ -76,6 +77,7 @@ CACHE:
 ./js/frameworks/babel_polyfill.min.js
 ./js/frameworks/indexeddbshim.min.js
 ./js/frameworks/indexeddbshim-ios9.pack.js
+./js/frameworks/flatpickr.min.js
 
 NETWORK:
 *

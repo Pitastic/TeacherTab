@@ -136,7 +136,7 @@ function firstListing(results, callback) {
 		span.innerHTML = mndl[_id].Bezeichnung;
 		li.appendChild(span);
 		span = document.createElement('span');
-		span.innerHTML = mndl[_id].Datum;
+		span.innerHTML = datum(false, mndl[_id].Datum);
 		li.appendChild(span);
 		span = document.createElement('span'); // Gewichtung
 		span.innerHTML = mndl[_id].Gewichtung + "x";
@@ -167,7 +167,7 @@ function firstListing(results, callback) {
 			span.innerHTML = fspz[_id2].Bezeichnung;
 			li.appendChild(span);
 			span = document.createElement('span');
-			span.innerHTML = fspz[_id2].Datum;
+			span.innerHTML = datum(false, fspz[_id2].Datum);
 			li.appendChild(span);
 			span = document.createElement('span'); // Gewichtung
 			span.innerHTML = fspz[_id2].Gewichtung + "x";
@@ -199,7 +199,7 @@ function firstListing(results, callback) {
 			span = document.createElement('span');
 			li.appendChild(span);
 			span = document.createElement('span');
-			span.innerHTML = fspz[_id3].Datum;
+			span.innerHTML = datum(false, fspz[_id3].Datum);
 			li.appendChild(span);
 			span = document.createElement('span'); // Gewichtung
 			span.innerHTML = fspz[_id3].Gewichtung + "x";
@@ -248,7 +248,7 @@ function firstListing(results, callback) {
 		span.innerHTML = schr[_id4].Bezeichnung;
 		li.appendChild(span);
 		span = document.createElement('span');
-		span.innerHTML = schr[_id4].Datum;
+		span.innerHTML = datum(false, schr[_id4].Datum);
 		li.appendChild(span);
 		span = document.createElement('span'); // Gewichtung
 		span.innerHTML = schr[_id4].Gewichtung + "x";

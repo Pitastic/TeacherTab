@@ -78,7 +78,12 @@ function leistungsDetails(Leistung){
 	// - Edit Pop
 	var editLeistung = document.getElementById("leistungEdit");
 	editLeistung.notenBezeichnung.value = Leistung.Bezeichnung;
-	editLeistung.notenDatum.value = Leistung.Datum;
+	if (GLOBALS['flatpickr']) {
+		// Polyfill
+		GLOBALS['flatpickr'].setDate(datum("ISO", Leistung.Datum));
+	}else{
+		editLeistung.notenDatum.value = datum("ISO", Leistung.Datum);
+	}
 	editLeistung.notenArt.value = Leistung.subtyp;
 	editLeistung.rangeSlide.value = parseFloat(Leistung.Gewichtung) < 1 ? 0 : parseFloat(Leistung.Gewichtung);
 	editLeistung.rangeWert.value = parseFloat(Leistung.Gewichtung) || 1;
@@ -147,7 +152,7 @@ function leistungsDetails_noten(Leistung, Students){
 	new_el.appendChild(divSchnitt);
 	// - - - Kopfdaten - - -
 	// -- Allgemeine Infos
-	document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = Leistung.Bezeichnung+' vom '+Leistung.Datum;
+	document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = Leistung.Bezeichnung+' vom '+ datum(false, Leistung.Datum);
 	old_Info.parentNode.replaceChild(new_el, old_Info);
 	// Save-Button
 	document.getElementById('Save').onclick = function(){
