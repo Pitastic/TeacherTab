@@ -74,7 +74,8 @@
 					<div class="table">
 						<div class="cell">
 							<a class="button stay" href="#" title="Grundeinstellungen" onclick="popUp('item0First');">Grundeinstellungen</a><br>
-							<a class="button HELP stay" href="https://my.teachertab.de" title="Hilfe" target="_blank">My.TeacherTab.de</a><br>
+							<!--<a class="button HELP stay" href="https://my.teachertab.de" title="Hilfe" target="_blank">My.TeacherTab.de</a><br>-->
+							<a class="button HELP stay" title="Dein Account" onclick="popUp('item0Info');">Dein Account</a><br>
 							<a id="syncUpdate" href="#" class="button OK stay hide" onclick="popUp('item0Update');">Update verfügbar</a>
 						</div class="cell">
 					</div>
@@ -151,6 +152,9 @@
 						<li>Eine neue Version <span id="newVersion"></span> der WebApp ist verfügbar. Um sie zu installieren, muss die App nur neu geladen werden.</li>
 						<li>Je nach Gerät werden neue Inhalte erst nach Ablauf einer Frist oder oft auch automatisch heruntergeladen.</li>
 						<li>Wenn das Update also jetzt nicht funktioniert, probiere es einfach einen Tag später noch einmal.</li>
+					</ul>
+					<ul>
+						<li>Die Änderungen in diesem Update findest du in deinem Accout MyTeacherTab.</li>
 					</ul>
 			</div>
 			<div class="close"><a class="stay" href="#">x</a></div>
@@ -302,6 +306,24 @@
 			<div>
 				<a class="button ABORT stay" onclick="popUpClose(this); window.location.reload();" href="#">Abbrechen</a>
 				<a class="button OK stay" onclick="settingsAllgemein()" href="#">Login</a>
+			</div>
+		</div>
+
+		<div id="item0Info" class="popUp">
+			<h3>Dein Account auf My TeacherTab</h3>
+			<div class="container">
+				<ul>
+					<li>Melde dich mit deinem Account auf my.teachertab.de an</li>
+				</ul>
+				<ul>
+					<li>Verwalte deinen Account</li>
+					<li>Informiere dich über neue und geplante Funktionen</li>
+					<li>Lies Blogeinträge in den TeacherTabTipps</li>
+				</ul>
+			</div>
+			<div class="close"><a class="stay" href="#">x</a></div>
+			<div>
+				<a class="button OK stay" href="https://my.teachertab.de" target="_blank">Öffnen</a>
 			</div>
 		</div>
 
