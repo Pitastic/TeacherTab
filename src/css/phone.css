@@ -1,6 +1,5 @@
 /* Background */
 html, body {
-	background: url(/img/back_tisch.jpg) top left repeat;
 	background-size: 640px auto;
 	line-height: 1.25em;
 	}
@@ -43,7 +42,7 @@ Header und Footer Leiste
 	text-align: center;
 	height: auto;
 	background-size: 390px auto;
-	background: url(../img/back_tisch.jpg) top center;
+	background: url(/img/back_tisch.jpg) top center;
 	border-style: solid;
 	border-color: #2c2c2c;
 }

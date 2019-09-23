@@ -33,8 +33,9 @@ h2 { display: none; }
 /* ========== Allgemeines und Texte =========== */
 html, body {
     margin: 0; padding: 0;
-	background: url(../img/back_tisch.jpg) top left repeat;
-    background-color: rgb(184, 120, 82);
+	background: url(/img/back_tisch.jpg) top left;
+    /*background-color: rgb(184, 120, 82);*/
+    background-color: black;
 	background-size: 500px 250px;
     overflow-x: hidden; overflow-y: hidden;
     color: black;
@@ -69,7 +70,7 @@ html, body {
 }
 
 .emptyList {
-    background: url(../img/no_entry.png) top right no-repeat no-repeat;
+    background: url(/img/no_entry.png) top right no-repeat no-repeat;
     background-size: 250px;
     background-position: center 50px;
 }

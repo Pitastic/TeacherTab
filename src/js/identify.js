@@ -30,7 +30,7 @@ var GLOBALS = {
 	'timeout': 20000,
 	'unlimited_dates': ["2099-01-01", "2098-01-01"],
 
-	'appversion': "2.1",
+	'appversion': "2.1.1",
 	'up2date': true,
 	'dbname': null,
 	'dbversion': null,
@@ -319,6 +319,7 @@ function extendCache() {
 // -- dynamic Orienatation
 function handle_orientation_landscape(evt) {
 	console.log("IDENTIFY: (style) Handle Orientation, isLandscape:", evt.matches);
+	//var viewport = "initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover";
 	var viewport = "initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
 	var dwidth = "width=device-width";
 	if (evt.matches) {
