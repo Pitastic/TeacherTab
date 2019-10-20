@@ -281,7 +281,7 @@ function leistungsDetails_punkte(Leistung, Students){
 	new_el.appendChild(divSchnitt);
 	// - - - Kopfdaten - - -
 	// -- Allgemeine Infos
-	document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = Leistung.Bezeichnung+' vom '+Leistung.Datum;
+	document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = Leistung.Bezeichnung+' vom '+datum(false, Leistung.Datum);
 	old.parentNode.replaceChild(new_el, old);
 	// Save-Button
 	document.getElementById('Save').onclick = function(){
@@ -372,7 +372,7 @@ function leistungsDetails_rohpunkte(Leistung, Students){
 	new_el.innerHTML = "";
 	// - - - - Algemeine Daten - - - -
 	// Überschrift
-	document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = Leistung.Bezeichnung+' vom '+Leistung.Datum;
+	document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = Leistung.Bezeichnung+' vom '+datum(false, Leistung.Datum);
 	// Save-Button
 	document.getElementById('Save').onclick = function(){
 		item2Save(true, Leistung.Bezeichnung);
