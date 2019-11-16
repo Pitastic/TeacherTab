@@ -686,7 +686,7 @@ function db_dynamicUpdate_CursorUpdate(callback, toApply, typ, eID) {
 					toUpdate = toApply(toUpdate);
 					var requestUpdate = cursor.update(toUpdate);
 					requestUpdate.onsuccess = function (r) {
-						console.log("IDB: Funktion angewendet auf ", r.id, "applied");
+						console.log("IDB: Funktion angewendet auf ", id, "applied");
 					};
 				}
 				cursor.continue();

@@ -609,8 +609,10 @@ function schnitt(_obj, bol_fspz) {
 			return "";
 		} else {
 			for (_row in _obj) {
-				iAnz += _obj[_row].Gewichtung;
-				r = r + parseFloat(_obj[_row].Note * _obj[_row].Gewichtung);
+				if (_obj[_row].Mitschreiber) {
+					iAnz += _obj[_row].Gewichtung;
+					r = r + parseFloat(_obj[_row].Note * _obj[_row].Gewichtung);
+				}
 			}
 			return Math.round((r / iAnz) * 100) / 100 || "";
 		}
