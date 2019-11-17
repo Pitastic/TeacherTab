@@ -727,9 +727,21 @@ function macTrackPadFix(element) {
 }
 
 function keyFunctions(event) {
-	if (event.keyCode == 27) {
-		var popUp = document.querySelector('.showPop .close a');
-		popUpClose(popUp, false);
+	var keyStroke = event.key || event.keyCode;
+	var closeButton = document.querySelector('.showPop .close a');
+	if (closeButton) {
+
+		if (keyStroke == "Escape" || keyStroke == 27) {
+			popUpClose(closeButton, false);
+
+		}else if (keyStroke == "Enter" || keyStroke == 13) {
+			var allBtns = document.querySelectorAll(".showPop.popUp .OK");
+			for (var i = 0; i < allBtns.length; i++) {
+				if (!allBtns[i].classList.contains("hide") && allBtns[i].id != "saveI") {
+					allBtns[i].click();
+				}
+			}
+		}
 	}
 }
 
@@ -770,7 +782,7 @@ function popUp(popWindow) {
 		document.getElementById(popWindow).classList.add('showPop');
 		document.getElementById('fadeBlack').classList.add('show');
 	}, 50);
-	window.addEventListener('keydown', keyFunctions);
+	document.addEventListener('keydown', keyFunctions);
 }
 
 
@@ -787,7 +799,7 @@ function popUpClose(thisElement, bol_refresh, keepBlack) {
 			thisElement.parentNode.parentNode.parentNode.classList.add('hide');
 		}, 250);
 	}
-	window.removeEventListener('keydown', keyFunctions);
+	document.removeEventListener('keydown', keyFunctions);
 }
 
 
