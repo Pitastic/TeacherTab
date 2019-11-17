@@ -2,6 +2,7 @@
 html, body.white {
 	background: white !important;
 	overflow: auto !important;
+	line-height: inherit !important;
 	}
 	body.json {
 		position: absolute;
@@ -26,6 +27,14 @@ section {
 	page-break-inside: avoid;
 	}
 	section:last-of-type{padding: 0 0.1em !important;}
+h1 {
+	padding: 0;
+	text-align: start;
+	font-weight: 400;
+	font-size: initial;
+	text-shadow: none;
+	color: black;
+}
 h1.sectionHead {
 	margin: 1em 0;
 	border-bottom: 2px solid grey;

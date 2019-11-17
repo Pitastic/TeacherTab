@@ -17,6 +17,13 @@ var STYLES_EXPORT = [
 	"/css/button.css",
 	"/css/export.css",
 ];
+var STYLES_EXPORT_MOBILE = [
+	"/css/basic.css",
+	"/css/popup.css",
+	"/css/button.css",
+	"/css/phone.css",
+	"/css/export.css",
+];
 
 
 var GLOBALS = {
@@ -491,7 +498,9 @@ function prepareDevice() {
 	switch (device_type) {
 	case "mobile":
 		// Lade CSS und Buttons für Smartphone
+		console.info("DEV: Pushe phone.css");
 		STYLES.push("/css/phone.css");
+		console.info(STYLES);
 		change_Buttons();
 		break;
 
@@ -501,7 +510,11 @@ function prepareDevice() {
 		break;
 	
 	case "export":
-		STYLES = STYLES_EXPORT;
+		if (DEVICE['type'] == "mobile") {
+			STYLES = STYLES_EXPORT_MOBILE;
+		}else{
+			STYLES = STYLES_EXPORT;
+		}
 		break;
 
 	default: // Desktop
@@ -510,6 +523,7 @@ function prepareDevice() {
 	}
 
 	for (var index = 0; index < STYLES.length; index++) {
+		console.info("DEV: passCss(", STYLES[index],")");
 		passCss(STYLES[index]);
 	}
 
