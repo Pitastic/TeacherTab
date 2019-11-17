@@ -7,6 +7,9 @@ sync_deleteKlasse sync_pushBack sync_getKlasse*/
 
 window.addEventListener('load', function () {
 
+	// Überschrift
+	document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = sessionStorage.getItem('klassenbezeichnung');
+
 	// Funktionen, die auf global SETTINGS warten müssen
 	db_readMultiData(function(r){
 		SETTINGS = r[0];

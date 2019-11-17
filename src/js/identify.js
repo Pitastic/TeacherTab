@@ -498,9 +498,7 @@ function prepareDevice() {
 	switch (device_type) {
 	case "mobile":
 		// Lade CSS und Buttons für Smartphone
-		console.info("DEV: Pushe phone.css");
 		STYLES.push("/css/phone.css");
-		console.info(STYLES);
 		change_Buttons();
 		break;
 
@@ -523,7 +521,6 @@ function prepareDevice() {
 	}
 
 	for (var index = 0; index < STYLES.length; index++) {
-		console.info("DEV: passCss(", STYLES[index],")");
 		passCss(STYLES[index]);
 	}
 
