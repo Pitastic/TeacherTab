@@ -144,7 +144,7 @@ function writeAllgemeines(results){
 			for (var i3 = 0; i3 < id_array.length; i3++) {
 				var tr2 = appendRow("nummer", "Nr. " + (i3+1) );
 				var Leistung = id_array[i3];
-				tr2 = appendRow("", Leistung.Datum, tr2);
+				tr2 = appendRow("", datum(false, Leistung.Datum), tr2);
 				tr2 = appendRow("", Leistung.Bezeichnung, tr2);
 				tr2 = appendRow("", Leistung.Gewichtung, tr2);
 				tr2 = appendRow("", Leistung.Eintragung, tr2);
