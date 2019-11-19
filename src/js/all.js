@@ -108,24 +108,24 @@ function setOnlineStatus(evt) {
 
 function Schuljahre() {
 	var selectBox = document.getElementById("jahrKlasse");
-	var copyBox = document.getElementById("jahrCopyKlasse");
+	//var copyBox = document.getElementById("jahrCopyKlasse");
 	var thisYear = new Date().getFullYear() - 1;
 	var nextYear = (thisYear + 1).toString().substring(2, 4);
 	var opt, opt2;
 	opt = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
-	opt2 = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
+	//opt2 = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
 	selectBox.appendChild(opt);
-	copyBox.appendChild(opt2);
+	//copyBox.appendChild(opt2);
 	thisYear = thisYear + 1;
 	nextYear = (thisYear + 1).toString().substring(2, 4);
 	opt = new Option(thisYear + " / " + nextYear + " (1. Hj.)");
-	opt2 = new Option(thisYear + " / " + nextYear + " (1. Hj.)");
+	//opt2 = new Option(thisYear + " / " + nextYear + " (1. Hj.)");
 	selectBox.appendChild(opt);
-	copyBox.appendChild(opt2);
+	//copyBox.appendChild(opt2);
 	opt = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
-	opt2 = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
+	//opt2 = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
 	selectBox.appendChild(opt);
-	copyBox.appendChild(opt2);
+	//copyBox.appendChild(opt2);
 }
 
 function loadVerteilung(Pkt_Verteilung) {
@@ -1159,6 +1159,15 @@ function handleDeleteLeistung(callback, lART, lID) {
 			return Student;
 		},
 		"student");
+}
+
+// Helper um Klassenkopie vorzubereiten
+function handleCopyKlasse(thisElement) {
+	var btn_OK = document.querySelector("#item0Add .button.OK");
+	var heading = document.querySelector("#item0Add h3");
+	btn_OK.onclick = function(){copyKlasse(this)};
+	heading.innerHTML = "Kopieren von "+ GLOBALS['klassenbezeichnung'];
+	popUpSwitch(thisElement, "item0Add");
 }
 
 

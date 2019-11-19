@@ -139,7 +139,7 @@ function initDB(callback) {
 
 
 // Neue Klasse anlegen
-function db_neueKlasse(callback, id, bezeichnung) {
+function db_neueKlasse(callback, id, bezeichnung, baseObj) {
 	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
 	db.onerror = errorHandler;
 	db.onsuccess = function (event) {
@@ -159,7 +159,6 @@ function db_neueKlasse(callback, id, bezeichnung) {
 			newdb.onerror = errorHandler;
 			newdb.onupgradeneeded = function (event) {
 				var connection = event.target.result;
-				console.log("IDB: creating Class");
 				// Erstelle ObjectStore
 				var oStore = connection.createObjectStore(id, { keyPath: "id", autoIncrement: true });
 				// Erstelle Indexes
@@ -167,11 +166,9 @@ function db_neueKlasse(callback, id, bezeichnung) {
 				// Globale Variable speichern
 				GLOBALS.klasse = id;
 				console.log("IDB:", bezeichnung, " (", id, ") created");
-				console.log("IDB: Index:", result_Index);
 			};
 			newdb.onsuccess = function (event) {
-				console.log("db_neueKlasse onsuccess");//DEV
-				SettingsRequest(event, id, bezeichnung, callback);
+				SettingsRequest(event, id, bezeichnung, callback, baseObj);
 			};
 			newdb.onversionchange = function (event) {
 				console.log("IDB: Schließe onversionchange von newdb");
@@ -517,7 +514,6 @@ function db_readKlasse(callback, targetClass) {
 			request.onerror = errorHandler;
 			request.onsuccess = function (event) {
 				var resultList = event.target.result;
-				console.log("IDB: Found", resultList);//DEV
 
 				// Liste in Object nach IDs umwandeln
 				var result = {};
@@ -761,31 +757,39 @@ function blockHandler(event) {
 }
 
 // Settings erstellen
-function SettingsRequest(event, id, bezeichnung, callback) {
-	console.log("SettingsRequest function");//DEV
+function SettingsRequest(event, id, bezeichnung, callback, baseObj) {
 	var connectionSR = event.target.result;
 	var checkRequest = connectionSR.transaction(id).objectStore(id).get(1);
 	checkRequest.onerror = errorHandler;
 	checkRequest.onsuccess = function (event) {
-		//DEV console.log("checkRequest onsuccess");
 		if (event.target.transaction) {
 			event.target.transaction.db.close();
 		}
 
-		if (!event.target.result) {
+		var Grunddaten = (baseObj) ? baseObj : formSettings(id, bezeichnung);
+
+		db_addDocument(function(){
+		
+			// Neue Klasse in Account-Array einfügen
+			var changed = timestamp();
+			console.log("IDB: adding Class to Account");
+			db_simpleUpdate(callback, 1, "klassenliste", "addKlasse", [id, { 'bezeichnung': bezeichnung, 'id': id, 'changed': changed }], "account");
+		
+		}, Grunddaten);
+
+
+		/*
+		if (baseObj) {
+			// eine Klassenkopie erstellen
+			db_addDocument(false, baseObj);
+		}else if (!event.target.result) {
 			// keine ID 1 vorhanden, SETTINGS schreiben:
-			console.log("IDB: adding Settings");
 			db_addDocument(false, formSettings(id, bezeichnung));
 		}
-
-		// Neue Klasse in Account-Array einfügen
-		var changed = timestamp();
-		console.log("IDB: adding Class to Account");
-		db_simpleUpdate(callback, 1, "klassenliste", "addKlasse", [id, { 'bezeichnung': bezeichnung, 'id': id, 'changed': changed }], "account");
+		*/
 
 	};
 	checkRequest.oncomplete = function (event) {
-		//DEV console.log("checkRequest oncomplete");
 		if (event.target.transaction) {
 			event.target.transaction.db.close();
 		}
@@ -796,70 +800,4 @@ function SettingsRequest(event, id, bezeichnung, callback) {
 	checkRequest.onversionchange = function (event) {
 		event.target.transaction.db.close();
 	};
-}
-
-//-> DEV Funktion für #77
-function testRangePut(typ){
-	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
-	db.onerror = errorHandler;
-	db.onsuccess = function (event) {
-		var connection = event.target.result;
-		var objectStore = connection.transaction([GLOBALS.klasse], 'readwrite').objectStore(GLOBALS.klasse);
-
-		var idxTyp = objectStore.index("typ");
-		var transaction = idxTyp.getAll(typ);
-
-		transaction.onerror = errorHandler;
-		transaction.onsuccess = function (event) {
-			var result = event.target.result;
-
-			for (var idx = 0; idx < result.length; idx++) {
-				var cursor = result[idx]
-				//var toUpdate = toApply(cursor);
-				var toUpdate = cursor;
-				toUpdate.name.sex = "anders";
-				var updateRequest = objectStore.put(toUpdate);
-				updateRequest.onerror = errorHandler;
-				updateRequest.onsuccess = function(){
-					console.log("updated");
-				}
-				console.log("Put", idx, updateRequest.transaction);
-			}
-			console.log("finish");
-		}
-		transaction.onerror = errorHandler;
-	}
-}
-
-function testRangeUpdate(typ){
-	var db = SHIMindexedDB.open(GLOBALS.dbname, GLOBALS.dbversion);
-	db.onerror = errorHandler;
-	db.onsuccess = function (event) {
-		var connection = event.target.result;
-		var objectStore = connection.transaction([GLOBALS.klasse], 'readwrite').objectStore(GLOBALS.klasse);
-
-		var idxTyp = objectStore.index("typ");
-		var keyRangeValue = IDBKeyRange.only(typ);
-		var transaction = idxTyp.openCursor(keyRangeValue);
-
-		console.log("Open Cursor:", transaction);
-
-		transaction.onsuccess = function(event){
-			var cursor = transaction.result;
-			if (cursor) {
-				console.log(cursor.value.id);
-				var toUpdate = cursor.value;
-				toUpdate.name.sex = "other";
-				var requestUpdate = cursor.update(toUpdate); // <---- Cursor Update breaks Continue !
-				requestUpdate.onsuccess = function (e) {
-					console.log("Cursor updated !", e);
-				};
-				requestUpdate.onerror = errorHandler;
-				cursor.continue();
-			}else{
-				console.log("finish");
-			}
-		}
-		transaction.onerror = errorHandler;
-	}
 }
