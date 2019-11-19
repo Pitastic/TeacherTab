@@ -108,24 +108,17 @@ function setOnlineStatus(evt) {
 
 function Schuljahre() {
 	var selectBox = document.getElementById("jahrKlasse");
-	//var copyBox = document.getElementById("jahrCopyKlasse");
 	var thisYear = new Date().getFullYear() - 1;
 	var nextYear = (thisYear + 1).toString().substring(2, 4);
 	var opt, opt2;
 	opt = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
-	//opt2 = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
 	selectBox.appendChild(opt);
-	//copyBox.appendChild(opt2);
 	thisYear = thisYear + 1;
 	nextYear = (thisYear + 1).toString().substring(2, 4);
 	opt = new Option(thisYear + " / " + nextYear + " (1. Hj.)");
-	//opt2 = new Option(thisYear + " / " + nextYear + " (1. Hj.)");
 	selectBox.appendChild(opt);
-	//copyBox.appendChild(opt2);
 	opt = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
-	//opt2 = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
 	selectBox.appendChild(opt);
-	//copyBox.appendChild(opt2);
 }
 
 function loadVerteilung(Pkt_Verteilung) {
@@ -1061,12 +1054,12 @@ function klassenDeleteHandler() {
 				// nur lokale Änderungen möglich
 				db_simpleUpdate(function () {
 
-					updateStatus(progress, "Kein PRO Account vorhanden", "Klasse nur lokal gelöscht", false, true);
+					updateStatus(progress, "Klasse auf dem Server nicht vorhanden", "Klasse nur lokal gelöscht", false, true);
 					setTimeout(function () {
 						window.location.reload();
-					}, 3500);
+					}, 2000);
 
-				}, 1, "klassenliste", "cleanUp", GLOBALS.klasse, "account");
+				}, 1, "klassenliste", "delKlasse", GLOBALS.klasse, "account");
 
 			}
 		});

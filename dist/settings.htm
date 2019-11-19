@@ -105,6 +105,13 @@
                     </form>
                     -->
 					</div>
+					<h3>Klassennamen bearbeiten</h3>
+					<div>
+						Hier kannst du den aktuellen Klassennamen in einem PopUp anpassen
+						<div class="right">
+							<a href="#" class="button stay" onclick="popUp('item1setting_klassenname')">Ändern</a>
+						</div>
+					</div>
 
 					<!-- <h3>Test Section</h3>
 					<div>
@@ -146,6 +153,34 @@
 
 	<!-- Eingabe-PopUp -->
 	<div id="fadeBlack" class="hide">
+
+		<!-- Klasse umbenennen -->
+		<div id="item1setting_klassenname" class="popUp">
+			<h3>Neuer Klassennamen</h3>
+			<div class="container">
+				<form>
+					<ul>
+						<li>
+							<input id="nameKlasse" type="text" placeholder="Kursbezeichnung (z.B. 5a)">
+						</li>
+						<li>
+							<label>Schuljahr : <select id="jahrKlasse">
+								</select>
+							</label>
+						</li>
+						<li>
+							<input id="fachKlasse" type="text" placeholder="Unterrichtsfach (z.B. Mathe)">
+						</li>
+					</ul>
+				</form>
+			</div>
+			<div class="close"><a class="stay" href="#">x</a></div>
+				
+			<div>
+				<a class="button ABORT stay" onclick="popUpClose(this);" href="#">Abbrechen</a>
+				<a class="button OK stay" href="#" onclick="renameKlasse(this);">Ändern</a>
+			</div>
+		</div>
 
 		<!-- Schüler gruppieren -->
 		<div id="item1setting_info" class="popUp">

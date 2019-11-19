@@ -16,6 +16,7 @@ window.addEventListener('load', function () {
 
 	// Style and Listeners
 	closeListener();
+	Schuljahre();
 });
 
 function settingDetails(results) {
@@ -107,6 +108,8 @@ function SettingsSave(bol_save) {
 		// -- -- Vorjahresnoten
 		// DEV: Disabled
 		settings.showVorjahr = false; //document.form_vorjahr.setVorjahr.checked;
+		//-- -- Timestamp
+		settings.changed = timestamp();
 
 		// DB save und refresh
 		db_replaceData(function () {
@@ -156,6 +159,44 @@ function gruppierenListe(results) {
 	return true;
 }
 
+function renameKlasse(thisElement) {
+	// Get Klassendaten
+	var nameKlasse = document.getElementById('nameKlasse');
+	var jahrKlasse = document.getElementById('jahrKlasse');
+	var fachKlasse = document.getElementById('fachKlasse');
+	if (nameKlasse.value && nameKlasse.value != "") {
+		var newKlasse =
+			jahrKlasse.value + ' - ' + // Schuljahr
+			fachKlasse.value + ' ' + // Fach
+			nameKlasse.value;  // Name
+
+		// Name in Account ändern
+		db_readGeneric(function (localAccount) {
+
+			localAccount.klassenliste[GLOBALS.klasse].bezeichnung = newKlasse;
+			localAccount.klassenliste[GLOBALS.klasse].changed = timestamp();
+
+			db_replaceData(function () {
+
+				// Name in Settings ändern
+				sessionStorage.setItem("klassenbezeichnung", newKlasse);
+				SETTINGS.name = newKlasse;
+				SETTINGS.changed = timestamp();
+
+				db_replaceData(function() {
+					console.log("IDB: Klasse umbenannt");
+					popUpClose(thisElement);
+					slide1("item1setting", "uebersicht.htm");
+				}, SETTINGS);
+
+			}, localAccount, "account");
+
+		}, 1, "account");
+
+	} else {
+		alert('Klassenname ungültig.');
+	}
+}
 /*
 function vorjahresPop(el) {
 	if (el.checked) {

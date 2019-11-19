@@ -418,14 +418,6 @@ function db_simpleUpdate(callback, eID, prop, mode, val, oStore) {
 						// auf Blacklist
 						toUpdate.blacklist.push(val);
 
-
-						// Account bereinigen
-					} else if (mode == "cleanUp") {
-						// aus Klassenliste
-						delete toUpdate.klassenliste[val];
-						// aus Local
-						idx = toUpdate.local.indexOf(val);
-						if (idx > -1) { toUpdate.local.splice(idx, 1); }
 					}
 
 					var requestUpdate = cursor.update(toUpdate);
@@ -776,17 +768,6 @@ function SettingsRequest(event, id, bezeichnung, callback, baseObj) {
 			db_simpleUpdate(callback, 1, "klassenliste", "addKlasse", [id, { 'bezeichnung': bezeichnung, 'id': id, 'changed': changed }], "account");
 		
 		}, Grunddaten);
-
-
-		/*
-		if (baseObj) {
-			// eine Klassenkopie erstellen
-			db_addDocument(false, baseObj);
-		}else if (!event.target.result) {
-			// keine ID 1 vorhanden, SETTINGS schreiben:
-			db_addDocument(false, formSettings(id, bezeichnung));
-		}
-		*/
 
 	};
 	checkRequest.oncomplete = function (event) {
