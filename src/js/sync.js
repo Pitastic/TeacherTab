@@ -264,6 +264,7 @@ function mergeAccount(newData, localData) {
 				// ...und wenn vorhanden auch oStore aus DB
 				GLOBALS.dbToGo += 1;
 				db_dropKlasse(delHash, function () {
+					delete account.local[delHash];
 					GLOBALS.dbFinished += 1;
 					console.log("IDB: Deleted", GLOBALS.dbFinished, "( von", GLOBALS.dbToGo, ")");
 				});

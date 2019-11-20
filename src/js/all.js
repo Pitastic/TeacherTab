@@ -1008,12 +1008,12 @@ function klassenSyncHandler(location, newWindow) {
 	}else{
 		updateStatus(100, "Du bist offline!", "Keine Synchronisation durchgeführt !", false, true);
 		setTimeout(function () {
-		if (newWindow) {
-			window.open(location, '_blank');
-		} else {
-			window.location.href = location;
-		}
-	}, 3000);
+			if (newWindow) {
+				window.open(location, '_blank');
+			} else {
+				window.location.href = location;
+			}
+		}, 3000);
 	}
 }
 
@@ -1156,11 +1156,17 @@ function handleDeleteLeistung(callback, lART, lID) {
 
 // Helper um Klassenkopie vorzubereiten
 function handleCopyKlasse(thisElement) {
-	var btn_OK = document.querySelector("#item0Add .button.OK");
-	var heading = document.querySelector("#item0Add h3");
-	btn_OK.onclick = function(){copyKlasse(this)};
-	heading.innerHTML = "Kopieren von "+ GLOBALS['klassenbezeichnung'];
-	popUpSwitch(thisElement, "item0Add");
+	db_readGeneric(function (localAccount) {
+		if (localAccount.local.indexOf(GLOBALS.klasse) > -1) {
+			var btn_OK = document.querySelector("#item0Add .button.OK");
+			var heading = document.querySelector("#item0Add h3");
+			btn_OK.onclick = function(){copyKlasse(this)};
+			heading.innerHTML = "Kopieren von "+ GLOBALS['klassenbezeichnung'];
+			popUpSwitch(thisElement, "item0Add");
+		}else{
+			alert("Die Klasse ist auf deinem Gerät noch nicht vorhanden. Rufe sie kurz einmal auf, um sie zu synchronisieren.");
+		}
+	}, 1, "account");
 }
 
 
