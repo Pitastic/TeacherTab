@@ -1,4 +1,4 @@
-var CACHE = "tt_webapp_2.2"
+var CACHE = "v2.2"
 var needToCache = [
 	'/index.htm',
 	'/settings.htm',
@@ -44,14 +44,34 @@ var needToCache = [
 
 
 self.addEventListener('install', function(event) {
+	self.skipWaiting();
 	event.waitUntil(
-		caches.open(CACHE).then(function(cache) {
+		caches.keys().then(function(cacheNames) {
+			return Promise.all(
+				cacheNames.filter(function(cacheName) {
+					// alte Caches löschen
+					return (cacheName != CACHE);
+				})
+				.map(function(cacheName) {
+					console.log("SW: Lösche Cache", cacheName);
+					return caches.delete(cacheName);
+				})
+			);
+		}) &&
+		caches.open(CACHE)
+		.then(function(cache){
+			console.log("SW: ....caching");
 			needToCache.map(function(toCache){
 				cache.add( toCache )
 				.catch(function(err) { console.log("SW: Fehler beim Cachen von", toCache, err); });
 			});
 		})
-		.then(function(cache){
+	);
+
+/*
+	event.waitUntil(
+		caches.open(CACHE)
+		.then(function(cache) {
 			caches.keys().then(function(keyList) {
 				keyList.map(function(item){
 					if (item != CACHE) {
@@ -68,7 +88,16 @@ self.addEventListener('install', function(event) {
 				});
 			})
 		})
+		*/
+/*
+		.then(function(cache){
+			needToCache.map(function(toCache){
+				cache.add( toCache )
+				.catch(function(err) { console.log("SW: Fehler beim Cachen von", toCache, err); });
+			});
+		})
 	);
+*/
 });
 
 self.addEventListener('fetch', function(event) {
@@ -93,19 +122,32 @@ self.addEventListener('fetch', function(event) {
 });
 
 self.addEventListener('activate', function(event) {
+	console.log("SW: activted");
+/*
+	event.waitUntil(
+		caches.open(CACHE)
+		.then(function(cache){
+			needToCache.map(function(toCache){
+				cache.add( toCache )
+				.catch(function(err) { console.log("SW: Fehler beim Cachen von", toCache, err); });
+			});
+		})
+	);
 	event.waitUntil(
 		caches.keys().then(function(cacheNames) {
 			return Promise.all(
 				cacheNames.filter(function(cacheName) {
-				// alte Caches löschen
+					// alte Caches löschen
 					return (cacheName != CACHE);
 				})
-					.map(function(cacheName) {
-						return caches.delete(cacheName);
-					})
+				.map(function(cacheName) {
+					console.log("SW: Lösche Cache", cacheName);
+					return caches.delete(cacheName);
+				})
 			);
 		})
 	);
+*/
 });
 
 function fromCache(request) {
