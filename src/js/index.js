@@ -16,7 +16,7 @@ window.addEventListener('load', function () {
 		var btn_OK = document.querySelector("#item0Add .button.OK");
 		var heading = document.querySelector("#item0Add h3");
 		btn_OK.onclick = function(){addKlasse(this)};
-		heading = "Neue Klasse erstellen12345";
+		heading.innerHTML = "Neue Klasse erstellen";
 		popUp("item0Add");
 	});
 

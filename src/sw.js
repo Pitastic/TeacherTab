@@ -67,53 +67,20 @@ self.addEventListener('install', function(event) {
 			});
 		})
 	);
-
-/*
-	event.waitUntil(
-		caches.open(CACHE)
-		.then(function(cache) {
-			caches.keys().then(function(keyList) {
-				keyList.map(function(item){
-					if (item != CACHE) {
-						caches.delete(item)
-						.then(function(r){
-							console.log("SW: Cache gelöscht:", item, r);
-						})
-						.catch(function(r){
-							console.log("SW: Fehler beim Löschen des Cache:", item, r);
-						})
-					}else{
-						console.log("SW: Cache auslassen:", item);
-					}
-				});
-			})
-		})
-		*/
-/*
-		.then(function(cache){
-			needToCache.map(function(toCache){
-				cache.add( toCache )
-				.catch(function(err) { console.log("SW: Fehler beim Cachen von", toCache, err); });
-			});
-		})
-	);
-*/
 });
 
 self.addEventListener('fetch', function(event) {
-	//DEV console.log("SW: Looking for", event.request.url);
-	// Network-First-Policy
+	// Cache-First-Policy
 	// nur Request nach Ressourcen abfangen (kein CGI)
 	if (event.request.mode != "cors") {
 		event.respondWith(
 			// Ressource anfragen
-			tryNetwork(event.request, 1000)
-			// Offline oder Timeout
+			fromCache(event.request)
+			// Nicht im Cache
 			.catch(function (request) {
-				// Ressource aus Cache raussuchen, weil offline/timeout
-				//DEV console.log("SW: Not in the Web, Lookup im Cache...");
-				return fromCache(event.request).catch( function(err){
-					//DEV console.log("SW: Not in Cache nor the Web:", err);
+				return tryNetwork(event.request, 10000)
+				.catch( function(err){
+					console.log("SW: Not in Cache nor the Web:", err);//DEV
 					return false;
 				});
 			})
@@ -121,23 +88,14 @@ self.addEventListener('fetch', function(event) {
 	}
 });
 
+
 self.addEventListener('activate', function(event) {
-	console.log("SW: activted");
-/*
-	event.waitUntil(
-		caches.open(CACHE)
-		.then(function(cache){
-			needToCache.map(function(toCache){
-				cache.add( toCache )
-				.catch(function(err) { console.log("SW: Fehler beim Cachen von", toCache, err); });
-			});
-		})
-	);
+	console.log("SW: activated");
+	// Lösche alte Caches
 	event.waitUntil(
 		caches.keys().then(function(cacheNames) {
 			return Promise.all(
 				cacheNames.filter(function(cacheName) {
-					// alte Caches löschen
 					return (cacheName != CACHE);
 				})
 				.map(function(cacheName) {
@@ -147,8 +105,8 @@ self.addEventListener('activate', function(event) {
 			);
 		})
 	);
-*/
 });
+
 
 function fromCache(request) {
 	//DEV console.log("SW: Serving from Cache", request);
