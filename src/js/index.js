@@ -8,10 +8,18 @@ checkAuth testCreds sync_deleteKlasse sync_pushBack sync_getKlasse sync_getAccou
 window.addEventListener('load', function () {
 
 	// Style and Listeners
-	addListener();
+	//addListener();
 	closeListener();
 
 	// -- Buttons
+	document.getElementById('btn_Add').addEventListener('click', function () {
+		var btn_OK = document.querySelector("#item0Add .button.OK");
+		var heading = document.querySelector("#item0Add h3");
+		btn_OK.onclick = function(){addKlasse(this)};
+		heading.innerHTML = "Neue Klasse erstellen";
+		popUp("item0Add");
+	});
+
 	document.getElementById('syncOpen').addEventListener('click', function () {
 		klassenAuswahl(document.getElementById('klasseSelect'));
 		// Öffnen mit Sync der geählten Klasse
@@ -69,7 +77,7 @@ window.addEventListener('load', function () {
 	// -- reset Vars und erste View festlegen
 	sessionStorage.removeItem('leistung');
 	sessionStorage.removeItem('klasse');
-	sessionStorage.setItem('lastview', 'item1');
+	sessionStorage.setItem('lastview', 'item0');
 
 	// Action bei knownDevice
 	if (GLOBALS.knownDevice) {
@@ -260,7 +268,8 @@ function klassenAuswahl(selectbox) {
 // ================== Addings ======================== //
 // =================================================== //
 
-function addKlasse(thisElement) {
+function addKlasse(thisElement, baseObj) {
+	// Get Klassendaten
 	var nameKlasse = document.getElementById('nameKlasse');
 	var jahrKlasse = document.getElementById('jahrKlasse');
 	var fachKlasse = document.getElementById('fachKlasse');
@@ -271,16 +280,53 @@ function addKlasse(thisElement) {
 			nameKlasse.value;  // Name
 		var newId = uniqueClassID(newKlasse);
 		sessionStorage.setItem('klasse', newId);
+
+		if (baseObj) {
+			// IDs in Kopie anpassen
+			baseObj[0].klasse = newId;
+			baseObj[0].name = newKlasse;
+		}
+
 		db_neueKlasse(function () {
-			window.location = "settings.htm";
-		}, newId, newKlasse);
-		document.getElementById('item0').classList.remove('show');
-		popUpClose(thisElement);
+			updateStatus(100, "Erfolgreich erstellt !", "Klasse wird angelegt...");
+			popUpSwitch(thisElement, "item0Sync");
+			setTimeout(function(){
+				if (baseObj) {
+					window.location = "uebersicht.htm";
+				}else{
+					window.location = "settings.htm";
+				}
+			}, 1500)
+		}, newId, newKlasse, baseObj);
+
 	} else {
 		alert('Klassenname ungültig.');
 	}
 }
 
+function copyKlasse(thisElement) {
+	// Get toCopy
+	db_readKlasse(function(toCopy){
+		var baseObj = []
+		// Form baseObj
+		for (var id in toCopy[1]){
+			var entry = toCopy[1][id]
+			if (entry['typ'] == "student") {
+				// nur Grunddaten von Schülern
+				var student = formStudent('', '', '');
+				student['name'] = entry['name'];
+				baseObj.push(student);
+				// decrement BatchID
+				GLOBALS.dbToGo += 1;
+			}else if (entry['typ'] == "settings") {
+				// Settings übernehmen
+				baseObj.push(entry);
+			}
+		}
+		// Create Obj
+		addKlasse(thisElement, baseObj);
+	}, GLOBALS['klasse'])
+}
 
 
 // DEPRECATED (noch SQL - als Anhalt für später behalten)

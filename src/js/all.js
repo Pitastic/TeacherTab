@@ -108,24 +108,17 @@ function setOnlineStatus(evt) {
 
 function Schuljahre() {
 	var selectBox = document.getElementById("jahrKlasse");
-	var copyBox = document.getElementById("jahrCopyKlasse");
 	var thisYear = new Date().getFullYear() - 1;
 	var nextYear = (thisYear + 1).toString().substring(2, 4);
 	var opt, opt2;
 	opt = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
-	opt2 = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
 	selectBox.appendChild(opt);
-	copyBox.appendChild(opt2);
 	thisYear = thisYear + 1;
 	nextYear = (thisYear + 1).toString().substring(2, 4);
 	opt = new Option(thisYear + " / " + nextYear + " (1. Hj.)");
-	opt2 = new Option(thisYear + " / " + nextYear + " (1. Hj.)");
 	selectBox.appendChild(opt);
-	copyBox.appendChild(opt2);
 	opt = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
-	opt2 = new Option(thisYear + " / " + nextYear + " (2. Hj.)");
 	selectBox.appendChild(opt);
-	copyBox.appendChild(opt2);
 }
 
 function loadVerteilung(Pkt_Verteilung) {
@@ -568,7 +561,7 @@ function schnitt_gesamt(Student, Leistungen) {
 	}
 
 	// Kompetenzen
-	var kompetenzen = [0, 0, 0, 0, 0];
+	var kompetenzen = [0, 0, 0, 0, [0,0,0,0]];
 	var Infos, temp_leistung, i2;
 	// -- Itteriere durch Leistungsart
 	for (i2 = 0; i2 < Leistungen.length; i2++) {
@@ -579,19 +572,25 @@ function schnitt_gesamt(Student, Leistungen) {
 		if (temp_leistung && temp_leistung.Mitschreiber && temp_leistung.Verteilung) {
 			var hundertProzent = Infos.Verteilungen[temp_leistung.Verteilung];
 			// Prozentsummen
-			kompetenzen[0] += temp_leistung.Kat1 / hundertProzent.Kat1;
-			kompetenzen[1] += temp_leistung.Kat2 / hundertProzent.Kat2;
-			kompetenzen[2] += temp_leistung.Kat3 / hundertProzent.Kat3;
-			kompetenzen[3] += temp_leistung.Kat4 / hundertProzent.Kat4;
-			// Counter
-			kompetenzen[4] += 1;
+			if (hundertProzent.Kat1) {
+				kompetenzen[0] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[4][0] += 1;}
+			if (hundertProzent.Kat2) {
+				kompetenzen[1] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[4][1] += 1;}
+			if (hundertProzent.Kat3) {
+				kompetenzen[2] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[4][2] += 1;}
+			if (hundertProzent.Kat4) {
+				kompetenzen[3] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[4][3] += 1;}
 		}
 	}
 	Student.kompetenzen = [
-		Math.round((kompetenzen[0] / kompetenzen[4]) * 100) / 100 || 0,
-		Math.round((kompetenzen[1] / kompetenzen[4]) * 100) / 100 || 0,
-		Math.round((kompetenzen[2] / kompetenzen[4]) * 100) / 100 || 0,
-		Math.round((kompetenzen[3] / kompetenzen[4]) * 100) / 100 || 0,
+		Math.round((kompetenzen[0] / kompetenzen[4][0]) * 100) / 100 || 0,
+		Math.round((kompetenzen[1] / kompetenzen[4][1]) * 100) / 100 || 0,
+		Math.round((kompetenzen[2] / kompetenzen[4][2]) * 100) / 100 || 0,
+		Math.round((kompetenzen[3] / kompetenzen[4][3]) * 100) / 100 || 0,
 	];
 
 	return Student;
@@ -609,8 +608,10 @@ function schnitt(_obj, bol_fspz) {
 			return "";
 		} else {
 			for (_row in _obj) {
-				iAnz += _obj[_row].Gewichtung;
-				r = r + parseFloat(_obj[_row].Note * _obj[_row].Gewichtung);
+				if (_obj[_row].Mitschreiber) {
+					iAnz += _obj[_row].Gewichtung;
+					r = r + parseFloat(_obj[_row].Note * _obj[_row].Gewichtung);
+				}
 			}
 			return Math.round((r / iAnz) * 100) / 100 || "";
 		}
@@ -725,9 +726,21 @@ function macTrackPadFix(element) {
 }
 
 function keyFunctions(event) {
-	if (event.keyCode == 27) {
-		var popUp = document.querySelector('.showPop .close a');
-		popUpClose(popUp, false);
+	var keyStroke = event.key || event.keyCode;
+	var closeButton = document.querySelector('.showPop .close a');
+	if (closeButton) {
+
+		if (keyStroke == "Escape" || keyStroke == 27) {
+			popUpClose(closeButton, false);
+
+		}else if (keyStroke == "Enter" || keyStroke == 13) {
+			var allBtns = document.querySelectorAll(".showPop.popUp .OK");
+			for (var i = 0; i < allBtns.length; i++) {
+				if (!allBtns[i].classList.contains("hide") && allBtns[i].id != "saveI") {
+					allBtns[i].click();
+				}
+			}
+		}
 	}
 }
 
@@ -768,7 +781,7 @@ function popUp(popWindow) {
 		document.getElementById(popWindow).classList.add('showPop');
 		document.getElementById('fadeBlack').classList.add('show');
 	}, 50);
-	window.addEventListener('keydown', keyFunctions);
+	document.addEventListener('keydown', keyFunctions);
 }
 
 
@@ -785,7 +798,7 @@ function popUpClose(thisElement, bol_refresh, keepBlack) {
 			thisElement.parentNode.parentNode.parentNode.classList.add('hide');
 		}, 250);
 	}
-	window.removeEventListener('keydown', keyFunctions);
+	document.removeEventListener('keydown', keyFunctions);
 }
 
 
@@ -1001,12 +1014,12 @@ function klassenSyncHandler(location, newWindow) {
 	}else{
 		updateStatus(100, "Du bist offline!", "Keine Synchronisation durchgeführt !", false, true);
 		setTimeout(function () {
-		if (newWindow) {
-			window.open(location, '_blank');
-		} else {
-			window.location.href = location;
-		}
-	}, 3000);
+			if (newWindow) {
+				window.open(location, '_blank');
+			} else {
+				window.location.href = location;
+			}
+		}, 3000);
 	}
 }
 
@@ -1047,12 +1060,12 @@ function klassenDeleteHandler() {
 				// nur lokale Änderungen möglich
 				db_simpleUpdate(function () {
 
-					updateStatus(progress, "Kein PRO Account vorhanden", "Klasse nur lokal gelöscht", false, true);
+					updateStatus(progress, "Klasse auf dem Server nicht vorhanden", "Klasse nur lokal gelöscht", false, true);
 					setTimeout(function () {
 						window.location.reload();
-					}, 3500);
+					}, 2000);
 
-				}, 1, "klassenliste", "cleanUp", GLOBALS.klasse, "account");
+				}, 1, "klassenliste", "delKlasse", GLOBALS.klasse, "account");
 
 			}
 		});
@@ -1076,6 +1089,8 @@ function klassenImportHandler() {
 		// Textfeld lesen, untersuchen und Timestamp setzen
 		var jsonBackup = document.getElementById("jsonBackup").value;
 		try {
+			jsonBackup = decodeURIComponent(jsonBackup);
+		console.log(jsonBackup);
 			jsonBackup = JSON.parse(jsonBackup);
 			jsonBackup = stampImport(jsonBackup, changed);
 			jsonBackup[1].name = jsonBackup[1].name + " (Import " + datum(true) + ")";
@@ -1147,10 +1162,26 @@ function handleDeleteLeistung(callback, lART, lID) {
 		"student");
 }
 
+// Helper um Klassenkopie vorzubereiten
+function handleCopyKlasse(thisElement) {
+	db_readGeneric(function (localAccount) {
+		if (localAccount.local.indexOf(GLOBALS.klasse) > -1) {
+			var btn_OK = document.querySelector("#item0Add .button.OK");
+			var heading = document.querySelector("#item0Add h3");
+			btn_OK.onclick = function(){copyKlasse(this)};
+			heading.innerHTML = "Kopieren von "+ GLOBALS['klassenbezeichnung'];
+			popUpSwitch(thisElement, "item0Add");
+		}else{
+			alert("Die Klasse ist auf deinem Gerät noch nicht vorhanden. Rufe sie kurz einmal auf, um sie zu synchronisieren.");
+		}
+	}, 1, "account");
+}
+
 
 // Helper zum geordneten Aufrufen der Schnitt-Update-Datenbankfunktionen
 function handleSchnitt(callback, sID) {
 	db_readMultiData(function (Leistungen) {
+		console.log("INFO: Schnittberechnung wird durchgeführt");
 		db_dynamicUpdate(
 			callback,
 			function (Student) { // Apply (anonym wegen Argumente)

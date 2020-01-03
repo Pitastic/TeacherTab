@@ -7,18 +7,28 @@ sync_deleteKlasse sync_pushBack sync_getKlasse*/
 
 window.addEventListener('load', function () {
 
+	// Überschrift
+	document.getElementById('header').getElementsByTagName('h1')[0].innerHTML = sessionStorage.getItem('klassenbezeichnung');
+
 	// Funktionen, die auf global SETTINGS warten müssen
 	db_readMultiData(function(r){
 		SETTINGS = r[0];
-		db_readMultiData(listLeistung, "leistung", function(){listLeistung([]);});
-		// List first View
-		db_readMultiData(listStudents, "student");
+		// List First View (Schnitt bei erstem Aufruf)
+		if (sessionStorage.getItem('lastview') == "item0") {
+			handleSchnitt(function(){
+				db_readMultiData(listLeistung, "leistung", function(){listLeistung([]);});
+				db_readMultiData(listStudents, "student");
+			})
+		}else{
+			db_readMultiData(listLeistung, "leistung", function(){listLeistung([]);});
+			db_readMultiData(listStudents, "student");
+		}
+		sessionStorage.setItem('lastview', 'item1');
 	}, "settings");
 
 	// Event-Listener
 	addListener();
 	closeListener();
-
 });
 
 

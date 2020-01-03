@@ -17,6 +17,13 @@ var STYLES_EXPORT = [
 	"/css/button.css",
 	"/css/export.css",
 ];
+var STYLES_EXPORT_MOBILE = [
+	"/css/basic.css",
+	"/css/popup.css",
+	"/css/button.css",
+	"/css/phone.css",
+	"/css/export.css",
+];
 
 
 var GLOBALS = {
@@ -30,7 +37,7 @@ var GLOBALS = {
 	'timeout': 20000,
 	'unlimited_dates': ["2099-01-01", "2098-01-01"],
 
-	'appversion': "2.1.1",
+	'appversion': "2.2",
 	'up2date': true,
 	'dbname': null,
 	'dbversion': null,
@@ -501,7 +508,11 @@ function prepareDevice() {
 		break;
 	
 	case "export":
-		STYLES = STYLES_EXPORT;
+		if (DEVICE['type'] == "mobile") {
+			STYLES = STYLES_EXPORT_MOBILE;
+		}else{
+			STYLES = STYLES_EXPORT;
+		}
 		break;
 
 	default: // Desktop

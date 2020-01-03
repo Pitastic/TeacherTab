@@ -106,11 +106,10 @@ function sync_getKlasse(callback, classObjectArray) {
 						}, klassenHash, merged[1].name);
 					} else {
 						alert("Diese Klasse kann nicht geöffnet werden !\nSie ist weder auf dem Gerät, noch konnte sie vom Server geladen werden !\nDie Liste wird bereinigt...");
-						var cleanMode = (GLOBALS.PRO) ? "delKlasse" : "cleanUp";
 						// Account um diese Klasse bereinigen (Blacklisting nur bei PRO)
 						db_simpleUpdate(function () {
 							window.location.reload();
-						}, 1, "klassenliste", cleanMode, klassenHash, "account");
+						}, 1, "klassenliste", "delKlasse", klassenHash, "account");
 					}
 
 				} else {
@@ -265,6 +264,7 @@ function mergeAccount(newData, localData) {
 				// ...und wenn vorhanden auch oStore aus DB
 				GLOBALS.dbToGo += 1;
 				db_dropKlasse(delHash, function () {
+					delete account.local[delHash];
 					GLOBALS.dbFinished += 1;
 					console.log("IDB: Deleted", GLOBALS.dbFinished, "( von", GLOBALS.dbToGo, ")");
 				});

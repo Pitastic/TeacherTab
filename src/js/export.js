@@ -30,7 +30,7 @@ window.addEventListener('load', function () {
 				
 			db_readKlasse(function(r){
 
-				var jsonData = btoa(JSON.stringify(r[1]));
+				var jsonData = btoa(encodeURIComponent(JSON.stringify(r[1])));
 
 				var a = document.createElement('a');
 				a.href = 'data:application/json;charset=utf-8;base64,' + jsonData;
@@ -144,7 +144,7 @@ function writeAllgemeines(results){
 			for (var i3 = 0; i3 < id_array.length; i3++) {
 				var tr2 = appendRow("nummer", "Nr. " + (i3+1) );
 				var Leistung = id_array[i3];
-				tr2 = appendRow("", Leistung.Datum, tr2);
+				tr2 = appendRow("", datum(false, Leistung.Datum), tr2);
 				tr2 = appendRow("", Leistung.Bezeichnung, tr2);
 				tr2 = appendRow("", Leistung.Gewichtung, tr2);
 				tr2 = appendRow("", Leistung.Eintragung, tr2);

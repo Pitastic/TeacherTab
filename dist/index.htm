@@ -104,7 +104,7 @@
 
 		<!-- Klasse hinzufügen -->
 		<div id="item0Add" class="popUp">
-			<h3>Klasse hinzufügen</h3>
+			<h3>neue Klasse</h3>
 			<div class="container">
 				<form>
 					<ul>
@@ -150,7 +150,7 @@
 			<div class="container">
 					<ul>
 						<li>Eine neue Version <span id="newVersion"></span> der WebApp ist verfügbar. Um sie zu installieren, muss die App nur neu geladen werden.</li>
-						<li>Je nach Gerät werden neue Inhalte erst nach Ablauf einer Frist oder oft auch automatisch heruntergeladen.</li>
+						<li>Es kann bis zu einem Tag dauern, bis dein Gerät die neuen Inhalte verwendet.</li>
 						<li>Wenn das Update also jetzt nicht funktioniert, probiere es einfach einen Tag später noch einmal.</li>
 					</ul>
 					<ul>
@@ -190,14 +190,11 @@
 		-->
 					</li>
 					<li class="soon">Kopie (kommt bald...)
-						<!--
-			<ul>
-				<li>neue Klasse durch Kopie erstellen</li>
-				<li>nur Grunddaten und Schüler werden übernommen</li>
-				<li>hilfreich bei Fortführung einer Klasse im nächsten Schuljahr</li>
-				<li>...erst bald verfügbar...</li>
-			</ul>
-		-->
+						<ul>
+							<li>neue Klasse durch Kopie erstellen</li>
+							<li>nur Grunddaten und Schüler werden übernommen</li>
+							<li>z.B. bei Fortführung einer Klasse im nächsten Schuljahr</li>
+						</ul>
 					</li>
 				</ul>
 			</div>
@@ -206,10 +203,10 @@
 			<div>
 				<a id="export_to_json" class="button" href="#" onclick="klassenExportHandler('json')">JSON</a>
 				<a id="export_to_html" class="button" href="#" onclick="klassenExportHandler('html')">HTML</a>
+				<a class="button stay" href="#" onclick="handleCopyKlasse(this)">Kopie</a>
 				<!--
-		<a class="button OK stay" href="#" onclick="setTimeout(function(){popUp('item0Copy');},1000);popUpClose(this);">Kopie</a>
-		<a id="export_to_csv" class="button" href="https://www.teachertab.de/webapp/export.htm" title="CSV Export">CSV</a>
-		-->
+				<a id="export_to_csv" class="button" href="https://www.teachertab.de/webapp/export.htm" title="CSV Export">CSV</a>
+				-->
 			</div>
 		</div>
 
@@ -234,35 +231,6 @@
 			<div class="close"><a class="stay" href="#">x</a></div>
 			<div>
 				<a id="export_to_html" class="button OK stay" href="#" onclick='popUpSwitch(this);klassenImportHandler();'>Importieren</a>
-			</div>
-		</div>
-
-		<div id="item0Copy" class="popUp">
-			<h3>neue Klasse durch Kopieren</h3>
-			<div class="container">
-				<ul>
-					<li><input id="nameCopyKlasse" type="text" placeholder="neuer Klassenname"></li>
-					<li>
-						<label>Schuljahr : <select id="jahrCopyKlasse">
-							</select>
-						</label>
-					</li>
-					<li>
-						<label>Fach : <select id="fachCopyKlasse">
-								<option value="Awt">AWT</option>
-								<option value="Eng">Englisch</option>
-								<option value="Nw">Naturwissenschaft</option>
-								<option value="Che">Chemie</option>
-								<option value="Bio">Biologie</option>
-								<option value="Phy">Physik</option>
-							</select>
-						</label>
-					</li>
-				</ul>
-			</div>
-			<div class="close"><a class="stay" href="#">x</a></div>
-			<div>
-				<a class="button OK" href="#" onclick="copyKlasse(this, sessionStorage.getItem('klasse'))">kopieren</a>
 			</div>
 		</div>
 
@@ -348,7 +316,7 @@
 	<nav>
 		<div class="centerWrap-child">
 			<div id="seitenleiste"><!--
-				--><a id="btn_Add" class="button OK stay" data-name="item0Add" href="#">Neu</a><!--
+				--><a id="btn_Add" class="button OK stay" href="#">Neu</a><!--
 				--><a id="import" class="button stay" href="#">Import</a><!--
 				--><a id="export" class="button stay" href="#">Export</a><!--
 				--><a id="btn_Delete" class="button ABORT stay">Löschen</a><!--
