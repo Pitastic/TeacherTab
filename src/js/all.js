@@ -584,7 +584,6 @@ function schnitt_gesamt(Student, Leistungen) {
 			if (hundertProzent.Kat4) {
 				kompetenzen[3] += (temp_leistung.Kat1 / hundertProzent.Kat1)
 				kompetenzen[4][3] += 1;}
-			console.log("DEV: Kompetenzen von", Student.name.nname, kompetenzen)
 		}
 	}
 	Student.kompetenzen = [
