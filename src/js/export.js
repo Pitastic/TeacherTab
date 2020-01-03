@@ -30,7 +30,7 @@ window.addEventListener('load', function () {
 				
 			db_readKlasse(function(r){
 
-				var jsonData = btoa(JSON.stringify(r[1]));
+				var jsonData = btoa(encodeURIComponent(JSON.stringify(r[1])));
 
 				var a = document.createElement('a');
 				a.href = 'data:application/json;charset=utf-8;base64,' + jsonData;

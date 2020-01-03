@@ -561,7 +561,7 @@ function schnitt_gesamt(Student, Leistungen) {
 	}
 
 	// Kompetenzen
-	var kompetenzen = [0, 0, 0, 0, 0];
+	var kompetenzen = [0, 0, 0, 0, [0,0,0,0]];
 	var Infos, temp_leistung, i2;
 	// -- Itteriere durch Leistungsart
 	for (i2 = 0; i2 < Leistungen.length; i2++) {
@@ -572,19 +572,26 @@ function schnitt_gesamt(Student, Leistungen) {
 		if (temp_leistung && temp_leistung.Mitschreiber && temp_leistung.Verteilung) {
 			var hundertProzent = Infos.Verteilungen[temp_leistung.Verteilung];
 			// Prozentsummen
-			kompetenzen[0] += temp_leistung.Kat1 / hundertProzent.Kat1;
-			kompetenzen[1] += temp_leistung.Kat2 / hundertProzent.Kat2;
-			kompetenzen[2] += temp_leistung.Kat3 / hundertProzent.Kat3;
-			kompetenzen[3] += temp_leistung.Kat4 / hundertProzent.Kat4;
-			// Counter
-			kompetenzen[4] += 1;
+			if (hundertProzent.Kat1) {
+				kompetenzen[0] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[4][0] += 1;}
+			if (hundertProzent.Kat2) {
+				kompetenzen[1] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[4][1] += 1;}
+			if (hundertProzent.Kat3) {
+				kompetenzen[2] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[4][2] += 1;}
+			if (hundertProzent.Kat4) {
+				kompetenzen[3] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[4][3] += 1;}
+			console.log("DEV: Kompetenzen von", Student.name.nname, kompetenzen)
 		}
 	}
 	Student.kompetenzen = [
-		Math.round((kompetenzen[0] / kompetenzen[4]) * 100) / 100 || 0,
-		Math.round((kompetenzen[1] / kompetenzen[4]) * 100) / 100 || 0,
-		Math.round((kompetenzen[2] / kompetenzen[4]) * 100) / 100 || 0,
-		Math.round((kompetenzen[3] / kompetenzen[4]) * 100) / 100 || 0,
+		Math.round((kompetenzen[0] / kompetenzen[4][0]) * 100) / 100 || 0,
+		Math.round((kompetenzen[1] / kompetenzen[4][1]) * 100) / 100 || 0,
+		Math.round((kompetenzen[2] / kompetenzen[4][2]) * 100) / 100 || 0,
+		Math.round((kompetenzen[3] / kompetenzen[4][3]) * 100) / 100 || 0,
 	];
 
 	return Student;
@@ -1083,6 +1090,8 @@ function klassenImportHandler() {
 		// Textfeld lesen, untersuchen und Timestamp setzen
 		var jsonBackup = document.getElementById("jsonBackup").value;
 		try {
+			jsonBackup = decodeURIComponent(jsonBackup);
+		console.log(jsonBackup);
 			jsonBackup = JSON.parse(jsonBackup);
 			jsonBackup = stampImport(jsonBackup, changed);
 			jsonBackup[1].name = jsonBackup[1].name + " (Import " + datum(true) + ")";
@@ -1173,6 +1182,7 @@ function handleCopyKlasse(thisElement) {
 // Helper zum geordneten Aufrufen der Schnitt-Update-Datenbankfunktionen
 function handleSchnitt(callback, sID) {
 	db_readMultiData(function (Leistungen) {
+		console.log("INFO: Schnittberechnung wird durchgeführt");
 		db_dynamicUpdate(
 			callback,
 			function (Student) { // Apply (anonym wegen Argumente)

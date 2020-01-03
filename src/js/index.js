@@ -77,7 +77,7 @@ window.addEventListener('load', function () {
 	// -- reset Vars und erste View festlegen
 	sessionStorage.removeItem('leistung');
 	sessionStorage.removeItem('klasse');
-	sessionStorage.setItem('lastview', 'item1');
+	sessionStorage.setItem('lastview', 'item0');
 
 	// Action bei knownDevice
 	if (GLOBALS.knownDevice) {
