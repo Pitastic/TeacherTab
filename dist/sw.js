@@ -12,6 +12,7 @@ var needToCache = [
 	'/css/main.css',
 	'/css/plot.css',
 	'/css/popup.css',
+	'/css/phone.css',
 	'/img/back_tisch.jpg',
 	'/img/DropDown.png',
 	'/img/lupe_klein.gif',
@@ -20,6 +21,16 @@ var needToCache = [
 	'/img/punkte.gif',
 	'/img/reload_button.gif',
 	'/img/rohpunkte.gif',
+	'/img/mobile/abort.png',
+	'/img/mobile/delete.png',
+	'/img/mobile/export.png',
+	'/img/mobile/import.png',
+	'/img/mobile/neu1.png',
+	'/img/mobile/neu2.png',
+	'/img/mobile/power.png',
+	'/img/mobile/save.png',
+	'/img/mobile/settings.png',
+	'/img/mobile/switch.png',
 	'/favicon.ico',
 	'/favicon/favicon.ico',
 	'/js/all.js',
@@ -33,6 +44,7 @@ var needToCache = [
 	'/js/uebersicht.js',
 	'/js/stay.js',
 	'/js/sync.js',
+	'/js/touch.js',
 	'/js/frameworks/crypto-js/aes.js',
 	'/js/frameworks/crypto-js/sha1.js',
 	'/js/frameworks/jsflot/jquery.flot.min.js',
@@ -132,7 +144,7 @@ function tryNetwork(request, timeout){
 			.then(function(cache){
 				var cacheResponse = response.clone();
 				cache.put(request, cacheResponse);
-				//DEV console.log("SW: Fullfilling", request.url);
+				console.log("SW: Loaded from the net:", request.url);
 				resolve(response); // ...response
 			})
 			.catch(function(err) {
