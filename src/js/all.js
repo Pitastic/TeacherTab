@@ -576,13 +576,13 @@ function schnitt_gesamt(Student, Leistungen) {
 				kompetenzen[0] += (temp_leistung.Kat1 / hundertProzent.Kat1)
 				kompetenzen[4][0] += 1;}
 			if (hundertProzent.Kat2) {
-				kompetenzen[1] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[1] += (temp_leistung.Kat2 / hundertProzent.Kat2)
 				kompetenzen[4][1] += 1;}
 			if (hundertProzent.Kat3) {
-				kompetenzen[2] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[2] += (temp_leistung.Kat3 / hundertProzent.Kat3)
 				kompetenzen[4][2] += 1;}
 			if (hundertProzent.Kat4) {
-				kompetenzen[3] += (temp_leistung.Kat1 / hundertProzent.Kat1)
+				kompetenzen[3] += (temp_leistung.Kat4 / hundertProzent.Kat4)
 				kompetenzen[4][3] += 1;}
 		}
 	}
