@@ -1,4 +1,4 @@
-var CACHE = "v2.2"
+var CACHE = "v2.2.1"
 var needToCache = [
 	'/index.htm',
 	'/settings.htm',
